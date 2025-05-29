@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus } from 'lucide-react';
@@ -193,15 +192,15 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
   if (!game || !league) {
     return (
-      <Card className="animate-slide-up max-w-md" style={{ animationDelay: `${index * 0.1}s` }}>
-        <CardContent className="p-4">
+      <Card className="animate-slide-up h-full flex flex-col" style={{ animationDelay: `${index * 0.1}s` }}>
+        <CardContent className="p-4 flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-3">
             <Badge variant="outline">Loading...</Badge>
             <div className="text-sm text-gray-500">
               {formatTime(log.created_at)}
             </div>
           </div>
-          <div className="text-gray-500">Loading game details...</div>
+          <div className="text-gray-500 flex-1 flex items-center justify-center">Loading game details...</div>
         </CardContent>
       </Card>
     );
@@ -212,8 +211,8 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
   return (
     <>
-      <Card className="animate-slide-up max-w-md" style={{ animationDelay: `${index * 0.1}s` }}>
-        <CardContent className="p-4">
+      <Card className="animate-slide-up h-full flex flex-col" style={{ animationDelay: `${index * 0.1}s` }}>
+        <CardContent className="p-4 flex-1 flex flex-col">
           {/* Top Row - Badges and Action Buttons */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
@@ -279,11 +278,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             )}
             
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatDate(game.date)}
-            </div>
-
             {/* View Boxscore Link - same as GameDetail */}
             {(game as any).boxscore_url && (
               <a 
@@ -297,55 +291,64 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
             )}
           </div>
 
-          {/* Log Details */}
-          <div className="space-y-2">
-            {log.company && (
-              <div className="flex items-center space-x-2 text-sm">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className="text-gray-700">{log.company}</span>
-              </div>
-            )}
-
-            {/* Only show rooted team info if a team was actually selected (not null/undefined/none) */}
-            {log.rooted_for && log.rooted_for !== 'none' && (
-              <div className="flex items-center space-x-2 text-sm">
-                <Heart className="h-4 w-4 text-red-500" />
-                <div className="flex items-center space-x-2">
-                  <img 
-                    src={getTeamLogo(log.rooted_for, league)} 
-                    alt={log.rooted_for}
-                    className="h-4 w-4 object-contain"
-                  />
-                  <span className="text-gray-700">
-                    Rooted for {formatTeamName(log.rooted_for, league)}
-                    {rootedResult && (
-                      <span className="ml-2 font-semibold text-gray-600">
-                        ({rootedResult.result})
-                      </span>
-                    )}
-                  </span>
+          {/* Log Details - flex-1 to fill remaining space */}
+          <div className="space-y-2 flex-1 flex flex-col">
+            <div className="flex-1">
+              {log.company && (
+                <div className="flex items-center space-x-2 text-sm mb-2">
+                  <Users className="h-4 w-4 text-gray-500" />
+                  <span className="text-gray-700">{log.company}</span>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Rating */}
-            {log.rating && (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">Rating:</span>
-                <div className="flex">
-                  {renderStars(log.rating)}
+              {/* Only show rooted team info if a team was actually selected (not null/undefined/none) */}
+              {log.rooted_for && log.rooted_for !== 'none' && (
+                <div className="flex items-center space-x-2 text-sm mb-2">
+                  <Heart className="h-4 w-4 text-red-500" />
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src={getTeamLogo(log.rooted_for, league)} 
+                      alt={log.rooted_for}
+                      className="h-4 w-4 object-contain"
+                    />
+                    <span className="text-gray-700">
+                      Rooted for {formatTeamName(log.rooted_for, league)}
+                      {rootedResult && (
+                        <span className="ml-2 font-semibold text-gray-600">
+                          ({rootedResult.result})
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {log.notes && (
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
-              </div>
-            )}
+              {/* Rating */}
+              {log.rating && (
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-sm font-medium text-gray-700">Rating:</span>
+                  <div className="flex">
+                    {renderStars(log.rating)}
+                  </div>
+                </div>
+              )}
 
-            <div className="text-xs text-gray-500 border-t pt-2">
-              {formatDate(log.created_at)}
+              {log.notes && (
+                <div className="bg-gray-50 p-3 rounded-md mb-2">
+                  <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
+                </div>
+              )}
+            </div>
+
+            {/* Date at very bottom */}
+            <div className="pt-2 border-t">
+              <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
+                <Calendar className="h-4 w-4 mr-1" />
+                {formatDate(game.date)}
+              </div>
+              <div className="text-xs text-gray-500 text-center">
+                {formatDate(log.created_at)}
+              </div>
             </div>
           </div>
         </CardContent>
