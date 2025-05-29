@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -127,14 +128,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </CardContent>
       </Link>
 
-      {/* Vertical divider */}
-      <div className="border-t border-gray-200"></div>
+      {/* Vertical divider with margins */}
+      <div className="border-t border-gray-200 mx-2"></div>
 
       <CardFooter className="p-6 pt-0">
         <div className="w-full space-y-3">
-          {/* View Boxscore Link */}
+          {/* View Boxscore Link with padding */}
           {game.boxscore_url && (
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-2">
               <a 
                 href={game.boxscore_url} 
                 target="_blank" 
