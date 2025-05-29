@@ -139,18 +139,14 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
       (log.rooted_for === game.home_team && homeScore > awayScore) ||
       (log.rooted_for === game.away_team && awayScore > homeScore);
     
-    const rootedTeamScore = log.rooted_for === game.home_team ? homeScore : awayScore;
-    const opponentScore = log.rooted_for === game.home_team ? awayScore : homeScore;
-    
     return {
-      result: rootedTeamWon ? 'Won' : 'Lost',
-      score: `${rootedTeamScore}-${opponentScore}`
+      result: rootedTeamWon ? 'Won' : 'Lost'
     };
   };
 
   if (!game || !league) {
     return (
-      <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+      <Card className="animate-slide-up max-w-md" style={{ animationDelay: `${index * 0.1}s` }}>
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
             <Badge variant="outline">Loading...</Badge>
@@ -263,7 +259,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     Rooted for {formatTeamName(log.rooted_for, league)}
                     {rootedResult && (
                       <span className="ml-2 font-semibold text-gray-600">
-                        {rootedResult.score}
+                        ({rootedResult.result})
                       </span>
                     )}
                   </span>
