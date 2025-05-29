@@ -24,7 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Games />} />
             <Route path="/game/:league/:gameId" element={<GameDetail />} />
-            <Route path="/timeline" element={<Timeline />} />
+            <Route path="/diary" element={<Timeline />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
