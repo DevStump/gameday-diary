@@ -1,35 +1,45 @@
 
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Trophy, TrendingUp, MapPin, Calendar, Star } from 'lucide-react';
+import { Trophy, TrendingUp, Star, Calendar, Target, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { useProfileStats } from '@/hooks/useProfileStats';
 
 const Profile = () => {
-  // Mock data for demonstration
-  const stats = {
-    totalGames: 47,
-    gamesWatched: 32,
-    gamesAttended: 15,
-    avgRating: 4.2,
-    totalPoints: 2847,
-    winRecord: { wins: 28, losses: 19 },
-    favoriteVenues: [
-      { name: 'Arrowhead Stadium', count: 5 },
-      { name: 'Kauffman Stadium', count: 4 },
-      { name: 'Lambeau Field', count: 3 }
-    ],
-    monthlyActivity: [
-      { month: 'Jan', games: 8 },
-      { month: 'Feb', games: 3 },
-      { month: 'Mar', games: 6 },
-      { month: 'Apr', games: 9 },
-      { month: 'May', games: 7 },
-      { month: 'Jun', games: 4 }
-    ]
-  };
+  const { data: stats, isLoading } = useProfileStats();
 
-  const winPercentage = (stats.winRecord.wins / (stats.winRecord.wins + stats.winRecord.losses)) * 100;
+  if (isLoading || !stats) {
+    return (
+      <Layout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">Loading your profile...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const winPercentage = stats.winRecord.wins + stats.winRecord.losses > 0 
+    ? (stats.winRecord.wins / (stats.winRecord.wins + stats.winRecord.losses)) * 100 
+    : 0;
+
+  // Data for Watched vs Attended pie chart
+  const attendanceData = [
+    { name: 'Watched', value: stats.gamesWatched, color: '#16a34a' },
+    { name: 'Attended', value: stats.gamesAttended, color: '#ca8a04' },
+  ];
+
+  // Data for league breakdown
+  const leagueData = [
+    { name: 'NFL', value: stats.nflGames },
+    { name: 'MLB', value: stats.mlbGames },
+  ];
+
+  const chartConfig = {
+    watched: { label: 'Watched', color: '#16a34a' },
+    attended: { label: 'Attended', color: '#ca8a04' },
+  };
 
   return (
     <Layout>
@@ -63,10 +73,10 @@ const Profile = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Attended</p>
-                  <p className="text-3xl font-bold text-sports-gold">{stats.gamesAttended}</p>
+                  <p className="text-sm font-medium text-gray-600">Playoff Games</p>
+                  <p className="text-3xl font-bold text-sports-gold">{stats.playoffGames}</p>
                 </div>
-                <MapPin className="h-8 w-8 text-sports-gold opacity-80" />
+                <Target className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
             </CardContent>
           </Card>
@@ -76,7 +86,7 @@ const Profile = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avg Rating</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.avgRating}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.avgRating || 'N/A'}</p>
                 </div>
                 <Star className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
@@ -87,115 +97,135 @@ const Profile = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Win %</p>
-                  <p className="text-3xl font-bold text-field-green">{winPercentage.toFixed(1)}%</p>
+                  <p className="text-sm font-medium text-gray-600">Total Points</p>
+                  <p className="text-3xl font-bold text-field-green">{stats.totalPoints}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-field-green opacity-80" />
+                <Zap className="h-8 w-8 text-field-green opacity-80" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Detailed Stats */}
+          {/* Win/Loss Record Featured Graphic */}
           <Card className="animate-slide-up">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Trophy className="h-5 w-5 text-field-green" />
-                <span>Game Statistics</span>
+                <TrendingUp className="h-5 w-5 text-field-green" />
+                <span>Win/Loss Record</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Watched vs Attended */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">Watched vs Attended</span>
-                  <span className="text-sm text-gray-500">{stats.gamesWatched + stats.gamesAttended} total</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Watched: {stats.gamesWatched}</span>
-                    <span>{((stats.gamesWatched / stats.totalGames) * 100).toFixed(1)}%</span>
+            <CardContent>
+              <div className="text-center">
+                <div className="mb-6">
+                  <div className="text-6xl font-bold text-field-green mb-2">
+                    {winPercentage.toFixed(1)}%
                   </div>
-                  <Progress value={(stats.gamesWatched / stats.totalGames) * 100} className="h-2" />
-                  <div className="flex justify-between text-sm">
-                    <span>Attended: {stats.gamesAttended}</span>
-                    <span>{((stats.gamesAttended / stats.totalGames) * 100).toFixed(1)}%</span>
+                  <div className="text-lg text-gray-600">Win Percentage</div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
+                    <div className="text-sm text-green-700">Wins</div>
                   </div>
-                  <Progress 
-                    value={(stats.gamesAttended / stats.totalGames) * 100} 
-                    className="h-2" 
-                    style={{ 
-                      background: 'linear-gradient(to right, rgb(255, 179, 0) 0%, rgb(255, 179, 0) 100%)'
-                    }}
-                  />
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
+                    <div className="text-sm text-red-700">Losses</div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Win/Loss Record */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">Win/Loss Record</span>
-                  <span className="text-sm text-gray-500">{stats.winRecord.wins}-{stats.winRecord.losses}</span>
-                </div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-green-600">Wins: {stats.winRecord.wins}</span>
-                  <span className="text-red-600">Losses: {stats.winRecord.losses}</span>
-                </div>
-                <Progress value={winPercentage} className="h-2" />
-              </div>
-
-              {/* Total Points/Runs */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-600 mb-1">Total Points/Runs Witnessed</p>
-                  <p className="text-4xl font-bold text-field-green">{stats.totalPoints.toLocaleString()}</p>
+                <div className="text-sm text-gray-500">
+                  Record: {stats.winRecord.wins}-{stats.winRecord.losses}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Favorite Venues */}
+          {/* Watched vs Attended Pie Chart */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-sports-gold" />
-                <span>Favorite Venues</span>
-              </CardTitle>
+              <CardTitle>Watched vs Attended</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={attendanceData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {attendanceData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+              
+              <div className="flex justify-center space-x-6 mt-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-field-green rounded-full"></div>
+                  <span className="text-sm">Watched ({stats.gamesWatched})</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-sports-gold rounded-full"></div>
+                  <span className="text-sm">Attended ({stats.gamesAttended})</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* League Breakdown */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <CardHeader>
+              <CardTitle>League Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.favoriteVenues.map((venue, index) => (
-                  <div key={venue.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-field-green text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        {index + 1}
-                      </div>
-                      <span className="font-medium text-gray-900">{venue.name}</span>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {venue.count} games
-                    </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium">NFL Games</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-field-green">{stats.nflGames}</div>
                   </div>
-                ))}
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium">MLB Games</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-field-green">{stats.mlbGames}</div>
+                  </div>
+                </div>
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Monthly Activity Chart Placeholder */}
-              <div className="mt-8">
-                <h4 className="text-sm font-medium text-gray-700 mb-4">Monthly Activity</h4>
-                <div className="grid grid-cols-6 gap-2">
-                  {stats.monthlyActivity.map((month) => (
-                    <div key={month.month} className="text-center">
-                      <div 
-                        className="bg-field-green rounded mb-1"
-                        style={{ 
-                          height: `${Math.max(month.games * 8, 8)}px`,
-                          opacity: Math.min(month.games / 10 + 0.3, 1)
-                        }}
-                      ></div>
-                      <div className="text-xs text-gray-600">{month.month}</div>
-                    </div>
-                  ))}
+          {/* Game Highlights */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <CardHeader>
+              <CardTitle>Game Highlights</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-field-green/10 rounded-lg">
+                  <span className="font-medium">Highest Rating</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="text-lg font-bold">{stats.highestRatedGame || 'N/A'}</div>
+                    <Star className="h-4 w-4 text-sports-gold" />
+                  </div>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-sports-gold/10 rounded-lg">
+                  <span className="font-medium">Playoff Games</span>
+                  <div className="text-lg font-bold">{stats.playoffGames}</div>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium">Points Witnessed</span>
+                  <div className="text-lg font-bold">{stats.totalPoints.toLocaleString()}</div>
                 </div>
               </div>
             </CardContent>
