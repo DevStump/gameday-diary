@@ -330,31 +330,35 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
               {/* Rooted for - always show */}
               <div className="flex items-center space-x-2 text-sm mb-2">
-                <Heart className="h-4 w-4 text-red-500" />
                 {log.rooted_for && log.rooted_for !== 'none' ? (
-                  <div className="flex items-center space-x-2">
+                  <>
                     <img 
                       src={getTeamLogo(log.rooted_for, league)} 
                       alt={log.rooted_for}
                       className="h-4 w-4 object-contain"
                     />
-                    <span className="text-gray-700">
-                      Rooted for {formatTeamName(log.rooted_for, league)}
-                      {rootedResult && (
-                        <span className="ml-2 font-semibold text-gray-600">
-                          ({rootedResult.result})
-                        </span>
-                      )}
-                    </span>
-                  </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-700">
+                        Rooted for {formatTeamName(log.rooted_for, league)}
+                        {rootedResult && (
+                          <span className="ml-2 font-semibold text-gray-600">
+                            ({rootedResult.result})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </>
                 ) : (
-                  <span className="text-gray-400 italic">No team selected</span>
+                  <>
+                    <Heart className="h-4 w-4 text-gray-500" />
+                    <span className="text-gray-400 italic">No team selected</span>
+                  </>
                 )}
               </div>
 
               {/* Rating - always show */}
               <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm font-medium text-gray-700">Rating:</span>
+                <Star className="h-4 w-4 text-gray-500" />
                 {log.rating ? (
                   <div className="flex">
                     {renderStars(log.rating)}
