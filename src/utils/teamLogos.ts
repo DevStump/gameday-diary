@@ -1,3 +1,4 @@
+
 // Utility for team logos and names by league
 
 export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
@@ -30,6 +31,7 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
     'SD': 'https://www.mlbstatic.com/team-logos/135.svg',
     'SDP': 'https://www.mlbstatic.com/team-logos/135.svg',
     'SF': 'https://www.mlbstatic.com/team-logos/137.svg',
+    'SFG': 'https://www.mlbstatic.com/team-logos/137.svg',
     'SEA': 'https://www.mlbstatic.com/team-logos/136.svg',
     'STL': 'https://www.mlbstatic.com/team-logos/138.svg',
     'TB': 'https://www.mlbstatic.com/team-logos/139.svg',
@@ -79,10 +81,42 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
     'TEN': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/pln44vuzugjgipyidsre',
     'WAS': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/xymxwrxtyj9fhaemhdyd',
     'WSH': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/xymxwrxtyj9fhaemhdyd',
+    // Lowercase variations found in database
+    'ari': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/u9fltoslqdsyao8cpm0k',
+    'atl': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/d8m7hzpsbrl6pnqht8op',
+    'bal': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ucsdijmddsqcj1i0nmur',
+    'buf': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/giphcy6ie9mxbnldntsf',
+    'car': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ervfzgrqdqpkfcjhu8jq',
+    'chi': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ra0poua3hivselqbgcbs',
+    'cin': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/okxpteoliyayufypqalq',
+    'cle': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/fgbn8acp4opvyxk13dcy',
+    'dal': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ieid8hoygzdlmzo0yhqr',
+    'den': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/t2jwlmj1tmpzcqzf2eav',
+    'det': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ocvxwnapdvwevupe4tpr',
+    'gnb': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/k5oxnyitwseuo27mnod9',
+    'hou': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/bpx2n7s8m4u2pz8dbu5m',
+    'ind': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/keenyn6qtrzngbcq8bre',
+    'jax': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/qykmj6xgtzpyc7xlzyra',
+    'kan': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ujdzcqep1oxcgbwgz3bz',
+    'lac': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/dhfidtn8jrumakbogeu4',
+    'lar': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ayvngv0oygf5ym1p3mhp',
+    'mia': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/lits6p8ycth9io9u6dhy',
+    'min': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/teguylrnqqmfcwxvcmmz',
+    'nor': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/sk7jkwbuuvmwdfm72cy1',
+    'nyg': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/t6mhdmgizi6qhndh8b9p',
+    'nyj': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ekijosiae96gektbo4iw',
+    'phi': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/puhrqgj71gobgdkdo6uq',
+    'pit': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/xujg9t3escthaxzswjkk',
+    'rai': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/gzcojbzcyjgubgyb6xf2',
+    'sea': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/lcgaue6nzwsmhz7h9zng',
+    'sfo': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/dxibuyxbk0b9ua5ih9hn',
+    'tam': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/v8uqiualryypwqgvwcih',
+    'ten': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/pln44vuzugjgipyidsre',
+    'was': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/xymxwrxtyj9fhaemhdyd',
   };
 
   const logoMap = league === 'NFL' ? nflLogos : mlbLogos;
-  return logoMap[teamCode?.toUpperCase()] || '/placeholder.svg';
+  return logoMap[teamCode?.toUpperCase()] || logoMap[teamCode] || '/placeholder.svg';
 };
 
 export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
@@ -115,6 +149,7 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     'SD': 'Padres',
     'SDP': 'Padres',
     'SF': 'Giants',
+    'SFG': 'Giants',
     'SEA': 'Mariners',
     'STL': 'Cardinals',
     'TB': 'Rays',
@@ -164,8 +199,40 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     'TEN': 'Titans',
     'WAS': 'Commanders',
     'WSH': 'Commanders',
+    // Lowercase and alternative variations
+    'ari': 'Cardinals',
+    'atl': 'Falcons',
+    'bal': 'Ravens',
+    'buf': 'Bills',
+    'car': 'Panthers',
+    'chi': 'Bears',
+    'cin': 'Bengals',
+    'cle': 'Browns',
+    'dal': 'Cowboys',
+    'den': 'Broncos',
+    'det': 'Lions',
+    'gnb': 'Packers',
+    'hou': 'Texans',
+    'ind': 'Colts',
+    'jax': 'Jaguars',
+    'kan': 'Chiefs',
+    'lac': 'Chargers',
+    'lar': 'Rams',
+    'mia': 'Dolphins',
+    'min': 'Vikings',
+    'nor': 'Saints',
+    'nyg': 'Giants',
+    'nyj': 'Jets',
+    'phi': 'Eagles',
+    'pit': 'Steelers',
+    'rai': 'Raiders',
+    'sea': 'Seahawks',
+    'sfo': '49ers',
+    'tam': 'Buccaneers',
+    'ten': 'Titans',
+    'was': 'Commanders',
   };
 
   const nameMap = league === 'NFL' ? nflNames : mlbNames;
-  return nameMap[teamCode?.toUpperCase()] || 'Unknown Team';
+  return nameMap[teamCode?.toUpperCase()] || nameMap[teamCode] || 'Unknown Team';
 };
