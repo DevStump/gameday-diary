@@ -199,9 +199,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                  <div className="text-sm text-gray-500">
-                    Added {formatTime(log.created_at)} on {formatDate(log.created_at)}
-                  </div>
                 </div>
               </div>
 
