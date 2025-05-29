@@ -31,8 +31,8 @@ const Games = () => {
   const location = useLocation();
   const { data: games = [], isLoading: loading } = useGames(filters);
 
-  // Limit to 50 games
-  const displayedGames = games.slice(0, 50);
+  // Limit to 24 games
+  const displayedGames = games.slice(0, 24);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
