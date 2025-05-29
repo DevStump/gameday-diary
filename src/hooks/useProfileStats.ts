@@ -5,8 +5,22 @@ import { useGames } from './useGames';
 
 export const useProfileStats = () => {
   const { data: gameLogs } = useGameLogs();
-  const { data: nflGames } = useGames('nfl');
-  const { data: mlbGames } = useGames('mlb');
+  const { data: nflGames } = useGames({
+    search: '',
+    league: 'NFL',
+    season: '',
+    playoff: '',
+    startDate: '',
+    endDate: ''
+  });
+  const { data: mlbGames } = useGames({
+    search: '',
+    league: 'MLB',
+    season: '',
+    playoff: '',
+    startDate: '',
+    endDate: ''
+  });
 
   return useQuery({
     queryKey: ['profile-stats', gameLogs],
