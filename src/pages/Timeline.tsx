@@ -48,7 +48,7 @@ const Timeline = () => {
             <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
             <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
-            <Link to="/games">
+            <Link to="/">
               <Button className="bg-field-green hover:bg-field-dark">
                 <Plus className="h-4 w-4 mr-2" />
                 Browse Games
