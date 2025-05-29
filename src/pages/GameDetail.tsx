@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -192,8 +193,12 @@ const GameDetail = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
-                  <span>Offensive Stats</span>
+                  <img 
+                    src={getTeamLogo(game.home_team, game.league)} 
+                    alt={game.home_team}
+                    className="h-6 w-6 object-contain"
+                  />
+                  <span>{formatTeamName(game.home_team, game.league)} Stats</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -231,8 +236,12 @@ const GameDetail = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5" />
-                  <span>Defensive Stats</span>
+                  <img 
+                    src={getTeamLogo(game.away_team, game.league)} 
+                    alt={game.away_team}
+                    className="h-6 w-6 object-contain"
+                  />
+                  <span>{formatTeamName(game.away_team, game.league)} Stats</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
