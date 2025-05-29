@@ -1,6 +1,7 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Pen, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
+import { User, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -30,7 +31,7 @@ const Profile = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center space-x-3 mb-4">
-              <Pen className="h-10 w-10 text-field-green" />
+              <User className="h-10 w-10 text-field-green" />
               <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
             </div>
             <p className="text-lg text-gray-600">
@@ -40,7 +41,7 @@ const Profile = () => {
 
           {/* Empty State */}
           <div className="text-center py-12">
-            <Pen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
             <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
             <Link to="/">
@@ -76,7 +77,7 @@ const Profile = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
-            <Pen className="h-10 w-10 text-field-green" />
+            <User className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
           </div>
           <p className="text-lg text-gray-600">

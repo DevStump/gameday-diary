@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus } from 'lucide-react';
@@ -29,7 +30,10 @@ const Diary = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">My Diary</h1>
+          <div className="flex justify-center items-center space-x-3 mb-4">
+            <Calendar className="h-10 w-10 text-field-green" />
+            <h1 className="text-4xl font-bold text-gray-900">My Diary</h1>
+          </div>
           <p className="text-lg text-gray-600">
             Your personal journey through the games you've watched and attended
           </p>
