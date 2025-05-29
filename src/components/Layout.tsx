@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, Trophy, User, Search, LogIn } from 'lucide-react';
+import { Calendar, Trophy, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const isAuthenticated = false; // TODO: Replace with actual auth state
+  const { user, signOut, loading } = useAuth();
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
@@ -19,6 +20,14 @@ const Layout = ({ children }: LayoutProps) => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
             {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
               {navigation.map((item) => {
-                if (item.requireAuth && !isAuthenticated) return null;
+                if (item.requireAuth && !user) return null;
                 
                 return (
                   <Link
@@ -56,14 +65,16 @@ const Layout = ({ children }: LayoutProps) => {
 
             {/* Auth Button */}
             <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <Button variant="outline" size="sm">
-                  Sign Out
-                </Button>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600">{user.email}</span>
+                  <Button variant="outline" size="sm" onClick={signOut}>
+                    Sign Out
+                  </Button>
+                </div>
               ) : (
-                <Button size="sm" className="bg-field-green hover:bg-field-dark">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
+                <Button size="sm" className="bg-field-green hover:bg-field-dark" asChild>
+                  <Link to="/auth">Sign In</Link>
                 </Button>
               )}
             </div>
@@ -77,7 +88,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
 
       {/* Mobile Navigation */}
-      {isAuthenticated && (
+      {user && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
           <div className="flex justify-around">
             {navigation.map((item) => (

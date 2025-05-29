@@ -1,66 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
 import GameFilters from '@/components/GameFilters';
+import GameLogModal from '@/components/GameLogModal';
 import { Loader2, Trophy } from 'lucide-react';
+import { useGames } from '@/hooks/useGames';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Games = () => {
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     search: '',
     league: '',
     season: '',
     playoff: ''
   });
+  const [selectedGame, setSelectedGame] = useState<{ id: string; title: string } | null>(null);
 
-  const isAuthenticated = false; // TODO: Replace with actual auth state
-
-  // Mock data for demonstration
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockGames = [
-        {
-          game_id: 'nfl_1',
-          date: '2024-01-15',
-          home_team: 'Chiefs',
-          away_team: 'Bills',
-          league: 'NFL' as const,
-          pts_off: 31,
-          pts_def: 17,
-          playoff: true,
-          venue: 'Arrowhead Stadium'
-        },
-        {
-          game_id: 'mlb_1',
-          date: '2024-10-01',
-          home_team: 'Dodgers',
-          away_team: 'Padres',
-          league: 'MLB' as const,
-          runs_scored: 8,
-          runs_allowed: 4,
-          playoff: true,
-          venue: 'Dodger Stadium'
-        },
-        {
-          game_id: 'nfl_2',
-          date: '2024-09-08',
-          home_team: 'Packers',
-          away_team: 'Lions',
-          league: 'NFL' as const,
-          pts_off: 24,
-          pts_def: 21,
-          playoff: false,
-          venue: 'Lambeau Field'
-        }
-      ];
-      
-      setGames(mockGames);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const { user } = useAuth();
+  const { data: games = [], isLoading: loading } = useGames(filters);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -78,29 +36,14 @@ const Games = () => {
     });
   };
 
-  const handleAddToDiary = (gameId: string) => {
-    if (!isAuthenticated) {
-      console.log('Redirect to login with game:', gameId);
-      // TODO: Implement auth modal or redirect
+  const handleAddToDiary = (gameId: string, gameTitle: string) => {
+    if (!user) {
+      // Redirect to auth page
+      window.location.href = '/auth';
       return;
     }
-    console.log('Add game to diary:', gameId);
-    // TODO: Implement add to diary functionality
+    setSelectedGame({ id: gameId, title: gameTitle });
   };
-
-  const filteredGames = games.filter(game => {
-    if (filters.search && !game.home_team.toLowerCase().includes(filters.search.toLowerCase()) && 
-        !game.away_team.toLowerCase().includes(filters.search.toLowerCase())) {
-      return false;
-    }
-    if (filters.league && game.league !== filters.league) {
-      return false;
-    }
-    if (filters.playoff && game.playoff.toString() !== filters.playoff) {
-      return false;
-    }
-    return true;
-  });
 
   return (
     <Layout>
@@ -114,7 +57,7 @@ const Games = () => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Explore thousands of NFL and MLB games. Find the perfect match to add to your personal game diary.
           </p>
-          {!isAuthenticated && (
+          {!user && (
             <p className="text-sm text-sports-gold mt-2 font-medium">
               Sign in to start tracking your game-watching journey
             </p>
@@ -141,18 +84,18 @@ const Games = () => {
           <>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">
-                {filteredGames.length} Games Found
+                {games.length} Games Found
               </h2>
             </div>
 
-            {filteredGames.length > 0 ? (
+            {games.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredGames.map((game, index) => (
+                {games.map((game, index) => (
                   <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                     <GameCard
                       game={game}
-                      onAddToDiary={handleAddToDiary}
-                      isAuthenticated={isAuthenticated}
+                      onAddToDiary={(gameId) => handleAddToDiary(gameId, `${game.away_team} @ ${game.home_team}`)}
+                      isAuthenticated={!!user}
                     />
                   </div>
                 ))}
@@ -165,6 +108,16 @@ const Games = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Game Log Modal */}
+        {selectedGame && (
+          <GameLogModal
+            isOpen={!!selectedGame}
+            onClose={() => setSelectedGame(null)}
+            gameId={selectedGame.id}
+            gameTitle={selectedGame.title}
+          />
         )}
       </div>
     </Layout>
