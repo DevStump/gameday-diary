@@ -233,10 +233,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             </div>
 
-              {rootedResult?.score && (
-              <div className="text-xl font-bold text-gray-900 mb-2">
-                {rootedResult.score}
-              </div>
+              {rootedResult?.score
               )}
             
             <div className="flex items-center justify-center text-sm text-gray-600">
