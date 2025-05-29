@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -5,9 +6,11 @@ import { useGame } from '@/hooks/useGame';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Calendar, MapPin, ArrowLeft, Plus, Users, Trophy, Target } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
 
 const GameDetail = () => {
   const { gameId, league } = useParams<{ gameId: string; league: string }>();
@@ -22,8 +25,7 @@ const GameDetail = () => {
   const formatDate = (dateString: string) => {
     console.log('Raw date from database:', dateString);
     
-    // Just use the date string directly from database without timezone conversion
-    // Expected format from DB: YYYY-MM-DD
+    // Use the date string directly from database
     const dateParts = dateString.split('-');
     if (dateParts.length === 3) {
       const year = dateParts[0];
@@ -35,7 +37,6 @@ const GameDetail = () => {
       const monthName = monthNames[parseInt(month) - 1];
       
       const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      // Create date for day of week calculation (using UTC to avoid timezone issues)
       const tempDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
       const dayName = dayNames[tempDate.getDay()];
       
@@ -44,7 +45,6 @@ const GameDetail = () => {
       return formattedDate;
     }
     
-    // Fallback: return original string if parsing fails
     console.log('Date parsing failed, returning original:', dateString);
     return dateString;
   };
@@ -139,9 +139,28 @@ const GameDetail = () => {
               <Calendar className="h-5 w-5 text-gray-600" />
               <span className="text-lg text-gray-600">{formatDate(game.date)}</span>
             </div>
-            <CardTitle className="text-3xl font-bold text-gray-900">
-              {game.away_team} @ {game.home_team}
-            </CardTitle>
+            
+            {/* Team Logos and Names */}
+            <div className="flex items-center justify-center space-x-6 mb-4">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
+                  <AvatarFallback className="text-sm">{game.away_team}</AvatarFallback>
+                </Avatar>
+                <span className="text-xl font-bold text-gray-900">{formatTeamName(game.away_team, game.league)}</span>
+              </div>
+              
+              <span className="text-gray-500 font-medium text-lg">@</span>
+              
+              <div className="flex items-center space-x-3">
+                <span className="text-xl font-bold text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
+                  <AvatarFallback className="text-sm">{game.home_team}</AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+
             {score && (
               <div className="text-4xl font-bold text-field-green mt-4">
                 {score.away} - {score.home}
@@ -326,12 +345,6 @@ const GameDetail = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Overtime</span>
                 <span className="font-semibold">{(game as any).overtime}</span>
-              </div>
-            )}
-            {(game as any).result && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Result</span>
-                <span className="font-semibold">{(game as any).result}</span>
               </div>
             )}
             {(game as any).boxscore_url && (

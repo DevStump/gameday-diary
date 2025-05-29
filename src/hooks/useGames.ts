@@ -19,7 +19,7 @@ export const useGames = (filters: GameFilters) => {
       
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
-        let nflQuery = supabase.from('nfl_games').select('*');
+        let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
           nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
@@ -36,7 +36,7 @@ export const useGames = (filters: GameFilters) => {
 
       // Fetch MLB games if no league filter or MLB is selected
       if (!filters.league || filters.league === 'MLB') {
-        let mlbQuery = supabase.from('mlb_games').select('*');
+        let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
           mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
@@ -102,26 +102,11 @@ export const useGames = (filters: GameFilters) => {
         allGames.slice(0, 5).forEach((game, index) => {
           console.log(`Game ${index + 1}: ${game.date} - ${game.away_team} @ ${game.home_team}`);
         });
-        
-        // Check for May 27, 2025 specifically
-        const may27Games = allGames.filter(game => {
-          const gameDate = new Date(game.date);
-          return gameDate.getMonth() === 4 && gameDate.getDate() === 27 && gameDate.getFullYear() === 2025;
-        });
-        console.log('May 27, 2025 games found:', may27Games.length);
-        if (may27Games.length > 0) {
-          console.log('May 27 games details:');
-          may27Games.forEach((game, index) => {
-            console.log(`  ${index + 1}. ${game.away_team} @ ${game.home_team} (${game.date})`);
-          });
-        }
       }
       
-      // Sort by date (newest first - descending)
+      // Sort by date (newest first - descending) using string comparison since dates are in YYYY-MM-DD format
       const sortedGames = allGames.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateB.getTime() - dateA.getTime();
+        return b.date.localeCompare(a.date);
       });
       
       console.log('Final games count:', sortedGames.length);
@@ -129,6 +114,16 @@ export const useGames = (filters: GameFilters) => {
       if (sortedGames.length > 0) {
         console.log('Latest game:', sortedGames[0].date, '-', sortedGames[0].away_team, '@', sortedGames[0].home_team);
         console.log('Earliest game:', sortedGames[sortedGames.length - 1].date, '-', sortedGames[sortedGames.length - 1].away_team, '@', sortedGames[sortedGames.length - 1].home_team);
+        
+        // Check for May 27, 2025 specifically
+        const may27Games = sortedGames.filter(game => game.date === '2025-05-27');
+        console.log('May 27, 2025 games found:', may27Games.length);
+        if (may27Games.length > 0) {
+          console.log('May 27 games details:');
+          may27Games.forEach((game, index) => {
+            console.log(`  ${index + 1}. ${game.away_team} @ ${game.home_team} (${game.game_id})`);
+          });
+        }
       }
       
       return sortedGames;
