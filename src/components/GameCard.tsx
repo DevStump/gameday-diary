@@ -53,7 +53,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }
     if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
       // Away team score first, then home team score
-      return `${game.runs_scored} - ${game.runs_allowed}`;
+      return `${game.runs_allowed} - ${game.runs_scored}`;
     }
     return null;
   };
