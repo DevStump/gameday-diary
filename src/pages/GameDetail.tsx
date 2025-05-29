@@ -166,6 +166,14 @@ const GameDetail = () => {
                 {score.away} - {score.home}
               </div>
             )}
+
+            {/* Week for NFL games */}
+            {game.league === 'NFL' && (game as any).week && (
+              <div className="text-lg text-gray-700 font-medium mt-2">
+                Week {(game as any).week}
+              </div>
+            )}
+
             {game.venue && (
               <div className="flex items-center justify-center space-x-1 text-gray-600 mt-2">
                 <MapPin className="h-4 w-4" />
@@ -174,7 +182,7 @@ const GameDetail = () => {
             )}
           </CardHeader>
           <CardContent>
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center space-y-3">
               <Button
                 onClick={handleAddToDiary}
                 className="bg-field-green hover:bg-field-dark"
@@ -183,6 +191,18 @@ const GameDetail = () => {
                 <Plus className="h-5 w-5 mr-2" />
                 {user ? 'Add to My Diary' : 'Sign in to Add to Diary'}
               </Button>
+              
+              {/* View Boxscore for NFL games */}
+              {game.league === 'NFL' && (game as any).boxscore_url && (
+                <a 
+                  href={(game as any).boxscore_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-field-green hover:underline font-semibold"
+                >
+                  View Boxscore
+                </a>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -331,45 +351,41 @@ const GameDetail = () => {
           </Card>
         )}
 
-        {/* Additional Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {(game as any).season && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Season</span>
-                <span className="font-semibold">{(game as any).season}</span>
-              </div>
-            )}
-            {(game as any).week && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Week</span>
-                <span className="font-semibold">{(game as any).week}</span>
-              </div>
-            )}
-            {(game as any).overtime && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Overtime</span>
-                <span className="font-semibold">{(game as any).overtime}</span>
-              </div>
-            )}
-            {(game as any).boxscore_url && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Boxscore</span>
-                <a 
-                  href={(game as any).boxscore_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-field-green hover:underline font-semibold"
-                >
-                  View Boxscore
-                </a>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Additional Info - Only for MLB games */}
+        {game.league === 'MLB' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {(game as any).season && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Season</span>
+                  <span className="font-semibold">{(game as any).season}</span>
+                </div>
+              )}
+              {(game as any).overtime && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Overtime</span>
+                  <span className="font-semibold">{(game as any).overtime}</span>
+                </div>
+              )}
+              {(game as any).boxscore_url && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Boxscore</span>
+                  <a 
+                    href={(game as any).boxscore_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-field-green hover:underline font-semibold"
+                  >
+                    View Boxscore
+                  </a>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </Layout>
   );
