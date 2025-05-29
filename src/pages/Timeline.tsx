@@ -319,14 +319,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
           {/* Log Details - flex-1 to fill remaining space */}
           <div className="space-y-2 flex-1 flex flex-col">
             <div className="flex-1">
-              {/* Company - always show */}
-              <div className="flex items-center space-x-2 text-sm mb-2">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className={log.company ? "text-gray-700" : "text-gray-400 italic"}>
-                  {log.company || "No company specified"}
-                </span>
-              </div>
-
               {/* Rating - always show */}
               <div className="flex items-center space-x-2 mb-2">
                 <Star className="h-4 w-4 text-gray-500" />
@@ -340,6 +332,14 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     <span className="text-gray-400 italic text-sm ml-2">Not rated</span>
                   </div>
                 )}
+              </div>
+
+              {/* Company - always show */}
+              <div className="flex items-center space-x-2 text-sm mb-2">
+                <Users className="h-4 w-4 text-gray-500" />
+                <span className={log.company ? "text-gray-700" : "text-gray-400 italic"}>
+                  {log.company || "No company specified"}
+                </span>
               </div>
 
               {/* Rooted for - always show */}
