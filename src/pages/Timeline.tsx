@@ -263,7 +263,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               )}
 
               <div className="text-xs text-gray-500 border-t pt-2">
-                Game played: {formatDate(game.date)}
+                Added: {formatDate(log.created_at)}
               </div>
             </div>
           </div>
