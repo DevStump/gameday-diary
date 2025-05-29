@@ -223,6 +223,11 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
               
               <span className="text-gray-500 font-medium">@</span>
+
+              <div className="flex items-center justify-center text-sm text-gray-600">
+                <Calendar className="h-4 w-4 mr-1" />
+                {formatDate(game.date)}
+              </div>
               
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900 text-sm">{formatTeamName(game.home_team, league)}</span>
@@ -240,10 +245,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             )}
             
-            <div className="flex items-center justify-center text-sm text-gray-600">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatDate(game.date)}
-            </div>
+
           </div>
 
           {/* Log Details */}
