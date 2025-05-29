@@ -130,17 +130,25 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
   // Calculate if rooted team won and get the score
   const getRootedTeamResult = () => {
-    if (!log.rooted_for || log.rooted_for === 'none' || !game?.result) {
-      return null;
+    if (!log.rooted_for || log.rooted_for === 'none' || !game) return null;
+  
+    let teamScore, oppScore;
+  
+    if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
+      const isHome = log.rooted_for === game.home_team;
+      teamScore = isHome ? game.pts_def : game.pts_off;
+      oppScore = isHome ? game.pts_off : game.pts_def;
+    } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
+      const isHome = log.rooted_for === game.home_team;
+      teamScore = isHome ? game.runs_scored : game.runs_allowed;
+      oppScore = isHome ? game.runs_allowed : game.runs_scored;
     }
-
-    const [awayScore, homeScore] = game.result.split('-').map(Number);
-    const rootedTeamWon = 
-      (log.rooted_for === game.home_team && homeScore > awayScore) ||
-      (log.rooted_for === game.away_team && awayScore > homeScore);
-    
+  
+    if (teamScore === undefined || oppScore === undefined) return null;
+  
     return {
-      result: rootedTeamWon ? 'Won' : 'Lost'
+      result: teamScore > oppScore ? 'Won' : 'Lost',
+      score: `${teamScore} - ${oppScore}`
     };
   };
 
@@ -259,7 +267,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     Rooted for {formatTeamName(log.rooted_for, league)}
                     {rootedResult && (
                       <span className="ml-2 font-semibold text-gray-600">
-                        ({rootedResult.result})
+                        ({rootedResult.result}{rootedResult.score ? ` ${rootedResult.score}` : ''})
                       </span>
                     )}
                   </span>
