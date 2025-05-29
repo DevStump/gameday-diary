@@ -55,7 +55,6 @@ export const useGames = (filters: GameFilters) => {
 
       const results = await Promise.all(promises);
       console.log('Query results:', results);
-      console.log('Raw results data:', results.map(r => ({ data: r.data, error: r.error, count: r.data?.length })));
       
       let allGames: any[] = [];
       
@@ -69,7 +68,6 @@ export const useGames = (filters: GameFilters) => {
         } else {
           const nflGames = nflResult?.data || [];
           console.log('NFL games count:', nflGames.length);
-          console.log('NFL games sample:', nflGames.slice(0, 2));
           allGames = allGames.concat(nflGames.map((game: any) => ({
             ...game,
             league: 'NFL' as const,
@@ -88,7 +86,6 @@ export const useGames = (filters: GameFilters) => {
         } else {
           const mlbGames = mlbResult?.data || [];
           console.log('MLB games count:', mlbGames.length);
-          console.log('MLB games sample:', mlbGames.slice(0, 2));
           allGames = allGames.concat(mlbGames.map((game: any) => ({
             ...game,
             league: 'MLB' as const,
@@ -98,9 +95,8 @@ export const useGames = (filters: GameFilters) => {
       }
 
       console.log('Total games before sorting:', allGames.length);
-      console.log('All games sample:', allGames.slice(0, 3));
       
-      // Sort by date (newest first)
+      // Sort by date (newest first - descending)
       const sortedGames = allGames.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);

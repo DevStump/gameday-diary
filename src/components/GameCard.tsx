@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
+import { Calendar, MapPin, Plus, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
 
 interface GameCardProps {
   game: {
@@ -86,7 +87,19 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="p-6 pt-0">
+      <CardFooter className="p-6 pt-0 space-y-2">
+        <Button
+          asChild
+          variant="outline"
+          className="w-full border-field-green text-field-green hover:bg-field-green hover:text-white"
+          size="sm"
+        >
+          <Link to={`/game/${game.league.toLowerCase()}/${game.game_id}`}>
+            <Eye className="h-4 w-4 mr-2" />
+            View Details
+          </Link>
+        </Button>
+        
         <Button
           onClick={() => onAddToDiary(game.game_id)}
           className="w-full bg-field-green hover:bg-field-dark transition-colors"
