@@ -19,7 +19,14 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      // Check for redirect URL in localStorage
+      const redirectUrl = localStorage.getItem('redirectUrl');
+      if (redirectUrl) {
+        localStorage.removeItem('redirectUrl');
+        navigate(redirectUrl);
+      } else {
+        navigate('/');
+      }
     }
   }, [user, navigate]);
 

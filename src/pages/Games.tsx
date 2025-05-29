@@ -7,6 +7,7 @@ import GameLogModal from '@/components/GameLogModal';
 import { Loader2, Trophy } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Games = () => {
   const [filters, setFilters] = useState({
@@ -17,9 +18,16 @@ const Games = () => {
     startDate: '',
     endDate: ''
   });
-  const [selectedGame, setSelectedGame] = useState<{ id: string; title: string } | null>(null);
+  const [selectedGame, setSelectedGame] = useState<{ 
+    id: string; 
+    title: string; 
+    homeTeam: string; 
+    awayTeam: string; 
+    league: string; 
+  } | null>(null);
 
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: games = [], isLoading: loading } = useGames(filters);
 
   // Limit to 50 games
@@ -43,13 +51,20 @@ const Games = () => {
     });
   };
 
-  const handleAddToDiary = (gameId: string, gameTitle: string) => {
+  const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
     if (!user) {
-      // Redirect to auth page
-      window.location.href = '/auth';
+      // Store current URL with filters
+      const currentUrl = new URL(window.location);
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          currentUrl.searchParams.set(key, value);
+        }
+      });
+      localStorage.setItem('redirectUrl', currentUrl.pathname + currentUrl.search);
+      navigate('/auth');
       return;
     }
-    setSelectedGame({ id: gameId, title: gameTitle });
+    setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
   return (
@@ -101,7 +116,13 @@ const Games = () => {
                   <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                     <GameCard
                       game={game}
-                      onAddToDiary={(gameId) => handleAddToDiary(gameId, `${game.away_team} @ ${game.home_team}`)}
+                      onAddToDiary={(gameId) => handleAddToDiary(
+                        gameId, 
+                        `${game.away_team} @ ${game.home_team}`,
+                        game.home_team,
+                        game.away_team,
+                        game.league
+                      )}
                       isAuthenticated={!!user}
                     />
                   </div>
@@ -124,6 +145,9 @@ const Games = () => {
             onClose={() => setSelectedGame(null)}
             gameId={selectedGame.id}
             gameTitle={selectedGame.title}
+            homeTeam={selectedGame.homeTeam}
+            awayTeam={selectedGame.awayTeam}
+            league={selectedGame.league}
           />
         )}
       </div>

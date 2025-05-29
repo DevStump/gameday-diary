@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { useGame } from '@/hooks/useGame';
+import GameLogModal from '@/components/GameLogModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Calendar, MapPin, ArrowLeft, Plus, Users, Trophy, Target, Zap } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Plus, Trophy, Zap } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
@@ -16,6 +16,7 @@ const GameDetail = () => {
   const { gameId, league } = useParams<{ gameId: string; league: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showGameLogModal, setShowGameLogModal] = useState(false);
   
   const { data: game, isLoading, error } = useGame(
     gameId || '', 
@@ -47,10 +48,12 @@ const GameDetail = () => {
 
   const handleAddToDiary = () => {
     if (!user) {
+      // Store current URL before redirecting to auth
+      localStorage.setItem('redirectUrl', window.location.pathname);
       navigate('/auth');
       return;
     }
-    console.log('Add to diary clicked for game:', gameId);
+    setShowGameLogModal(true);
   };
 
   if (isLoading) {
@@ -103,6 +106,7 @@ const GameDetail = () => {
   };
 
   const score = getScore();
+  const gameTitle = `${formatTeamName(game.away_team, game.league)} @ ${formatTeamName(game.home_team, game.league)}`;
 
   return (
     <TooltipProvider>
@@ -220,7 +224,6 @@ const GameDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Game Statistics */}
           {game.league === 'NFL' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <Card>
@@ -357,6 +360,19 @@ const GameDetail = () => {
             </Card>
           )}
         </div>
+
+        {/* Game Log Modal */}
+        {showGameLogModal && game && (
+          <GameLogModal
+            isOpen={showGameLogModal}
+            onClose={() => setShowGameLogModal(false)}
+            gameId={game.game_id}
+            gameTitle={gameTitle}
+            homeTeam={game.home_team}
+            awayTeam={game.away_team}
+            league={game.league}
+          />
+        )}
       </Layout>
     </TooltipProvider>
   );

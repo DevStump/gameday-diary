@@ -8,15 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Star } from 'lucide-react';
 import { useAddGameLog } from '@/hooks/useGameLogs';
 import { useToast } from '@/hooks/use-toast';
+import { formatTeamName } from '@/utils/teamLogos';
 
 interface GameLogModalProps {
   isOpen: boolean;
   onClose: () => void;
   gameId: string;
   gameTitle: string;
+  homeTeam: string;
+  awayTeam: string;
+  league: string;
 }
 
-const GameLogModal = ({ isOpen, onClose, gameId, gameTitle }: GameLogModalProps) => {
+const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, league }: GameLogModalProps) => {
   const [mode, setMode] = useState<'attended' | 'watched'>('watched');
   const [company, setCompany] = useState('');
   const [rating, setRating] = useState(0);
@@ -97,11 +101,16 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle }: GameLogModalProps)
 
           <div>
             <label className="text-sm font-medium">Who did you root for? (optional)</label>
-            <Input
-              value={rootedFor}
-              onChange={(e) => setRootedFor(e.target.value)}
-              placeholder="Team name"
-            />
+            <Select value={rootedFor} onValueChange={setRootedFor}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a team" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No preference</SelectItem>
+                <SelectItem value={awayTeam}>{formatTeamName(awayTeam, league)}</SelectItem>
+                <SelectItem value={homeTeam}>{formatTeamName(homeTeam, league)}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
