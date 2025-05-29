@@ -40,7 +40,7 @@ export const useProfileStats = () => {
         ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 100) / 100
         : 0;
 
-      // Win/Loss record based on rooted team
+      // Win/Loss record based on rooted team's actual performance
       let wins = 0;
       let losses = 0;
       
@@ -48,7 +48,10 @@ export const useProfileStats = () => {
         if (log.rooted_for && log.rooted_for !== 'none') {
           const game = allGames.find(g => g.game_id === log.game_id);
           if (game && game.result) {
+            // Parse the score from result (format: "away_score-home_score")
             const [awayScore, homeScore] = game.result.split('-').map(Number);
+            
+            // Check if the rooted team won
             const rootedTeamWon = 
               (log.rooted_for === game.home_team && homeScore > awayScore) ||
               (log.rooted_for === game.away_team && awayScore > homeScore);

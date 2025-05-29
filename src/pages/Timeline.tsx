@@ -11,25 +11,6 @@ import { formatTeamName } from '@/utils/teamLogos';
 const Timeline = () => {
   const { data: gameLogs, isLoading } = useGameLogs();
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
   if (isLoading) {
     return (
       <Layout>
@@ -72,9 +53,20 @@ const Timeline = () => {
 };
 
 const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
-  // Determine league from game_id pattern - NFL game IDs are shorter
-  const league = log.game_id.includes('_') || log.game_id.length < 15 ? 'NFL' : 'MLB';
-  const { data: game } = useGame(log.game_id, league as 'NFL' | 'MLB');
+  // Determine league from game_id pattern
+  // NFL game IDs are typically shorter and contain underscores or specific patterns
+  // MLB game IDs are longer alphanumeric strings
+  const determineLeague = (gameId: string): 'NFL' | 'MLB' => {
+    // NFL game IDs are usually in format like "2023_01_BUF_MIA" or shorter patterns
+    if (gameId.includes('_') || gameId.length < 15) {
+      return 'NFL';
+    }
+    // MLB game IDs are typically longer alphanumeric strings
+    return 'MLB';
+  };
+
+  const league = determineLeague(log.game_id);
+  const { data: game } = useGame(log.game_id, league);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -106,6 +98,20 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     ));
   };
 
+  // Calculate if rooted team won
+  const getRootedTeamResult = () => {
+    if (!log.rooted_for || log.rooted_for === 'none' || !game?.result) {
+      return null;
+    }
+
+    const [awayScore, homeScore] = game.result.split('-').map(Number);
+    const rootedTeamWon = 
+      (log.rooted_for === game.home_team && homeScore > awayScore) ||
+      (log.rooted_for === game.away_team && awayScore > homeScore);
+    
+    return rootedTeamWon ? 'Won' : 'Lost';
+  };
+
   if (!game) {
     return (
       <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -122,7 +128,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     );
   }
 
-  const leagueType = league.toUpperCase() as 'NFL' | 'MLB';
+  const rootedResult = getRootedTeamResult();
 
   return (
     <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -150,7 +156,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
             </div>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {formatTeamName(game.away_team, leagueType)} @ {formatTeamName(game.home_team, leagueType)}
+              {formatTeamName(game.away_team, league)} @ {formatTeamName(game.home_team, league)}
             </h3>
 
             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
@@ -188,7 +194,16 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
             {log.rooted_for && log.rooted_for !== 'none' && (
               <div className="flex items-center space-x-2 text-sm">
                 <Heart className="h-4 w-4 text-red-500" />
-                <span className="text-gray-700">Rooted for {formatTeamName(log.rooted_for, leagueType)}</span>
+                <span className="text-gray-700">
+                  Rooted for {formatTeamName(log.rooted_for, league)}
+                  {rootedResult && (
+                    <span className={`ml-2 font-semibold ${
+                      rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      ({rootedResult})
+                    </span>
+                  )}
+                </span>
               </div>
             )}
 
