@@ -139,8 +139,9 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   
     if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
       const isHome = log.rooted_for === game.home_team;
-      teamScore = isHome ? game.pts_def : game.pts_off;
-      oppScore = isHome ? game.pts_off : game.pts_def;
+      // Fixed: pts_off is home team score, pts_def is away team score
+      teamScore = isHome ? game.pts_off : game.pts_def;
+      oppScore = isHome ? game.pts_def : game.pts_off;
     } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
       const isHome = log.rooted_for === game.home_team;
       teamScore = isHome ? game.runs_scored : game.runs_allowed;
