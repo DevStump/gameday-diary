@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -96,10 +95,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-4 mb-3">
               <div className="flex items-center space-x-2">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
-                  <AvatarFallback className="text-xs">{game.away_team}</AvatarFallback>
-                </Avatar>
+                <img 
+                  src={getTeamLogo(game.away_team, game.league)} 
+                  alt={game.away_team}
+                  className="h-12 w-12 object-contain"
+                />
                 <span className="font-medium text-gray-900">{formatTeamName(game.away_team, game.league)}</span>
               </div>
               
@@ -107,10 +107,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
-                  <AvatarFallback className="text-xs">{game.home_team}</AvatarFallback>
-                </Avatar>
+                <img 
+                  src={getTeamLogo(game.home_team, game.league)} 
+                  alt={game.home_team}
+                  className="h-12 w-12 object-contain"
+                />
               </div>
             </div>
             

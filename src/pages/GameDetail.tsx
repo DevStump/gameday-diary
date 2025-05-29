@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -141,10 +140,11 @@ const GameDetail = () => {
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-6 mb-4">
               <div className="flex items-center space-x-3">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
-                  <AvatarFallback className="text-sm">{game.away_team}</AvatarFallback>
-                </Avatar>
+                <img 
+                  src={getTeamLogo(game.away_team, game.league)} 
+                  alt={game.away_team}
+                  className="h-20 w-20 object-contain"
+                />
                 <span className="text-xl font-bold text-gray-900">{formatTeamName(game.away_team, game.league)}</span>
               </div>
               
@@ -152,10 +152,11 @@ const GameDetail = () => {
               
               <div className="flex items-center space-x-3">
                 <span className="text-xl font-bold text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
-                  <AvatarFallback className="text-sm">{game.home_team}</AvatarFallback>
-                </Avatar>
+                <img 
+                  src={getTeamLogo(game.home_team, game.league)} 
+                  alt={game.home_team}
+                  className="h-20 w-20 object-contain"
+                />
               </div>
             </div>
 
