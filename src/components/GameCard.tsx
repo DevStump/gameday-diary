@@ -47,11 +47,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
   const getScore = () => {
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      // Away team score first, then home team score
-      return `${game.pts_off} - ${game.pts_def}`;
+      // Fixed: Show home team score on the right (pts_def - pts_off instead of pts_off - pts_def)
+      return `${game.pts_def} - ${game.pts_off}`;
     }
     if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      // Away team score first, then home team score
+      // Keep MLB scores as they are (away team score first, then home team score)
       return `${game.runs_allowed} - ${game.runs_scored}`;
     }
     return null;

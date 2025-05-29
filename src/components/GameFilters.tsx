@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -71,6 +70,39 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     }
   };
 
+  // Helper function to get the display text for selected team
+  const getSelectedTeamDisplay = (selectedTeam: string, leagueFilter: string): string => {
+    if (!selectedTeam || selectedTeam === 'all') {
+      return 'All Teams';
+    }
+
+    // Try NFL first if no league filter or NFL is selected
+    if (!leagueFilter || leagueFilter === 'NFL') {
+      if (nflTeams.includes(selectedTeam)) {
+        return `${selectedTeam} - ${formatTeamName(selectedTeam, 'NFL')}`;
+      }
+    }
+
+    // Try MLB if no league filter or MLB is selected
+    if (!leagueFilter || leagueFilter === 'MLB') {
+      if (mlbTeams.includes(selectedTeam)) {
+        return `${selectedTeam} - ${formatTeamName(selectedTeam, 'MLB')}`;
+      }
+    }
+
+    // Fallback - try both leagues
+    const nflName = formatTeamName(selectedTeam, 'NFL');
+    const mlbName = formatTeamName(selectedTeam, 'MLB');
+    
+    if (nflName !== 'Unknown Team') {
+      return `${selectedTeam} - ${nflName}`;
+    } else if (mlbName !== 'Unknown Team') {
+      return `${selectedTeam} - ${mlbName}`;
+    }
+
+    return selectedTeam;
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
       <div className="flex items-center justify-between mb-4">
@@ -107,7 +139,9 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         {/* Teams Dropdown - Sectioned by Sport */}
         <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
-            <SelectValue placeholder="All Teams" />
+            <span className="text-sm">
+              {getSelectedTeamDisplay(filters.search, filters.league)}
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
