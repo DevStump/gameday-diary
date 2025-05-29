@@ -4,7 +4,7 @@ import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectLabel, SelectGroup } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -43,10 +43,6 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     'Twins', 'Mets', 'Yankees', 'Athletics', 'Phillies', 'Pirates', 'Padres', 'Giants',
     'Mariners', 'Cardinals', 'Rays', 'Rangers', 'Blue Jays', 'Nationals'
   ];
-
-  const allTeams = filters.league === 'NFL' ? nflTeams : 
-                  filters.league === 'MLB' ? mlbTeams : 
-                  [...nflTeams, ...mlbTeams].sort();
 
   const handleDateChange = (date: Date | undefined, type: 'startDate' | 'endDate') => {
     if (date) {
@@ -90,18 +86,33 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           </SelectContent>
         </Select>
 
-        {/* Teams Dropdown */}
+        {/* Teams Dropdown - Sectioned by Sport */}
         <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
-            {allTeams.map((team) => (
-              <SelectItem key={team} value={team}>
-                {team}
-              </SelectItem>
-            ))}
+            {(!filters.league || filters.league === 'NFL') && (
+              <SelectGroup>
+                <SelectLabel>NFL Teams</SelectLabel>
+                {nflTeams.map((team) => (
+                  <SelectItem key={team} value={team}>
+                    {team}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            {(!filters.league || filters.league === 'MLB') && (
+              <SelectGroup>
+                <SelectLabel>MLB Teams</SelectLabel>
+                {mlbTeams.map((team) => (
+                  <SelectItem key={team} value={team}>
+                    {team}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
           </SelectContent>
         </Select>
 
