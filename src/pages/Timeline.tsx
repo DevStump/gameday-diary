@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useGames } from '@/hooks/useGames';
-import { formatTeamName } from '@/utils/teamLogos';
+import { formatTeamName, getTeamLogo } from '@/utils/teamLogos';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 
@@ -204,9 +205,27 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {formatTeamName(game.away_team, league)} @ {formatTeamName(game.home_team, league)}
-              </h3>
+              <div className="flex items-center space-x-4 mb-2">
+                <div className="flex items-center space-x-2">
+                  <img 
+                    src={getTeamLogo(game.away_team, league)} 
+                    alt={game.away_team}
+                    className="h-8 w-8 object-contain"
+                  />
+                  <span className="font-medium text-gray-900">{formatTeamName(game.away_team, league)}</span>
+                </div>
+                
+                <span className="text-gray-500 font-medium">@</span>
+                
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-gray-900">{formatTeamName(game.home_team, league)}</span>
+                  <img 
+                    src={getTeamLogo(game.home_team, league)} 
+                    alt={game.home_team}
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+              </div>
 
               <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                 <div className="flex items-center">
@@ -243,16 +262,23 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               {log.rooted_for && log.rooted_for !== 'none' && (
                 <div className="flex items-center space-x-2 text-sm">
                   <Heart className="h-4 w-4 text-red-500" />
-                  <span className="text-gray-700">
-                    Rooted for {formatTeamName(log.rooted_for, league)}
-                    {rootedResult && (
-                      <span className={`ml-2 font-semibold ${
-                        rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        ({rootedResult})
-                      </span>
-                    )}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src={getTeamLogo(log.rooted_for, league)} 
+                      alt={log.rooted_for}
+                      className="h-4 w-4 object-contain"
+                    />
+                    <span className="text-gray-700">
+                      Rooted for {formatTeamName(log.rooted_for, league)}
+                      {rootedResult && (
+                        <span className={`ml-2 font-semibold ${
+                          rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          ({rootedResult})
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 </div>
               )}
 
