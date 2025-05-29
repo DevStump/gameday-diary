@@ -24,7 +24,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
   const [mode, setMode] = useState<'attended' | 'watched'>('watched');
   const [company, setCompany] = useState('');
   const [rating, setRating] = useState(0);
-  const [rootedFor, setRootedFor] = useState('');
+  const [rootedFor, setRootedFor] = useState('none');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -55,7 +55,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
       setMode('watched');
       setCompany('');
       setRating(0);
-      setRootedFor('');
+      setRootedFor('none');
       setNotes('');
     } catch (error) {
       toast({
@@ -106,7 +106,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
             <label className="text-sm font-medium">Who did you root for?</label>
             <Select value={rootedFor} onValueChange={setRootedFor}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a team" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No preference</SelectItem>

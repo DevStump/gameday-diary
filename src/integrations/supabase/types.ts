@@ -181,29 +181,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_game_logs_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "mlb_games"
-            referencedColumns: ["game_id"]
-          },
-          {
-            foreignKeyName: "user_game_logs_game_id_fkey1"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "nfl_games"
-            referencedColumns: ["game_id"]
-          },
-          {
-            foreignKeyName: "user_game_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users: {
         Row: {
