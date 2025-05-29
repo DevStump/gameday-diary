@@ -95,24 +95,24 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
           <div className="text-center mb-4">
             {/* Team Logos and Names */}
-            <div className="flex items-center justify-center space-x-4 mb-3">
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-3">
+              <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
                 <img 
                   src={getTeamLogo(game.away_team, game.league)} 
                   alt={game.away_team}
-                  className="h-12 w-12 object-contain"
+                  className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0"
                 />
-                <span className="font-medium text-gray-900">{formatTeamName(game.away_team, game.league)}</span>
+                <span className="font-medium text-gray-900 text-sm sm:text-base truncate">{formatTeamName(game.away_team, game.league)}</span>
               </div>
               
-              <span className="text-gray-500 font-medium">@</span>
+              <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
               
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
+              <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-start">
+                <span className="font-medium text-gray-900 text-sm sm:text-base truncate">{formatTeamName(game.home_team, game.league)}</span>
                 <img 
                   src={getTeamLogo(game.home_team, game.league)} 
                   alt={game.home_team}
-                  className="h-12 w-12 object-contain"
+                  className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0"
                 />
               </div>
             </div>
