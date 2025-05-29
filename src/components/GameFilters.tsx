@@ -55,24 +55,24 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         </div>
 
         {/* League */}
-        <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value)}>
+        <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <SelectValue placeholder="All Leagues" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Leagues</SelectItem>
+            <SelectItem value="all">All Leagues</SelectItem>
             <SelectItem value="NFL">NFL</SelectItem>
             <SelectItem value="MLB">MLB</SelectItem>
           </SelectContent>
         </Select>
 
         {/* Season */}
-        <Select value={filters.season} onValueChange={(value) => onFilterChange('season', value)}>
+        <Select value={filters.season} onValueChange={(value) => onFilterChange('season', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <SelectValue placeholder="All Seasons" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Seasons</SelectItem>
+            <SelectItem value="all">All Seasons</SelectItem>
             {seasons.map((season) => (
               <SelectItem key={season} value={season.toString()}>
                 {season}
@@ -82,12 +82,12 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         </Select>
 
         {/* Playoff */}
-        <Select value={filters.playoff} onValueChange={(value) => onFilterChange('playoff', value)}>
+        <Select value={filters.playoff} onValueChange={(value) => onFilterChange('playoff', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <SelectValue placeholder="All Games" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Games</SelectItem>
+            <SelectItem value="all">All Games</SelectItem>
             <SelectItem value="true">Playoff Games</SelectItem>
             <SelectItem value="false">Regular Season</SelectItem>
           </SelectContent>
