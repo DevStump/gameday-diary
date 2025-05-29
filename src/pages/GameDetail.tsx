@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Calendar, MapPin, ArrowLeft, Plus, Users, Trophy, Target, Zap } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Plus, Users, Trophy, Target } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
@@ -161,20 +162,15 @@ const GameDetail = () => {
             </div>
 
             {score && (
-              <div className="flex items-center justify-center space-x-2 mt-4">
-                <div className="text-4xl font-bold text-field-green">
-                  {score.away} - {score.home}
-                </div>
-                {game.league === 'MLB' && (game as any).walkoff && (
-                  <Zap className="h-8 w-8 text-sports-gold fill-current" />
-                )}
+              <div className="text-4xl font-bold text-field-green mt-4">
+                {score.away} - {score.home}
               </div>
             )}
 
             {/* Week for NFL games */}
             {game.league === 'NFL' && (game as any).week && (
-              <div className="text-lg text-gray-700 font-medium mt-4">
-                Week: {(game as any).week}
+              <div className="text-lg text-gray-700 font-medium mt-2">
+                Week {(game as any).week}
               </div>
             )}
 
@@ -196,8 +192,8 @@ const GameDetail = () => {
                 {user ? 'Add to My Diary' : 'Sign in to Add to Diary'}
               </Button>
               
-              {/* View Boxscore */}
-              {(game as any).boxscore_url && (
+              {/* View Boxscore for NFL games */}
+              {game.league === 'NFL' && (game as any).boxscore_url && (
                 <a 
                   href={(game as any).boxscore_url} 
                   target="_blank" 
@@ -314,7 +310,6 @@ const GameDetail = () => {
                   <span className="font-semibold">{(game as any).innings}</span>
                 </div>
               )}
-            </CardContent>
               {(game as any).winning_pitcher && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Winning Pitcher</span>
@@ -343,6 +338,48 @@ const GameDetail = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Game Time</span>
                   <span className="font-semibold">{Math.floor((game as any).time_of_game / 60)}:{((game as any).time_of_game % 60).toString().padStart(2, '0')}</span>
+                </div>
+              )}
+              {(game as any).walkoff && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Walk-off</span>
+                  <Badge variant="outline" className="border-sports-gold text-sports-gold">Yes</Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Additional Info - Only for MLB games */}
+        {game.league === 'MLB' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {(game as any).season && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Season</span>
+                  <span className="font-semibold">{(game as any).season}</span>
+                </div>
+              )}
+              {(game as any).overtime && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Overtime</span>
+                  <span className="font-semibold">{(game as any).overtime}</span>
+                </div>
+              )}
+              {(game as any).boxscore_url && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Boxscore</span>
+                  <a 
+                    href={(game as any).boxscore_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-field-green hover:underline font-semibold"
+                  >
+                    View Boxscore
+                  </a>
                 </div>
               )}
             </CardContent>
