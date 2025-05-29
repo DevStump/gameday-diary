@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus } from 'lucide-react';
@@ -328,6 +327,21 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                 </span>
               </div>
 
+              {/* Rating - always show */}
+              <div className="flex items-center space-x-2 mb-2">
+                <Star className="h-4 w-4 text-gray-500" />
+                {log.rating ? (
+                  <div className="flex">
+                    {renderStars(log.rating)}
+                  </div>
+                ) : (
+                  <div className="flex">
+                    {renderStars(0)}
+                    <span className="text-gray-400 italic text-sm ml-2">Not rated</span>
+                  </div>
+                )}
+              </div>
+
               {/* Rooted for - always show */}
               <div className="flex items-center space-x-2 text-sm mb-2">
                 {log.rooted_for && log.rooted_for !== 'none' ? (
@@ -353,21 +367,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     <Heart className="h-4 w-4 text-gray-500" />
                     <span className="text-gray-400 italic">No rooting selected</span>
                   </>
-                )}
-              </div>
-
-              {/* Rating - always show */}
-              <div className="flex items-center space-x-2 mb-2">
-                <Star className="h-4 w-4 text-gray-500" />
-                {log.rating ? (
-                  <div className="flex">
-                    {renderStars(log.rating)}
-                  </div>
-                ) : (
-                  <div className="flex">
-                    {renderStars(0)}
-                    <span className="text-gray-400 italic text-sm ml-2">Not rated</span>
-                  </div>
                 )}
               </div>
 
