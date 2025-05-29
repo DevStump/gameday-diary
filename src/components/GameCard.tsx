@@ -28,10 +28,7 @@ interface GameCardProps {
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const formatDate = (dateString: string) => {
-    console.log('Raw date from database:', dateString, 'for game:', game.away_team, '@', game.home_team);
-    
-    // Just use the date string directly from database without timezone conversion
-    // Expected format from DB: YYYY-MM-DD
+    // Just use the date string directly from database
     const dateParts = dateString.split('-');
     if (dateParts.length === 3) {
       const year = dateParts[0];
@@ -43,20 +40,19 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       const monthName = monthNames[parseInt(month) - 1];
       
       const formattedDate = `${monthName} ${parseInt(day)}, ${year}`;
-      console.log('Formatted date result:', formattedDate);
       return formattedDate;
     }
     
-    // Fallback: return original string if parsing fails
-    console.log('Date parsing failed, returning original:', dateString);
     return dateString;
   };
 
   const getScore = () => {
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
+      // Away team score first, then home team score
       return `${game.pts_off} - ${game.pts_def}`;
     }
     if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
+      // Away team score first, then home team score
       return `${game.runs_scored} - ${game.runs_allowed}`;
     }
     return null;
@@ -100,7 +96,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-4 mb-3">
               <div className="flex items-center space-x-2">
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
                   <AvatarFallback className="text-xs">{game.away_team}</AvatarFallback>
                 </Avatar>
@@ -111,7 +107,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               
               <div className="flex items-center space-x-2">
                 <span className="font-medium text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
                   <AvatarFallback className="text-xs">{game.home_team}</AvatarFallback>
                 </Avatar>

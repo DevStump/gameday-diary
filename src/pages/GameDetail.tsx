@@ -23,9 +23,7 @@ const GameDetail = () => {
   );
 
   const formatDate = (dateString: string) => {
-    console.log('Raw date from database:', dateString);
-    
-    // Use the date string directly from database
+    // Just use the date string directly from database
     const dateParts = dateString.split('-');
     if (dateParts.length === 3) {
       const year = dateParts[0];
@@ -41,11 +39,9 @@ const GameDetail = () => {
       const dayName = dayNames[tempDate.getDay()];
       
       const formattedDate = `${dayName}, ${monthName} ${parseInt(day)}, ${year}`;
-      console.log('Formatted date result:', formattedDate);
       return formattedDate;
     }
     
-    console.log('Date parsing failed, returning original:', dateString);
     return dateString;
   };
 
@@ -92,13 +88,15 @@ const GameDetail = () => {
     if (game.league === 'NFL') {
       const nflGame = game as any;
       if (nflGame.pts_off !== undefined && nflGame.pts_def !== undefined) {
-        return { home: nflGame.pts_def, away: nflGame.pts_off };
+        // Away team score first, then home team score
+        return { away: nflGame.pts_off, home: nflGame.pts_def };
       }
     }
     if (game.league === 'MLB') {
       const mlbGame = game as any;
       if (mlbGame.runs_scored !== undefined && mlbGame.runs_allowed !== undefined) {
-        return { home: mlbGame.runs_allowed, away: mlbGame.runs_scored };
+        // Away team score first, then home team score
+        return { away: mlbGame.runs_scored, home: mlbGame.runs_allowed };
       }
     }
     return null;
@@ -143,7 +141,7 @@ const GameDetail = () => {
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-6 mb-4">
               <div className="flex items-center space-x-3">
-                <Avatar className="h-12 w-12">
+                <Avatar className="h-16 w-16">
                   <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
                   <AvatarFallback className="text-sm">{game.away_team}</AvatarFallback>
                 </Avatar>
@@ -154,7 +152,7 @@ const GameDetail = () => {
               
               <div className="flex items-center space-x-3">
                 <span className="text-xl font-bold text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
-                <Avatar className="h-12 w-12">
+                <Avatar className="h-16 w-16">
                   <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
                   <AvatarFallback className="text-sm">{game.home_team}</AvatarFallback>
                 </Avatar>
