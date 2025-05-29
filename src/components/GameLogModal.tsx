@@ -41,7 +41,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
         mode,
         company: company || undefined,
         rating: rating || undefined,
-        rooted_for: rootedFor || undefined,
+        rooted_for: rootedFor === 'none' ? undefined : rootedFor || undefined,
         notes: notes || undefined,
       });
 
@@ -109,7 +109,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
                 <SelectValue placeholder="Select a team" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No preference</SelectItem>
+                <SelectItem value="none">No preference</SelectItem>
                 <SelectItem value={awayTeam}>{formatTeamName(awayTeam, leagueType)}</SelectItem>
                 <SelectItem value={homeTeam}>{formatTeamName(homeTeam, leagueType)}</SelectItem>
               </SelectContent>
