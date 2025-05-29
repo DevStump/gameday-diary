@@ -351,7 +351,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                 ) : (
                   <>
                     <Heart className="h-4 w-4 text-gray-500" />
-                    <span className="text-gray-400 italic">No team selected</span>
+                    <span className="text-gray-400 italic">No rooting selected</span>
                   </>
                 )}
               </div>
