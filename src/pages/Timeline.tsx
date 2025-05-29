@@ -153,6 +153,25 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     };
   };
 
+  // Get the game score regardless of rooting preference
+  const getGameScore = () => {
+    if (!game) return null;
+
+    let awayScore, homeScore;
+
+    if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
+      awayScore = game.pts_off;
+      homeScore = game.pts_def;
+    } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
+      awayScore = game.runs_allowed;
+      homeScore = game.runs_scored;
+    }
+
+    if (awayScore === undefined || homeScore === undefined) return null;
+
+    return `${awayScore} - ${homeScore}`;
+  };
+
   if (!game || !league) {
     return (
       <Card className="animate-slide-up max-w-md" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -170,6 +189,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   }
 
   const rootedResult = getRootedTeamResult();
+  const gameScore = getGameScore();
 
   return (
     <>
@@ -234,9 +254,9 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             </div>
 
-            {rootedResult?.score && (
+            {gameScore && (
               <div className="text-xl font-bold text-gray-900 mb-2">
-                {rootedResult.score}
+                {gameScore}
               </div>
             )}
             

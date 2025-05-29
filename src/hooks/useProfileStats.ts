@@ -45,21 +45,31 @@ export const useProfileStats = () => {
       let losses = 0;
       
       gameLogs.forEach(log => {
+        // Only count games where user actually rooted for a team
         if (log.rooted_for && log.rooted_for !== 'none') {
           const game = allGames.find(g => g.game_id === log.game_id);
-          if (game && game.result) {
-            // Parse the score from result (format: "away_score-home_score")
-            const [awayScore, homeScore] = game.result.split('-').map(Number);
+          if (game) {
+            let teamScore, oppScore;
             
-            // Check if the rooted team won
-            const rootedTeamWon = 
-              (log.rooted_for === game.home_team && homeScore > awayScore) ||
-              (log.rooted_for === game.away_team && awayScore > homeScore);
+            // Determine league based on which array contains the game
+            const league = nflGames?.includes(game) ? 'NFL' : 'MLB';
             
-            if (rootedTeamWon) {
-              wins++;
-            } else {
-              losses++;
+            if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
+              const isHome = log.rooted_for === game.home_team;
+              teamScore = isHome ? game.pts_def : game.pts_off;
+              oppScore = isHome ? game.pts_off : game.pts_def;
+            } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
+              const isHome = log.rooted_for === game.home_team;
+              teamScore = isHome ? game.runs_scored : game.runs_allowed;
+              oppScore = isHome ? game.runs_allowed : game.runs_scored;
+            }
+            
+            if (teamScore !== undefined && oppScore !== undefined) {
+              if (teamScore > oppScore) {
+                wins++;
+              } else {
+                losses++;
+              }
             }
           }
         }
