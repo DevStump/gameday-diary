@@ -5,7 +5,7 @@ export const getTeamLogo = (teamCode: string): string => {
     // MLB Teams - using placeholder images for now
     'ATH': '/placeholder.svg',
     'HOU': '/placeholder.svg',
-    'NYY': '/placeholder.svg',
+    'NYY': 'https://content.sportslogos.net/logos/53/68/full/new_york_yankees_logo_primary_19685115.png,
     'BOS': '/placeholder.svg',
     'LAD': '/placeholder.svg',
     'SF': '/placeholder.svg',
