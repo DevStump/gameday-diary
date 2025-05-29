@@ -128,6 +128,25 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     });
   };
 
+  const formatGameDate = (dateString: string) => {
+    // Just use the date string directly from database
+    const dateParts = dateString.split('-');
+    if (dateParts.length === 3) {
+      const year = dateParts[0];
+      const month = dateParts[1];
+      const day = dateParts[2];
+      
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthName = monthNames[parseInt(month) - 1];
+      
+      const formattedDate = `${monthName} ${parseInt(day)}, ${year}`;
+      return formattedDate;
+    }
+    
+    return dateString;
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -248,6 +267,12 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
             </div>
           </div>
 
+          {/* Game Date */}
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-3">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formatGameDate(game.date)}
+          </div>
+
           {/* Teams and Score */}
           <div className="text-center mb-3">
             <div className="flex items-center justify-center space-x-3 mb-2">
@@ -340,14 +365,10 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               )}
             </div>
 
-            {/* Date at very bottom */}
+            {/* Added date at very bottom */}
             <div className="pt-2 border-t">
-              <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formatDate(game.date)}
-              </div>
               <div className="text-xs text-gray-500 text-center">
-                {formatDate(log.created_at)}
+                Added: {formatDate(log.created_at)}
               </div>
             </div>
           </div>
