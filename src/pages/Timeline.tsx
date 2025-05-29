@@ -5,7 +5,7 @@ import { Calendar, MapPin, Star, Users, Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useGameLogs } from '@/hooks/useGameLogs';
-import { useGame } from '@/hooks/useGame';
+import { useGames } from '@/hooks/useGames';
 import { formatTeamName } from '@/utils/teamLogos';
 
 const Timeline = () => {
@@ -53,20 +53,45 @@ const Timeline = () => {
 };
 
 const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
-  // Determine league from game_id pattern
-  // NFL game IDs are typically shorter and contain underscores or specific patterns
-  // MLB game IDs are longer alphanumeric strings
-  const determineLeague = (gameId: string): 'NFL' | 'MLB' => {
-    // NFL game IDs are usually in format like "2023_01_BUF_MIA" or shorter patterns
-    if (gameId.includes('_') || gameId.length < 15) {
-      return 'NFL';
+  // Fetch both NFL and MLB games to determine which league the game belongs to
+  const { data: nflGames } = useGames({
+    search: '',
+    league: 'NFL',
+    season: '',
+    playoff: '',
+    startDate: '',
+    endDate: ''
+  });
+  
+  const { data: mlbGames } = useGames({
+    search: '',
+    league: 'MLB',
+    season: '',
+    playoff: '',
+    startDate: '',
+    endDate: ''
+  });
+
+  // Find the game in either NFL or MLB games and determine league
+  const findGameAndLeague = () => {
+    if (nflGames) {
+      const nflGame = nflGames.find(g => g.game_id === log.game_id);
+      if (nflGame) {
+        return { game: { ...nflGame, league: 'NFL' }, league: 'NFL' as const };
+      }
     }
-    // MLB game IDs are typically longer alphanumeric strings
-    return 'MLB';
+    
+    if (mlbGames) {
+      const mlbGame = mlbGames.find(g => g.game_id === log.game_id);
+      if (mlbGame) {
+        return { game: { ...mlbGame, league: 'MLB' }, league: 'MLB' as const };
+      }
+    }
+    
+    return { game: null, league: null };
   };
 
-  const league = determineLeague(log.game_id);
-  const { data: game } = useGame(log.game_id, league);
+  const { game, league } = findGameAndLeague();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -112,7 +137,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     return rootedTeamWon ? 'Won' : 'Lost';
   };
 
-  if (!game) {
+  if (!game || !league) {
     return (
       <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
         <CardContent className="p-6">
