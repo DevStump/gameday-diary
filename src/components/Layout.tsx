@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, Pen, User, Search } from 'lucide-react';
+import { Calendar, Book, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import WelcomeModal from '@/components/WelcomeModal';
@@ -40,7 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <Pen className="h-8 w-8 text-field-green" />
+              <Book className="h-8 w-8 text-field-green" />
               <span className="text-xl font-bold text-gray-900">GamedayDiary</span>
             </Link>
 
