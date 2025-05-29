@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
@@ -156,7 +155,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
           <div className="flex items-center justify-between mb-3">
             <Badge variant="outline">Loading...</Badge>
             <div className="text-sm text-gray-500">
-              Added {formatTime(log.created_at)}
+              {formatTime(log.created_at)}
             </div>
           </div>
           <div className="text-gray-500">Loading game details...</div>
@@ -169,7 +168,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
   return (
     <>
-      <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+      <Card className="animate-slide-up max-w-md" style={{ animationDelay: `${index * 0.1}s` }}>
         <CardContent className="p-4">
           {/* Top Row - Badges and Action Buttons */}
           <div className="flex items-center justify-between mb-3">
@@ -263,10 +262,8 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                   <span className="text-gray-700">
                     Rooted for {formatTeamName(log.rooted_for, league)}
                     {rootedResult && (
-                      <span className={`ml-2 font-semibold ${
-                        rootedResult.result === 'Won' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        ({rootedResult.result} {rootedResult.score})
+                      <span className="ml-2 font-semibold text-gray-600">
+                        {rootedResult.score}
                       </span>
                     )}
                   </span>
@@ -291,7 +288,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
             )}
 
             <div className="text-xs text-gray-500 border-t pt-2">
-              Added: {formatDate(log.created_at)}
+              {formatDate(log.created_at)}
             </div>
           </div>
         </CardContent>
