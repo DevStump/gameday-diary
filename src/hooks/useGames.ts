@@ -24,6 +24,7 @@ export const useGames = (filters: GameFilters) => {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
+          // Search by team abbreviation in home_team or away_team columns
           nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
         }
         if (filters.season) {
@@ -47,6 +48,7 @@ export const useGames = (filters: GameFilters) => {
         let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
+          // Search by team abbreviation in home_team or away_team columns
           mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
         }
         if (filters.playoff) {

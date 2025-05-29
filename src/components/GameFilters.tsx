@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectLabel, SelectGroup } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -29,20 +30,20 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
   const currentYear = new Date().getFullYear();
   const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
-  // Team options for both leagues
+  // Team abbreviations for both leagues (sorted alphabetically)
   const nflTeams = [
-    'Cardinals', 'Falcons', 'Ravens', 'Bills', 'Panthers', 'Bears', 'Bengals', 'Browns',
-    'Cowboys', 'Broncos', 'Lions', 'Packers', 'Texans', 'Colts', 'Jaguars', 'Chiefs',
-    'Raiders', 'Chargers', 'Rams', 'Dolphins', 'Vikings', 'Patriots', 'Saints', 'Giants',
-    'Jets', 'Eagles', 'Steelers', '49ers', 'Seahawks', 'Buccaneers', 'Titans', 'Commanders'
-  ];
+    'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE',
+    'DAL', 'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC',
+    'LV', 'LAC', 'LAR', 'MIA', 'MIN', 'NE', 'NO', 'NYG',
+    'NYJ', 'PHI', 'PIT', 'SF', 'SEA', 'TB', 'TEN', 'WAS'
+  ].sort();
 
   const mlbTeams = [
-    'Diamondbacks', 'Braves', 'Orioles', 'Red Sox', 'Cubs', 'White Sox', 'Reds', 'Guardians',
-    'Rockies', 'Tigers', 'Astros', 'Royals', 'Angels', 'Dodgers', 'Marlins', 'Brewers',
-    'Twins', 'Mets', 'Yankees', 'Athletics', 'Phillies', 'Pirates', 'Padres', 'Giants',
-    'Mariners', 'Cardinals', 'Rays', 'Rangers', 'Blue Jays', 'Nationals'
-  ];
+    'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CWS', 'CIN', 'CLE',
+    'COL', 'DET', 'HOU', 'KC', 'LAA', 'LAD', 'MIA', 'MIL',
+    'MIN', 'NYM', 'NYY', 'OAK', 'PHI', 'PIT', 'SD', 'SF',
+    'SEA', 'STL', 'TB', 'TEX', 'TOR', 'WSH'
+  ].sort();
 
   const handleDateChange = (date: Date | undefined, type: 'startDate' | 'endDate') => {
     if (date) {
@@ -94,21 +95,24 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
             {(!filters.league || filters.league === 'NFL') && (
-              <SelectGroup>
-                <SelectLabel>NFL Teams</SelectLabel>
-                {nflTeams.map((team) => (
-                  <SelectItem key={team} value={team}>
-                    {team}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <>
+                <SelectGroup>
+                  <SelectLabel>NFL Teams</SelectLabel>
+                  {nflTeams.map((team) => (
+                    <SelectItem key={`nfl-${team}`} value={team}>
+                      {team} - {formatTeamName(team, 'NFL')}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+                {(!filters.league || filters.league === 'MLB') && <Separator className="my-2" />}
+              </>
             )}
             {(!filters.league || filters.league === 'MLB') && (
               <SelectGroup>
                 <SelectLabel>MLB Teams</SelectLabel>
                 {mlbTeams.map((team) => (
-                  <SelectItem key={team} value={team}>
-                    {team}
+                  <SelectItem key={`mlb-${team}`} value={team}>
+                    {team} - {formatTeamName(team, 'MLB')}
                   </SelectItem>
                 ))}
               </SelectGroup>
