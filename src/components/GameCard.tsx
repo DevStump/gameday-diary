@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ interface GameCardProps {
     runs_allowed?: number;
     playoff?: boolean;
     venue?: string;
+    boxscore_url?: string;
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
@@ -125,17 +127,35 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       </Link>
 
       <CardFooter className="p-6 pt-0">
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            onAddToDiary(game.game_id);
-          }}
-          className="w-full bg-field-green hover:bg-field-dark transition-colors"
-          size="sm"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
-        </Button>
+        <div className="w-full space-y-3">
+          {/* View Boxscore Link */}
+          {game.boxscore_url && (
+            <div className="flex justify-center">
+              <a 
+                href={game.boxscore_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-field-green hover:underline font-semibold text-sm"
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Boxscore
+              </a>
+            </div>
+          )}
+          
+          {/* Add to Diary Button */}
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              onAddToDiary(game.game_id);
+            }}
+            className="w-full bg-field-green hover:bg-field-dark transition-colors"
+            size="sm"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
