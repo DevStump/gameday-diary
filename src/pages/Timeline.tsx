@@ -11,14 +11,14 @@ import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 import { useNavigate, Link } from 'react-router-dom';
 
-const Timeline = () => {
+const Diary = () => {
   const { data: gameLogs, isLoading } = useGameLogs();
 
   if (isLoading) {
     return (
       <Layout>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading your game timeline...</div>
+          <div className="text-center">Loading your diary...</div>
         </div>
       </Layout>
     );
@@ -29,13 +29,13 @@ const Timeline = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">My Diary</h1>
           <p className="text-lg text-gray-600">
             Your personal journey through the games you've watched and attended
           </p>
         </div>
 
-        {/* Timeline - 2 Column Grid */}
+        {/* Diary - 2 Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {gameLogs?.map((log, index) => (
             <GameLogEntry key={log.id} log={log} index={index} />
@@ -372,4 +372,4 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   );
 };
 
-export default Timeline;
+export default Diary;
