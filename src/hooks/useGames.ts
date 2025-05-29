@@ -96,6 +96,24 @@ export const useGames = (filters: GameFilters) => {
 
       console.log('Total games before sorting:', allGames.length);
       
+      // Debug: Log some sample dates to check format
+      if (allGames.length > 0) {
+        console.log('Sample game dates (first 5):');
+        allGames.slice(0, 5).forEach((game, index) => {
+          console.log(`Game ${index + 1}: ${game.date} (${new Date(game.date).toISOString()})`);
+        });
+        
+        // Check for May 27, 2025 specifically
+        const may27Games = allGames.filter(game => {
+          const gameDate = new Date(game.date);
+          return gameDate.getMonth() === 4 && gameDate.getDate() === 27 && gameDate.getFullYear() === 2025;
+        });
+        console.log('May 27, 2025 games found:', may27Games.length);
+        if (may27Games.length > 0) {
+          console.log('May 27 games:', may27Games.slice(0, 3));
+        }
+      }
+      
       // Sort by date (newest first - descending)
       const sortedGames = allGames.sort((a, b) => {
         const dateA = new Date(a.date);
@@ -104,6 +122,12 @@ export const useGames = (filters: GameFilters) => {
       });
       
       console.log('Final games count:', sortedGames.length);
+      console.log('Date range after sorting:');
+      if (sortedGames.length > 0) {
+        console.log('Latest game:', sortedGames[0].date, sortedGames[0].home_team, 'vs', sortedGames[0].away_team);
+        console.log('Earliest game:', sortedGames[sortedGames.length - 1].date, sortedGames[sortedGames.length - 1].home_team, 'vs', sortedGames[sortedGames.length - 1].away_team);
+      }
+      
       return sortedGames;
     },
   });
