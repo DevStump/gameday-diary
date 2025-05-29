@@ -214,49 +214,6 @@ const GameDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <img 
-                    src={getTeamLogo(game.home_team, game.league)} 
-                    alt={game.home_team}
-                    className="h-6 w-6 object-contain"
-                  />
-                  <span>{formatTeamName(game.home_team, game.league)} Stats</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {(game as any).yards_off && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Yards</span>
-                    <span className="font-semibold">{(game as any).yards_off}</span>
-                  </div>
-                )}
-                {(game as any).pass_yds_off && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Passing Yards</span>
-                    <span className="font-semibold">{(game as any).pass_yds_off}</span>
-                  </div>
-                )}
-                {(game as any).rush_yds_off && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Rushing Yards</span>
-                    <span className="font-semibold">{(game as any).rush_yds_off}</span>
-                  </div>
-                )}
-                {(game as any).first_down_off && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">First Downs</span>
-                    <span className="font-semibold">{(game as any).first_down_off}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Turnovers</span>
-                  <span className="font-semibold">{(game as any).to_off || 0}</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <img 
                     src={getTeamLogo(game.away_team, game.league)} 
                     alt={game.away_team}
                     className="h-6 w-6 object-contain"
@@ -292,6 +249,48 @@ const GameDetail = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Turnovers Forced</span>
                   <span className="font-semibold">{(game as any).to_def || 0}</span>
+                </div>
+              </CardContent>
+            </Card>
+             <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <img 
+                    src={getTeamLogo(game.home_team, game.league)} 
+                    alt={game.home_team}
+                    className="h-6 w-6 object-contain"
+                  />
+                  <span>{formatTeamName(game.home_team, game.league)} Stats</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {(game as any).yards_off && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total Yards</span>
+                    <span className="font-semibold">{(game as any).yards_off}</span>
+                  </div>
+                )}
+                {(game as any).pass_yds_off && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Passing Yards</span>
+                    <span className="font-semibold">{(game as any).pass_yds_off}</span>
+                  </div>
+                )}
+                {(game as any).rush_yds_off && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Rushing Yards</span>
+                    <span className="font-semibold">{(game as any).rush_yds_off}</span>
+                  </div>
+                )}
+                {(game as any).first_down_off && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">First Downs</span>
+                    <span className="font-semibold">{(game as any).first_down_off}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Turnovers</span>
+                  <span className="font-semibold">{(game as any).to_off || 0}</span>
                 </div>
               </CardContent>
             </Card>
