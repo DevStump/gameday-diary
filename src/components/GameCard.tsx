@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
-import { getTeamLogo } from '@/utils/teamLogos';
+import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
 
 interface GameCardProps {
   game: {
@@ -28,13 +28,28 @@ interface GameCardProps {
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const formatDate = (dateString: string) => {
+    console.log('Formatting date:', dateString, 'for game:', game.away_team, '@', game.home_team);
+    
+    // Handle both date string formats
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date:', dateString);
+      return dateString; // Return original string if invalid
+    }
+    
+    console.log('Parsed date object:', date);
+    
+    const formattedDate = date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
+    
+    console.log('Formatted date result:', formattedDate);
+    return formattedDate;
   };
 
   const getScore = () => {
@@ -89,13 +104,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                   <AvatarImage src={getTeamLogo(game.away_team)} alt={game.away_team} />
                   <AvatarFallback className="text-xs">{game.away_team}</AvatarFallback>
                 </Avatar>
-                <span className="font-medium text-gray-900">{game.away_team}</span>
+                <span className="font-medium text-gray-900">{formatTeamName(game.away_team)}</span>
               </div>
               
               <span className="text-gray-500 font-medium">@</span>
               
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{game.home_team}</span>
+                <span className="font-medium text-gray-900">{formatTeamName(game.home_team)}</span>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={getTeamLogo(game.home_team)} alt={game.home_team} />
                   <AvatarFallback className="text-xs">{game.home_team}</AvatarFallback>
