@@ -308,12 +308,13 @@ const GameDetail = () => {
               <CardTitle>Game Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {(game as any).innings && (game as any).innings > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Innings</span>
-                  <span className="font-semibold">{(game as any).innings}</span>
-                </div>
-              )}
+            {(game as any).innings != null && (game as any).innings > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Innings</span>
+                <span className="font-semibold">{(game as any).innings}</span>
+              </div>
+            )}
+            </CardContent>
               {(game as any).winning_pitcher && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Winning Pitcher</span>
