@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { formatTeamName } from '@/utils/teamLogos';
 
 interface GameFilters {
   search: string;
@@ -24,12 +25,13 @@ export const useGames = (filters: GameFilters) => {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
-          // Only search NFL teams when fetching NFL games
-          // If a league is specifically selected, only search that league's teams
-          if (!filters.league || filters.league === 'NFL') {
-            nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          // Convert abbreviation to team name for NFL
+          const nflTeamName = formatTeamName(filters.search, 'NFL');
+          if (nflTeamName !== 'Unknown Team') {
+            // Search by team name in home_team or away_team columns
+            nflQuery = nflQuery.or(`home_team.ilike.%${nflTeamName}%,away_team.ilike.%${nflTeamName}%`);
           } else {
-            // If MLB is selected, don't fetch NFL games with this search term
+            // If it's not a valid NFL team, don't return any NFL games
             nflQuery = nflQuery.limit(0);
           }
         }
@@ -54,12 +56,13 @@ export const useGames = (filters: GameFilters) => {
         let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
-          // Only search MLB teams when fetching MLB games
-          // If a league is specifically selected, only search that league's teams
-          if (!filters.league || filters.league === 'MLB') {
-            mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          // Convert abbreviation to team name for MLB
+          const mlbTeamName = formatTeamName(filters.search, 'MLB');
+          if (mlbTeamName !== 'Unknown Team') {
+            // Search by team name in home_team or away_team columns
+            mlbQuery = mlbQuery.or(`home_team.ilike.%${mlbTeamName}%,away_team.ilike.%${mlbTeamName}%`);
           } else {
-            // If NFL is selected, don't fetch MLB games with this search term
+            // If it's not a valid MLB team, don't return any MLB games
             mlbQuery = mlbQuery.limit(0);
           }
         }
