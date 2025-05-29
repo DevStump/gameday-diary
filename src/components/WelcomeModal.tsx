@@ -26,7 +26,7 @@ const WelcomeModal = () => {
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold text-gray-900 mb-4">
-            🏟️ Welcome to GameTracker!
+            📝 Welcome to GameDiary!
           </DialogTitle>
         </DialogHeader>
         
