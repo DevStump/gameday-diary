@@ -1,4 +1,3 @@
-
 // Utility for team logos and names by league
 
 export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
@@ -113,6 +112,15 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
     'tam': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/v8uqiualryypwqgvwcih',
     'ten': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/pln44vuzugjgipyidsre',
     'was': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/xymxwrxtyj9fhaemhdyd',
+    // Additional team codes from your list
+    'crd': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/u9fltoslqdsyao8cpm0k', // Arizona Cardinals
+    'rav': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ucsdijmddsqcj1i0nmur', // Baltimore Ravens
+    'htx': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/bpx2n7s8m4u2pz8dbu5m', // Houston Texans
+    'clt': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/keenyn6qtrzngbcq8bre', // Indianapolis Colts
+    'sdg': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/dhfidtn8jrumakbogeu4', // Los Angeles Chargers
+    'ram': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/ayvngv0oygf5ym1p3mhp', // Los Angeles Rams
+    'nwe': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/moyfxx3dq5pio4aiftnc', // New England Patriots
+    'oti': 'https://static.www.nfl.com/image/private/t_headshot_desktop/league/pln44vuzugjgipyidsre', // Tennessee Titans
   };
 
   const logoMap = league === 'NFL' ? nflLogos : mlbLogos;
@@ -232,6 +240,14 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     'ten': 'Titans',
     'oti': 'Titans',
     'was': 'Commanders',
+    // Additional team codes from your list
+    'crd': 'Cardinals', // Arizona Cardinals
+    'rav': 'Ravens', // Baltimore Ravens
+    'htx': 'Texans', // Houston Texans
+    'clt': 'Colts', // Indianapolis Colts
+    'sdg': 'Chargers', // Los Angeles Chargers
+    'ram': 'Rams', // Los Angeles Rams
+    'nwe': 'Patriots', // New England Patriots
   };
 
   const nameMap = league === 'NFL' ? nflNames : mlbNames;
