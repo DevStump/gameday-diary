@@ -103,7 +103,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
           </div>
 
           <div>
-            <label className="text-sm font-medium">Who did you root for? (optional)</label>
+            <label className="text-sm font-medium">Who did you root for?</label>
             <Select value={rootedFor} onValueChange={setRootedFor}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a team" />
