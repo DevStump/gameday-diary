@@ -30,17 +30,6 @@ const Timeline = () => {
     });
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating ? 'text-sports-gold fill-current' : 'text-gray-300'
-        }`}
-      />
-    ));
-  };
-
   if (isLoading) {
     return (
       <Layout>
@@ -83,13 +72,9 @@ const Timeline = () => {
 };
 
 const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
-  // Determine league from game_id pattern
-  const league = log.game_id.includes('202') && log.game_id.length > 10 ? 'MLB' : 'NFL';
-  const { data: game } = useGame(league.toLowerCase(), log.game_id);
-
-  if (!game) {
-    return null;
-  }
+  // Determine league from game_id pattern - NFL game IDs are shorter
+  const league = log.game_id.includes('_') || log.game_id.length < 15 ? 'NFL' : 'MLB';
+  const { data: game } = useGame(log.game_id, league as 'NFL' | 'MLB');
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -121,6 +106,22 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     ));
   };
 
+  if (!game) {
+    return (
+      <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-3">
+            <Badge variant="outline">Loading...</Badge>
+            <div className="text-sm text-gray-500">
+              Added {formatTime(log.created_at)}
+            </div>
+          </div>
+          <div className="text-gray-500">Loading game details...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const leagueType = league.toUpperCase() as 'NFL' | 'MLB';
 
   return (
@@ -144,7 +145,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                 </Badge>
               </div>
               <div className="text-sm text-gray-500">
-                Added {formatTime(log.created_at)}
+                Added {formatTime(log.created_at)} on {formatDate(log.created_at)}
               </div>
             </div>
 
@@ -157,9 +158,11 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                 <Calendar className="h-4 w-4 mr-1" />
                 {formatDate(game.date)}
               </div>
-              <div className="text-lg font-bold text-field-green">
-                {game.result}
-              </div>
+              {game.result && (
+                <div className="text-lg font-bold text-field-green">
+                  {game.result}
+                </div>
+              )}
             </div>
 
             {/* Rating */}
