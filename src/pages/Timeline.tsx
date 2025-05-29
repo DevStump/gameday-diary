@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
@@ -232,20 +231,12 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                   className="h-8 w-8 object-contain"
                 />
               </div>
-            
-            {rootedResult?.score && (
-              <div className="text-lg font-bold text-gray-900 mb-2">
-                Final Score: {rootedResult.score}
-              </div>
-            )}
-
-              <div className="flex items-center justify-center text-sm text-gray-600">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formatDate(game.date)}
-              </div>
             </div>
             
-
+            <div className="flex items-center justify-center text-sm text-gray-600">
+              <Calendar className="h-4 w-4 mr-1" />
+              {formatDate(game.date)}
+            </div>
           </div>
 
           {/* Log Details */}
@@ -270,7 +261,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     Rooted for {formatTeamName(log.rooted_for, league)}
                     {rootedResult && (
                       <span className="ml-2 font-semibold text-gray-600">
-                        ({rootedResult.result})
+                        ({rootedResult.result}{rootedResult.score ? ` ${rootedResult.score}` : ''})
                       </span>
                     )}
                   </span>
