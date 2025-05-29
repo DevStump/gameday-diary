@@ -24,8 +24,14 @@ export const useGames = (filters: GameFilters) => {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
-          // Search by team abbreviation in home_team or away_team columns
-          nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          // Only search NFL teams when fetching NFL games
+          // If a league is specifically selected, only search that league's teams
+          if (!filters.league || filters.league === 'NFL') {
+            nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          } else {
+            // If MLB is selected, don't fetch NFL games with this search term
+            nflQuery = nflQuery.limit(0);
+          }
         }
         if (filters.season) {
           nflQuery = nflQuery.eq('season', parseInt(filters.season));
@@ -48,8 +54,14 @@ export const useGames = (filters: GameFilters) => {
         let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
         
         if (filters.search) {
-          // Search by team abbreviation in home_team or away_team columns
-          mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          // Only search MLB teams when fetching MLB games
+          // If a league is specifically selected, only search that league's teams
+          if (!filters.league || filters.league === 'MLB') {
+            mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+          } else {
+            // If NFL is selected, don't fetch MLB games with this search term
+            mlbQuery = mlbQuery.limit(0);
+          }
         }
         if (filters.season) {
           // For MLB, filter by year from date since there's no season column
