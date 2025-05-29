@@ -89,14 +89,14 @@ const GameDetail = () => {
       const nflGame = game as any;
       if (nflGame.pts_off !== undefined && nflGame.pts_def !== undefined) {
         // Away team score first, then home team score
-        return { away: nflGame.pts_off, home: nflGame.pts_def };
+        return { away: nflGame.pts_def, home: nflGame.pts_off };
       }
     }
     if (game.league === 'MLB') {
       const mlbGame = game as any;
       if (mlbGame.runs_scored !== undefined && mlbGame.runs_allowed !== undefined) {
         // Away team score first, then home team score
-        return { away: mlbGame.runs_scored, home: mlbGame.runs_allowed };
+        return { away: mlbGame.runs_allowed, home: mlbGame.runs_scored };
       }
     }
     return null;
