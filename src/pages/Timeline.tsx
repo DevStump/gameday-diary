@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus } from 'lucide-react';
@@ -319,17 +320,18 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
           {/* Log Details - flex-1 to fill remaining space */}
           <div className="space-y-2 flex-1 flex flex-col">
             <div className="flex-1">
-              {log.company && (
-                <div className="flex items-center space-x-2 text-sm mb-2">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">{log.company}</span>
-                </div>
-              )}
+              {/* Company - always show */}
+              <div className="flex items-center space-x-2 text-sm mb-2">
+                <Users className="h-4 w-4 text-gray-500" />
+                <span className={log.company ? "text-gray-700" : "text-gray-400 italic"}>
+                  {log.company || "No company specified"}
+                </span>
+              </div>
 
-              {/* Only show rooted team info if a team was actually selected (not null/undefined/none) */}
-              {log.rooted_for && log.rooted_for !== 'none' && (
-                <div className="flex items-center space-x-2 text-sm mb-2">
-                  <Heart className="h-4 w-4 text-red-500" />
+              {/* Rooted for - always show */}
+              <div className="flex items-center space-x-2 text-sm mb-2">
+                <Heart className="h-4 w-4 text-red-500" />
+                {log.rooted_for && log.rooted_for !== 'none' ? (
                   <div className="flex items-center space-x-2">
                     <img 
                       src={getTeamLogo(log.rooted_for, league)} 
@@ -345,18 +347,25 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                       )}
                     </span>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <span className="text-gray-400 italic">No team selected</span>
+                )}
+              </div>
 
-              {/* Rating */}
-              {log.rating && (
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-sm font-medium text-gray-700">Rating:</span>
+              {/* Rating - always show */}
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-sm font-medium text-gray-700">Rating:</span>
+                {log.rating ? (
                   <div className="flex">
                     {renderStars(log.rating)}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="flex">
+                    {renderStars(0)}
+                    <span className="text-gray-400 italic text-sm ml-2">Not rated</span>
+                  </div>
+                )}
+              </div>
 
               {log.notes && (
                 <div className="bg-gray-50 p-3 rounded-md mb-2">
