@@ -238,16 +238,17 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     'sfo': '49ers',
     'tam': 'Buccaneers',
     'ten': 'Titans',
-    'oti': 'Titans',
     'was': 'Commanders',
     // Additional team codes from your list
-    'crd': 'Cardinals', // Arizona Cardinals
-    'rav': 'Ravens', // Baltimore Ravens
-    'htx': 'Texans', // Houston Texans
-    'clt': 'Colts', // Indianapolis Colts
-    'sdg': 'Chargers', // Los Angeles Chargers
-    'ram': 'Rams', // Los Angeles Rams
-    'nwe': 'Patriots', // New England Patriots
+    'crd': 'Cardinals',
+    'rav': 'Ravens',
+    'htx': 'Texans',
+    'clt': 'Colts',
+    'sdg': 'Chargers',
+    'ram': 'Rams',
+    'nwe': 'Patriots',
+    'oti': 'Titans',
+    'jac': 'Jaguars',
   };
 
   const nameMap = league === 'NFL' ? nflNames : mlbNames;
