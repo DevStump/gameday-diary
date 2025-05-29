@@ -1,21 +1,55 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Trophy, TrendingUp, Star, Calendar, Target } from 'lucide-react';
+import { Trophy, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { formatTeamName } from '@/utils/teamLogos';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
   const { data: stats, isLoading } = useProfileStats();
 
-  if (isLoading || !stats) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">Loading your profile...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Show empty state if no games logged
+  if (!stats || stats.totalGames === 0) {
+    return (
+      <Layout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex justify-center items-center space-x-3 mb-4">
+              <Trophy className="h-10 w-10 text-field-green" />
+              <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
+            </div>
+            <p className="text-lg text-gray-600">
+              Your game-watching statistics and achievements
+            </p>
+          </div>
+
+          {/* Empty State */}
+          <div className="text-center py-12">
+            <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
+            <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
+            <Link to="/games">
+              <Button className="bg-field-green hover:bg-field-dark">
+                <Plus className="h-4 w-4 mr-2" />
+                Browse Games
+              </Button>
+            </Link>
+          </div>
         </div>
       </Layout>
     );

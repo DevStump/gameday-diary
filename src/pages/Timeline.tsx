@@ -1,6 +1,6 @@
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { useGames } from '@/hooks/useGames';
 import { formatTeamName, getTeamLogo } from '@/utils/teamLogos';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Timeline = () => {
   const { data: gameLogs, isLoading } = useGameLogs();
@@ -47,7 +47,13 @@ const Timeline = () => {
           <div className="text-center py-12">
             <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
-            <p className="text-gray-600 mb-4">Start building your game diary by adding games you've watched or attended.</p>
+            <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
+            <Link to="/games">
+              <Button className="bg-field-green hover:bg-field-dark">
+                <Plus className="h-4 w-4 mr-2" />
+                Browse Games
+              </Button>
+            </Link>
           </div>
         )}
       </div>
