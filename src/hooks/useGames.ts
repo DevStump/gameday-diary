@@ -7,6 +7,8 @@ interface GameFilters {
   league: string;
   season: string;
   playoff: string;
+  startDate: string;
+  endDate: string;
 }
 
 export const useGames = (filters: GameFilters) => {
@@ -30,6 +32,12 @@ export const useGames = (filters: GameFilters) => {
         if (filters.playoff) {
           nflQuery = nflQuery.eq('playoff', filters.playoff === 'true');
         }
+        if (filters.startDate) {
+          nflQuery = nflQuery.gte('date', filters.startDate);
+        }
+        if (filters.endDate) {
+          nflQuery = nflQuery.lte('date', filters.endDate);
+        }
         
         promises.push(nflQuery);
       }
@@ -43,6 +51,12 @@ export const useGames = (filters: GameFilters) => {
         }
         if (filters.playoff) {
           mlbQuery = mlbQuery.eq('playoff', filters.playoff === 'true');
+        }
+        if (filters.startDate) {
+          mlbQuery = mlbQuery.gte('date', filters.startDate);
+        }
+        if (filters.endDate) {
+          mlbQuery = mlbQuery.lte('date', filters.endDate);
         }
         
         promises.push(mlbQuery);
@@ -96,35 +110,12 @@ export const useGames = (filters: GameFilters) => {
 
       console.log('Total games before sorting:', allGames.length);
       
-      // Debug: Log some sample dates to check format
-      if (allGames.length > 0) {
-        console.log('Sample game dates (first 5):');
-        allGames.slice(0, 5).forEach((game, index) => {
-          console.log(`Game ${index + 1}: ${game.date} - ${game.away_team} @ ${game.home_team}`);
-        });
-      }
-      
       // Sort by date (newest first - descending) using string comparison since dates are in YYYY-MM-DD format
       const sortedGames = allGames.sort((a, b) => {
         return b.date.localeCompare(a.date);
       });
       
       console.log('Final games count:', sortedGames.length);
-      console.log('Date range after sorting:');
-      if (sortedGames.length > 0) {
-        console.log('Latest game:', sortedGames[0].date, '-', sortedGames[0].away_team, '@', sortedGames[0].home_team);
-        console.log('Earliest game:', sortedGames[sortedGames.length - 1].date, '-', sortedGames[sortedGames.length - 1].away_team, '@', sortedGames[sortedGames.length - 1].home_team);
-        
-        // Check for May 27, 2025 specifically
-        const may27Games = sortedGames.filter(game => game.date === '2025-05-27');
-        console.log('May 27, 2025 games found:', may27Games.length);
-        if (may27Games.length > 0) {
-          console.log('May 27 games details:');
-          may27Games.forEach((game, index) => {
-            console.log(`  ${index + 1}. ${game.away_team} @ ${game.home_team} (${game.game_id})`);
-          });
-        }
-      }
       
       return sortedGames;
     },

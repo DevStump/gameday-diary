@@ -1,10 +1,15 @@
 
 import React from 'react';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { formatTeamName } from '@/utils/teamLogos';
 
 interface GameFiltersProps {
   filters: {
@@ -12,6 +17,8 @@ interface GameFiltersProps {
     league: string;
     season: string;
     playoff: string;
+    startDate: string;
+    endDate: string;
   };
   onFilterChange: (key: string, value: string) => void;
   onClearFilters: () => void;
@@ -21,6 +28,34 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   const currentYear = new Date().getFullYear();
   const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
+  // Team options for both leagues
+  const nflTeams = [
+    'Cardinals', 'Falcons', 'Ravens', 'Bills', 'Panthers', 'Bears', 'Bengals', 'Browns',
+    'Cowboys', 'Broncos', 'Lions', 'Packers', 'Texans', 'Colts', 'Jaguars', 'Chiefs',
+    'Raiders', 'Chargers', 'Rams', 'Dolphins', 'Vikings', 'Patriots', 'Saints', 'Giants',
+    'Jets', 'Eagles', 'Steelers', '49ers', 'Seahawks', 'Buccaneers', 'Titans', 'Commanders'
+  ];
+
+  const mlbTeams = [
+    'Diamondbacks', 'Braves', 'Orioles', 'Red Sox', 'Cubs', 'White Sox', 'Reds', 'Guardians',
+    'Rockies', 'Tigers', 'Astros', 'Royals', 'Angels', 'Dodgers', 'Marlins', 'Brewers',
+    'Twins', 'Mets', 'Yankees', 'Athletics', 'Phillies', 'Pirates', 'Padres', 'Giants',
+    'Mariners', 'Cardinals', 'Rays', 'Rangers', 'Blue Jays', 'Nationals'
+  ];
+
+  const allTeams = filters.league === 'NFL' ? nflTeams : 
+                  filters.league === 'MLB' ? mlbTeams : 
+                  [...nflTeams, ...mlbTeams].sort();
+
+  const handleDateChange = (date: Date | undefined, type: 'startDate' | 'endDate') => {
+    if (date) {
+      const dateString = format(date, 'yyyy-MM-dd');
+      onFilterChange(type, dateString);
+    } else {
+      onFilterChange(type, '');
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
@@ -42,18 +77,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search teams..."
-            value={filters.search}
-            onChange={(e) => onFilterChange('search', e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
@@ -63,6 +87,21 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
             <SelectItem value="all">All Leagues</SelectItem>
             <SelectItem value="NFL">NFL</SelectItem>
             <SelectItem value="MLB">MLB</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Teams Dropdown */}
+        <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="All Teams" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Teams</SelectItem>
+            {allTeams.map((team) => (
+              <SelectItem key={team} value={team}>
+                {team}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -92,6 +131,56 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
             <SelectItem value="false">Regular Season</SelectItem>
           </SelectContent>
         </Select>
+
+        {/* Start Date */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left font-normal",
+                !filters.startDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {filters.startDate ? format(new Date(filters.startDate), "MMM dd, yyyy") : "Start Date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={filters.startDate ? new Date(filters.startDate) : undefined}
+              onSelect={(date) => handleDateChange(date, 'startDate')}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+
+        {/* End Date */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left font-normal",
+                !filters.endDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {filters.endDate ? format(new Date(filters.endDate), "MMM dd, yyyy") : "End Date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={filters.endDate ? new Date(filters.endDate) : undefined}
+              onSelect={(date) => handleDateChange(date, 'endDate')}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Active Filters */}
@@ -99,7 +188,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         <div className="flex flex-wrap gap-2">
           {filters.search && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>Search: "{filters.search}"</span>
+              <span>Team: {filters.search}</span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('search', '')}
@@ -130,6 +219,24 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('playoff', '')}
+              />
+            </Badge>
+          )}
+          {filters.startDate && (
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <span>From: {format(new Date(filters.startDate), "MMM dd, yyyy")}</span>
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-red-600"
+                onClick={() => onFilterChange('startDate', '')}
+              />
+            </Badge>
+          )}
+          {filters.endDate && (
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <span>To: {format(new Date(filters.endDate), "MMM dd, yyyy")}</span>
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-red-600"
+                onClick={() => onFilterChange('endDate', '')}
               />
             </Badge>
           )}

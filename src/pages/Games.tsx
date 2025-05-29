@@ -13,12 +13,17 @@ const Games = () => {
     search: '',
     league: '',
     season: '',
-    playoff: ''
+    playoff: '',
+    startDate: '',
+    endDate: ''
   });
   const [selectedGame, setSelectedGame] = useState<{ id: string; title: string } | null>(null);
 
   const { user } = useAuth();
   const { data: games = [], isLoading: loading } = useGames(filters);
+
+  // Limit to 50 games
+  const displayedGames = games.slice(0, 50);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -32,7 +37,9 @@ const Games = () => {
       search: '',
       league: '',
       season: '',
-      playoff: ''
+      playoff: '',
+      startDate: '',
+      endDate: ''
     });
   };
 
@@ -84,13 +91,13 @@ const Games = () => {
           <>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">
-                {games.length} Games Found
+                {displayedGames.length} Games Displayed {games.length > 50 && `(${games.length} total found)`}
               </h2>
             </div>
 
-            {games.length > 0 ? (
+            {displayedGames.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {games.map((game, index) => (
+                {displayedGames.map((game, index) => (
                   <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                     <GameCard
                       game={game}
