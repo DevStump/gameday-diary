@@ -7,7 +7,7 @@ import GameLogModal from '@/components/GameLogModal';
 import { Loader2, Trophy } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Games = () => {
   const [filters, setFilters] = useState({
@@ -28,6 +28,7 @@ const Games = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: games = [], isLoading: loading } = useGames(filters);
 
   // Limit to 50 games
@@ -54,13 +55,14 @@ const Games = () => {
   const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
     if (!user) {
       // Store current URL with filters
-      const currentUrl = new URL(window.location);
+      const currentUrl = window.location.origin + location.pathname + location.search;
       Object.entries(filters).forEach(([key, value]) => {
         if (value) {
-          currentUrl.searchParams.set(key, value);
+          const url = new URL(currentUrl);
+          url.searchParams.set(key, value);
         }
       });
-      localStorage.setItem('redirectUrl', currentUrl.pathname + currentUrl.search);
+      localStorage.setItem('redirectUrl', location.pathname + location.search);
       navigate('/auth');
       return;
     }

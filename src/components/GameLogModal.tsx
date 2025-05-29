@@ -68,6 +68,9 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
     }
   };
 
+  // Ensure league is properly typed for formatTeamName
+  const leagueType = league.toUpperCase() as 'NFL' | 'MLB';
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -107,8 +110,8 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">No preference</SelectItem>
-                <SelectItem value={awayTeam}>{formatTeamName(awayTeam, league)}</SelectItem>
-                <SelectItem value={homeTeam}>{formatTeamName(homeTeam, league)}</SelectItem>
+                <SelectItem value={awayTeam}>{formatTeamName(awayTeam, leagueType)}</SelectItem>
+                <SelectItem value={homeTeam}>{formatTeamName(homeTeam, leagueType)}</SelectItem>
               </SelectContent>
             </Select>
           </div>
