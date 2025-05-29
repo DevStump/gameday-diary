@@ -17,7 +17,7 @@ const Timeline = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">Loading your game timeline...</div>
         </div>
       </Layout>
@@ -26,7 +26,7 @@ const Timeline = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
@@ -35,8 +35,8 @@ const Timeline = () => {
           </p>
         </div>
 
-        {/* Timeline */}
-        <div className="space-y-6">
+        {/* Timeline - 2 Column Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {gameLogs?.map((log, index) => (
             <GameLogEntry key={log.id} log={log} index={index} />
           ))}
@@ -129,7 +129,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     ));
   };
 
-  // Calculate if rooted team won
+  // Calculate if rooted team won and get the score
   const getRootedTeamResult = () => {
     if (!log.rooted_for || log.rooted_for === 'none' || !game?.result) {
       return null;
@@ -140,13 +140,19 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
       (log.rooted_for === game.home_team && homeScore > awayScore) ||
       (log.rooted_for === game.away_team && awayScore > homeScore);
     
-    return rootedTeamWon ? 'Won' : 'Lost';
+    const rootedTeamScore = log.rooted_for === game.home_team ? homeScore : awayScore;
+    const opponentScore = log.rooted_for === game.home_team ? awayScore : homeScore;
+    
+    return {
+      result: rootedTeamWon ? 'Won' : 'Lost',
+      score: `${rootedTeamScore}-${opponentScore}`
+    };
   };
 
   if (!game || !league) {
     return (
       <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-        <CardContent className="p-6">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
             <Badge variant="outline">Loading...</Badge>
             <div className="text-sm text-gray-500">
@@ -164,130 +170,128 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   return (
     <>
       <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-        <CardContent className="p-6">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
-            {/* Game Info */}
-            <div className="flex-1 mb-4 lg:mb-0">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Badge variant={league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
-                    {league}
-                  </Badge>
-                  {game.playoff && (
-                    <Badge variant="outline" className="border-sports-gold text-sports-gold">
-                      Playoff
-                    </Badge>
-                  )}
-                  <Badge variant={log.mode === 'attended' ? 'default' : 'secondary'}>
-                    {log.mode === 'attended' ? 'Attended' : 'Watched'}
-                  </Badge>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowEditModal(true)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowDeleteModal(true)}
-                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4 mb-2">
-                <div className="flex items-center space-x-2">
-                  <img 
-                    src={getTeamLogo(game.away_team, league)} 
-                    alt={game.away_team}
-                    className="h-8 w-8 object-contain"
-                  />
-                  <span className="font-medium text-gray-900">{formatTeamName(game.away_team, league)}</span>
-                </div>
-                
-                <span className="text-gray-500 font-medium">@</span>
-                
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium text-gray-900">{formatTeamName(game.home_team, league)}</span>
-                  <img 
-                    src={getTeamLogo(game.home_team, league)} 
-                    alt={game.home_team}
-                    className="h-8 w-8 object-contain"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  {formatDate(game.date)}
-                </div>
-                {game.result && (
-                  <div className="text-lg font-bold text-field-green">
-                    {game.result}
-                  </div>
-                )}
-              </div>
-
-              {/* Rating */}
-              {log.rating && (
-                <div className="flex items-center space-x-2 mb-3">
-                  <span className="text-sm font-medium text-gray-700">Rating:</span>
-                  <div className="flex">
-                    {renderStars(log.rating)}
-                  </div>
-                </div>
+        <CardContent className="p-4">
+          {/* Top Row - Badges and Action Buttons */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-2">
+              <Badge variant={league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+                {league}
+              </Badge>
+              {game.playoff && (
+                <Badge variant="outline" className="border-sports-gold text-sports-gold">
+                  Playoff
+                </Badge>
               )}
+              <Badge variant={log.mode === 'attended' ? 'default' : 'secondary'}>
+                {log.mode === 'attended' ? 'Attended' : 'Watched'}
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowEditModal(true)}
+                className="h-8 w-8 p-0"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDeleteModal(true)}
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Teams and Score */}
+          <div className="text-center mb-3">
+            <div className="flex items-center justify-center space-x-3 mb-2">
+              <div className="flex items-center space-x-2">
+                <img 
+                  src={getTeamLogo(game.away_team, league)} 
+                  alt={game.away_team}
+                  className="h-8 w-8 object-contain"
+                />
+                <span className="font-medium text-gray-900 text-sm">{formatTeamName(game.away_team, league)}</span>
+              </div>
+              
+              <span className="text-gray-500 font-medium">@</span>
+              
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-gray-900 text-sm">{formatTeamName(game.home_team, league)}</span>
+                <img 
+                  src={getTeamLogo(game.home_team, league)} 
+                  alt={game.home_team}
+                  className="h-8 w-8 object-contain"
+                />
+              </div>
             </div>
 
-            {/* Log Details */}
-            <div className="lg:w-1/3 space-y-3">
-              {log.company && (
-                <div className="flex items-center space-x-2 text-sm">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700">{log.company}</span>
-                </div>
-              )}
-
-              {log.rooted_for && log.rooted_for !== 'none' && (
-                <div className="flex items-center space-x-2 text-sm">
-                  <Heart className="h-4 w-4 text-red-500" />
-                  <div className="flex items-center space-x-2">
-                    <img 
-                      src={getTeamLogo(log.rooted_for, league)} 
-                      alt={log.rooted_for}
-                      className="h-4 w-4 object-contain"
-                    />
-                    <span className="text-gray-700">
-                      Rooted for {formatTeamName(log.rooted_for, league)}
-                      {rootedResult && (
-                        <span className={`ml-2 font-semibold ${
-                          rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          ({rootedResult})
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {log.notes && (
-                <div className="bg-gray-50 p-3 rounded-md">
-                  <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
-                </div>
-              )}
-
-              <div className="text-xs text-gray-500 border-t pt-2">
-                Added: {formatDate(log.created_at)}
+            {game.result && (
+              <div className="text-xl font-bold text-field-green mb-2">
+                {game.result}
               </div>
+            )}
+
+            <div className="flex items-center justify-center text-sm text-gray-600">
+              <Calendar className="h-4 w-4 mr-1" />
+              {formatDate(game.date)}
+            </div>
+          </div>
+
+          {/* Log Details */}
+          <div className="space-y-2">
+            {log.company && (
+              <div className="flex items-center space-x-2 text-sm">
+                <Users className="h-4 w-4 text-gray-500" />
+                <span className="text-gray-700">{log.company}</span>
+              </div>
+            )}
+
+            {log.rooted_for && log.rooted_for !== 'none' && (
+              <div className="flex items-center space-x-2 text-sm">
+                <Heart className="h-4 w-4 text-red-500" />
+                <div className="flex items-center space-x-2">
+                  <img 
+                    src={getTeamLogo(log.rooted_for, league)} 
+                    alt={log.rooted_for}
+                    className="h-4 w-4 object-contain"
+                  />
+                  <span className="text-gray-700">
+                    Rooted for {formatTeamName(log.rooted_for, league)}
+                    {rootedResult && (
+                      <span className={`ml-2 font-semibold ${
+                        rootedResult.result === 'Won' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        ({rootedResult.result} {rootedResult.score})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Rating */}
+            {log.rating && (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-700">Rating:</span>
+                <div className="flex">
+                  {renderStars(log.rating)}
+                </div>
+              </div>
+            )}
+
+            {log.notes && (
+              <div className="bg-gray-50 p-3 rounded-md">
+                <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
+              </div>
+            )}
+
+            <div className="text-xs text-gray-500 border-t pt-2">
+              Added: {formatDate(log.created_at)}
             </div>
           </div>
         </CardContent>
