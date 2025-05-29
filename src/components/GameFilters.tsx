@@ -27,8 +27,9 @@ interface GameFiltersProps {
 
 const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersProps) => {
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
-  const currentYear = new Date().getFullYear();
-  const seasons = Array.from({ length: 5 }, (_, i) => currentYear - i);
+  
+  // Only show 2024 and 2025 seasons
+  const seasons = [2025, 2024];
 
   // Team abbreviations for both leagues (sorted alphabetically)
   const nflTeams = [
@@ -47,10 +48,26 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
 
   const handleDateChange = (date: Date | undefined, type: 'startDate' | 'endDate') => {
     if (date) {
-      const dateString = format(date, 'yyyy-MM-dd');
+      // Format as YYYY-MM-DD to match database format (no timezone)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateString = `${year}-${month}-${day}`;
       onFilterChange(type, dateString);
     } else {
       onFilterChange(type, '');
+    }
+  };
+
+  // Helper function to parse date string safely
+  const parseDate = (dateString: string): Date | undefined => {
+    if (!dateString) return undefined;
+    try {
+      // Parse YYYY-MM-DD format directly
+      const [year, month, day] = dateString.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    } catch {
+      return undefined;
     }
   };
 
@@ -158,13 +175,13 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.startDate ? format(new Date(filters.startDate), "MMM dd, yyyy") : "Start Date"}
+              {filters.startDate ? format(parseDate(filters.startDate) || new Date(), "MMM dd, yyyy") : "Start Date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={filters.startDate ? new Date(filters.startDate) : undefined}
+              selected={parseDate(filters.startDate)}
               onSelect={(date) => handleDateChange(date, 'startDate')}
               initialFocus
               className="pointer-events-auto"
@@ -183,13 +200,13 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.endDate ? format(new Date(filters.endDate), "MMM dd, yyyy") : "End Date"}
+              {filters.endDate ? format(parseDate(filters.endDate) || new Date(), "MMM dd, yyyy") : "End Date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={filters.endDate ? new Date(filters.endDate) : undefined}
+              selected={parseDate(filters.endDate)}
               onSelect={(date) => handleDateChange(date, 'endDate')}
               initialFocus
               className="pointer-events-auto"
@@ -239,7 +256,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           )}
           {filters.startDate && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>From: {format(new Date(filters.startDate), "MMM dd, yyyy")}</span>
+              <span>From: {format(parseDate(filters.startDate) || new Date(), "MMM dd, yyyy")}</span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('startDate', '')}
@@ -248,7 +265,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           )}
           {filters.endDate && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>To: {format(new Date(filters.endDate), "MMM dd, yyyy")}</span>
+              <span>To: {format(parseDate(filters.endDate) || new Date(), "MMM dd, yyyy")}</span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('endDate', '')}
