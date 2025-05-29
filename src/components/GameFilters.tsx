@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -71,26 +72,19 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
   };
 
   // Helper function to get the display text for selected team
-  const getSelectedTeamDisplay = (selectedTeam: string, leagueFilter: string): string => {
+  const getSelectedTeamDisplay = (selectedTeam: string): string => {
     if (!selectedTeam || selectedTeam === 'all') {
       return 'All Teams';
     }
 
-    // Try NFL first if no league filter or NFL is selected
-    if (!leagueFilter || leagueFilter === 'NFL') {
-      if (nflTeams.includes(selectedTeam)) {
-        return `${selectedTeam} - ${formatTeamName(selectedTeam, 'NFL')}`;
-      }
+    // Handle new format: "ATL:NFL" or "ATL:MLB"
+    if (selectedTeam.includes(':')) {
+      const [teamAbbr, league] = selectedTeam.split(':');
+      const teamName = formatTeamName(teamAbbr, league as 'NFL' | 'MLB');
+      return `${teamAbbr} - ${teamName}`;
     }
 
-    // Try MLB if no league filter or MLB is selected
-    if (!leagueFilter || leagueFilter === 'MLB') {
-      if (mlbTeams.includes(selectedTeam)) {
-        return `${selectedTeam} - ${formatTeamName(selectedTeam, 'MLB')}`;
-      }
-    }
-
-    // Fallback - try both leagues
+    // Legacy format handling (fallback)
     const nflName = formatTeamName(selectedTeam, 'NFL');
     const mlbName = formatTeamName(selectedTeam, 'MLB');
     
@@ -100,6 +94,16 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
       return `${selectedTeam} - ${mlbName}`;
     }
 
+    return selectedTeam;
+  };
+
+  // Helper function to get display text for active filter badge
+  const getTeamBadgeText = (selectedTeam: string): string => {
+    if (selectedTeam.includes(':')) {
+      const [teamAbbr, league] = selectedTeam.split(':');
+      const teamName = formatTeamName(teamAbbr, league as 'NFL' | 'MLB');
+      return `${teamAbbr} - ${teamName}`;
+    }
     return selectedTeam;
   };
 
@@ -140,7 +144,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <span className="text-sm">
-              {getSelectedTeamDisplay(filters.search, filters.league)}
+              {getSelectedTeamDisplay(filters.search)}
             </span>
           </SelectTrigger>
           <SelectContent>
@@ -150,7 +154,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
                 <SelectGroup>
                   <SelectLabel>NFL Teams</SelectLabel>
                   {nflTeams.map((team) => (
-                    <SelectItem key={`nfl-${team}`} value={team}>
+                    <SelectItem key={`nfl-${team}`} value={`${team}:NFL`}>
                       {team} - {formatTeamName(team, 'NFL')}
                     </SelectItem>
                   ))}
@@ -162,7 +166,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               <SelectGroup>
                 <SelectLabel>MLB Teams</SelectLabel>
                 {mlbTeams.map((team) => (
-                  <SelectItem key={`mlb-${team}`} value={team}>
+                  <SelectItem key={`mlb-${team}`} value={`${team}:MLB`}>
                     {team} - {formatTeamName(team, 'MLB')}
                   </SelectItem>
                 ))}
@@ -254,7 +258,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         <div className="flex flex-wrap gap-2">
           {filters.search && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>Team: {filters.search}</span>
+              <span>Team: {getTeamBadgeText(filters.search)}</span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('search', '')}

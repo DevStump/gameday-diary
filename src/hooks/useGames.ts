@@ -1,7 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { formatTeamName } from '@/utils/teamLogos';
 
 interface GameFilters {
   search: string;
@@ -20,21 +19,38 @@ export const useGames = (filters: GameFilters) => {
       
       const promises = [];
       
+      // Parse the search filter to extract team abbreviation and league
+      let searchTeam = '';
+      let searchLeague = '';
+      
+      if (filters.search) {
+        if (filters.search.includes(':')) {
+          // New format: "ATL:NFL" or "ATL:MLB"
+          const [team, league] = filters.search.split(':');
+          searchTeam = team;
+          searchLeague = league;
+        } else {
+          // Legacy format: just "ATL"
+          searchTeam = filters.search;
+        }
+      }
+      
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
         
-        if (filters.search) {
-          // Convert abbreviation to team name for NFL
-          const nflTeamName = formatTeamName(filters.search, 'NFL');
-          if (nflTeamName !== 'Unknown Team') {
-            // Search by team name in home_team or away_team columns
-            nflQuery = nflQuery.or(`home_team.ilike.%${nflTeamName}%,away_team.ilike.%${nflTeamName}%`);
+        if (searchTeam) {
+          // Only filter NFL games if no league specified in search or NFL specified
+          if (!searchLeague || searchLeague === 'NFL') {
+            // NFL stores team abbreviations in lowercase
+            const nflTeamCode = searchTeam.toLowerCase();
+            nflQuery = nflQuery.or(`home_team.eq.${nflTeamCode},away_team.eq.${nflTeamCode}`);
           } else {
-            // If it's not a valid NFL team, don't return any NFL games
+            // If search is for MLB team specifically, don't return NFL games
             nflQuery = nflQuery.limit(0);
           }
         }
+        
         if (filters.season) {
           nflQuery = nflQuery.eq('season', parseInt(filters.season));
         }
@@ -55,17 +71,18 @@ export const useGames = (filters: GameFilters) => {
       if (!filters.league || filters.league === 'MLB') {
         let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
         
-        if (filters.search) {
-          // Convert abbreviation to team name for MLB
-          const mlbTeamName = formatTeamName(filters.search, 'MLB');
-          if (mlbTeamName !== 'Unknown Team') {
-            // Search by team name in home_team or away_team columns
-            mlbQuery = mlbQuery.or(`home_team.ilike.%${mlbTeamName}%,away_team.ilike.%${mlbTeamName}%`);
+        if (searchTeam) {
+          // Only filter MLB games if no league specified in search or MLB specified
+          if (!searchLeague || searchLeague === 'MLB') {
+            // MLB stores team abbreviations in uppercase
+            const mlbTeamCode = searchTeam.toUpperCase();
+            mlbQuery = mlbQuery.or(`home_team.eq.${mlbTeamCode},away_team.eq.${mlbTeamCode}`);
           } else {
-            // If it's not a valid MLB team, don't return any MLB games
+            // If search is for NFL team specifically, don't return MLB games
             mlbQuery = mlbQuery.limit(0);
           }
         }
+        
         if (filters.season) {
           // For MLB, filter by year from date since there's no season column
           const year = parseInt(filters.season);
