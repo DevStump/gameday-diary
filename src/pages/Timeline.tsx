@@ -1,6 +1,7 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { useGames } from '@/hooks/useGames';
 import { formatTeamName, getTeamLogo } from '@/utils/teamLogos';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
+import { useNavigate } from 'react-router-dom';
 
 const Timeline = () => {
   const { data: gameLogs, isLoading } = useGameLogs();
@@ -57,6 +59,7 @@ const Timeline = () => {
 const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const navigate = useNavigate();
   
   // Fetch both NFL and MLB games to determine which league the game belongs to
   const { data: nflGames } = useGames({
@@ -153,16 +156,18 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     };
   };
 
-  // Get the game score regardless of rooting preference
+  // Get the game score regardless of rooting preference (away - home format)
   const getGameScore = () => {
     if (!game) return null;
 
     let awayScore, homeScore;
 
     if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
+      // For NFL: pts_off is away team score, pts_def is home team score
       awayScore = game.pts_off;
       homeScore = game.pts_def;
     } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
+      // For MLB: runs_scored is home team score, runs_allowed is away team score
       awayScore = game.runs_allowed;
       homeScore = game.runs_scored;
     }
@@ -170,6 +175,10 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     if (awayScore === undefined || homeScore === undefined) return null;
 
     return `${awayScore} - ${homeScore}`;
+  };
+
+  const handleViewBoxscore = () => {
+    navigate(`/games/${game.game_id}?league=${league}`);
   };
 
   if (!game || !league) {
@@ -260,10 +269,21 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             )}
             
-            <div className="flex items-center justify-center text-sm text-gray-600">
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
               <Calendar className="h-4 w-4 mr-1" />
               {formatDate(game.date)}
             </div>
+
+            {/* View Boxscore Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleViewBoxscore}
+              className="text-xs"
+            >
+              <Eye className="h-3 w-3 mr-1" />
+              View Boxscore
+            </Button>
           </div>
 
           {/* Log Details */}
