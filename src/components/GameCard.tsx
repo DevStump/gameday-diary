@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, MapPin, Plus, Eye } from 'lucide-react';
+import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -49,59 +49,55 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200 animate-fade-in">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center space-x-2">
-            <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
-              {game.league}
-            </Badge>
-            {game.playoff && (
-              <Badge variant="outline" className="border-sports-gold text-sports-gold">
-                Playoff
+      <Link 
+        to={`/game/${game.league.toLowerCase()}/${game.game_id}`}
+        className="block"
+      >
+        <CardContent className="p-6 cursor-pointer">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center space-x-2">
+              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+                {game.league}
               </Badge>
-            )}
-          </div>
-          <div className="text-right">
-            <div className="flex items-center text-sm text-gray-600 mb-1">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatDate(game.date)}
+              {game.playoff && (
+                <Badge variant="outline" className="border-sports-gold text-sports-gold">
+                  Playoff
+                </Badge>
+              )}
             </div>
-            {game.venue && (
-              <div className="flex items-center text-sm text-gray-600">
-                <MapPin className="h-4 w-4 mr-1" />
-                {game.venue}
+            <div className="text-right">
+              <div className="flex items-center text-sm text-gray-600 mb-1">
+                <Calendar className="h-4 w-4 mr-1" />
+                {formatDate(game.date)}
+              </div>
+              {game.venue && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {game.venue}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="text-center mb-4">
+            <div className="text-lg font-semibold text-gray-900 mb-2">
+              {game.away_team} @ {game.home_team}
+            </div>
+            {score && (
+              <div className="text-2xl font-bold text-field-green">
+                {score}
               </div>
             )}
           </div>
-        </div>
+        </CardContent>
+      </Link>
 
-        <div className="text-center mb-4">
-          <div className="text-lg font-semibold text-gray-900 mb-2">
-            {game.away_team} @ {game.home_team}
-          </div>
-          {score && (
-            <div className="text-2xl font-bold text-field-green">
-              {score}
-            </div>
-          )}
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-6 pt-0 space-y-2">
+      <CardFooter className="p-6 pt-0">
         <Button
-          asChild
-          variant="outline"
-          className="w-full border-field-green text-field-green hover:bg-field-green hover:text-white"
-          size="sm"
-        >
-          <Link to={`/game/${game.league.toLowerCase()}/${game.game_id}`}>
-            <Eye className="h-4 w-4 mr-2" />
-            View Details
-          </Link>
-        </Button>
-        
-        <Button
-          onClick={() => onAddToDiary(game.game_id)}
+          onClick={(e) => {
+            e.preventDefault();
+            onAddToDiary(game.game_id);
+          }}
           className="w-full bg-field-green hover:bg-field-dark transition-colors"
           size="sm"
         >

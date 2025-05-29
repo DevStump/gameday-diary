@@ -35,7 +35,6 @@ const GameDetail = () => {
       navigate('/auth');
       return;
     }
-    // This will be handled by the existing modal system
     console.log('Add to diary clicked for game:', gameId);
   };
 
@@ -71,11 +70,17 @@ const GameDetail = () => {
   }
 
   const getScore = () => {
-    if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      return { home: game.pts_def, away: game.pts_off };
+    if (game.league === 'NFL') {
+      const nflGame = game as any;
+      if (nflGame.pts_off !== undefined && nflGame.pts_def !== undefined) {
+        return { home: nflGame.pts_def, away: nflGame.pts_off };
+      }
     }
-    if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      return { home: game.runs_allowed, away: game.runs_scored };
+    if (game.league === 'MLB') {
+      const mlbGame = game as any;
+      if (mlbGame.runs_scored !== undefined && mlbGame.runs_allowed !== undefined) {
+        return { home: mlbGame.runs_allowed, away: mlbGame.runs_scored };
+      }
     }
     return null;
   };
@@ -100,7 +105,7 @@ const GameDetail = () => {
             <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
               {game.league}
             </Badge>
-            {game.playoff && (
+            {(game as any).playoff && (
               <Badge variant="outline" className="border-sports-gold text-sports-gold">
                 Playoff Game
               </Badge>
@@ -155,33 +160,33 @@ const GameDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {game.yards_off && (
+                {(game as any).yards_off && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Total Yards</span>
-                    <span className="font-semibold">{game.yards_off}</span>
+                    <span className="font-semibold">{(game as any).yards_off}</span>
                   </div>
                 )}
-                {game.pass_yds_off && (
+                {(game as any).pass_yds_off && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Passing Yards</span>
-                    <span className="font-semibold">{game.pass_yds_off}</span>
+                    <span className="font-semibold">{(game as any).pass_yds_off}</span>
                   </div>
                 )}
-                {game.rush_yds_off && (
+                {(game as any).rush_yds_off && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Rushing Yards</span>
-                    <span className="font-semibold">{game.rush_yds_off}</span>
+                    <span className="font-semibold">{(game as any).rush_yds_off}</span>
                   </div>
                 )}
-                {game.first_down_off && (
+                {(game as any).first_down_off && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">First Downs</span>
-                    <span className="font-semibold">{game.first_down_off}</span>
+                    <span className="font-semibold">{(game as any).first_down_off}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Turnovers</span>
-                  <span className="font-semibold">{game.to_off || 0}</span>
+                  <span className="font-semibold">{(game as any).to_off || 0}</span>
                 </div>
               </CardContent>
             </Card>
@@ -194,33 +199,33 @@ const GameDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {game.yards_def && (
+                {(game as any).yards_def && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Yards Allowed</span>
-                    <span className="font-semibold">{game.yards_def}</span>
+                    <span className="font-semibold">{(game as any).yards_def}</span>
                   </div>
                 )}
-                {game.pass_yds_def && (
+                {(game as any).pass_yds_def && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Pass Yards Allowed</span>
-                    <span className="font-semibold">{game.pass_yds_def}</span>
+                    <span className="font-semibold">{(game as any).pass_yds_def}</span>
                   </div>
                 )}
-                {game.rush_yds_def && (
+                {(game as any).rush_yds_def && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Rush Yards Allowed</span>
-                    <span className="font-semibold">{game.rush_yds_def}</span>
+                    <span className="font-semibold">{(game as any).rush_yds_def}</span>
                   </div>
                 )}
-                {game.first_down_def && (
+                {(game as any).first_down_def && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">First Downs Allowed</span>
-                    <span className="font-semibold">{game.first_down_def}</span>
+                    <span className="font-semibold">{(game as any).first_down_def}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Turnovers Forced</span>
-                  <span className="font-semibold">{game.to_def || 0}</span>
+                  <span className="font-semibold">{(game as any).to_def || 0}</span>
                 </div>
               </CardContent>
             </Card>
@@ -234,43 +239,43 @@ const GameDetail = () => {
               <CardTitle>Game Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {game.innings && (
+              {(game as any).innings && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Innings</span>
-                  <span className="font-semibold">{game.innings}</span>
+                  <span className="font-semibold">{(game as any).innings}</span>
                 </div>
               )}
-              {game.winning_pitcher && (
+              {(game as any).winning_pitcher && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Winning Pitcher</span>
-                  <span className="font-semibold">{game.winning_pitcher}</span>
+                  <span className="font-semibold">{(game as any).winning_pitcher}</span>
                 </div>
               )}
-              {game.losing_pitcher && (
+              {(game as any).losing_pitcher && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Losing Pitcher</span>
-                  <span className="font-semibold">{game.losing_pitcher}</span>
+                  <span className="font-semibold">{(game as any).losing_pitcher}</span>
                 </div>
               )}
-              {game.saving_pitcher && (
+              {(game as any).saving_pitcher && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Save</span>
-                  <span className="font-semibold">{game.saving_pitcher}</span>
+                  <span className="font-semibold">{(game as any).saving_pitcher}</span>
                 </div>
               )}
-              {game.attendance && (
+              {(game as any).attendance && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Attendance</span>
-                  <span className="font-semibold">{game.attendance.toLocaleString()}</span>
+                  <span className="font-semibold">{(game as any).attendance.toLocaleString()}</span>
                 </div>
               )}
-              {game.time_of_game && (
+              {(game as any).time_of_game && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Game Time</span>
-                  <span className="font-semibold">{Math.floor(game.time_of_game / 60)}:{(game.time_of_game % 60).toString().padStart(2, '0')}</span>
+                  <span className="font-semibold">{Math.floor((game as any).time_of_game / 60)}:{((game as any).time_of_game % 60).toString().padStart(2, '0')}</span>
                 </div>
               )}
-              {game.walkoff && (
+              {(game as any).walkoff && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Walk-off</span>
                   <Badge variant="outline" className="border-sports-gold text-sports-gold">Yes</Badge>
@@ -286,35 +291,35 @@ const GameDetail = () => {
             <CardTitle>Additional Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {game.season && (
+            {(game as any).season && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Season</span>
-                <span className="font-semibold">{game.season}</span>
+                <span className="font-semibold">{(game as any).season}</span>
               </div>
             )}
-            {game.week && (
+            {(game as any).week && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Week</span>
-                <span className="font-semibold">{game.week}</span>
+                <span className="font-semibold">{(game as any).week}</span>
               </div>
             )}
-            {game.overtime && (
+            {(game as any).overtime && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Overtime</span>
-                <span className="font-semibold">{game.overtime}</span>
+                <span className="font-semibold">{(game as any).overtime}</span>
               </div>
             )}
-            {game.result && (
+            {(game as any).result && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Result</span>
-                <span className="font-semibold">{game.result}</span>
+                <span className="font-semibold">{(game as any).result}</span>
               </div>
             )}
-            {game.boxscore_url && (
+            {(game as any).boxscore_url && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Boxscore</span>
                 <a 
-                  href={game.boxscore_url} 
+                  href={(game as any).boxscore_url} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-field-green hover:underline font-semibold"
