@@ -27,7 +27,7 @@ const Diary = () => {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
