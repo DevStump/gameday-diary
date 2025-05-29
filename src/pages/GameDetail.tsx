@@ -224,30 +224,30 @@ const GameDetail = () => {
               <CardContent className="space-y-3">
                 {(game as any).yards_def && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Yards Allowed</span>
+                    <span className="text-gray-600">Total Yards</span>
                     <span className="font-semibold">{(game as any).yards_def}</span>
                   </div>
                 )}
                 {(game as any).pass_yds_def && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Pass Yards Allowed</span>
+                    <span className="text-gray-600">Passing Yards</span>
                     <span className="font-semibold">{(game as any).pass_yds_def}</span>
                   </div>
                 )}
                 {(game as any).rush_yds_def && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Rush Yards Allowed</span>
+                    <span className="text-gray-600">Rushing Yards</span>
                     <span className="font-semibold">{(game as any).rush_yds_def}</span>
                   </div>
                 )}
                 {(game as any).first_down_def && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">First Downs Allowed</span>
+                    <span className="text-gray-600">First Downs</span>
                     <span className="font-semibold">{(game as any).first_down_def}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Turnovers Forced</span>
+                  <span className="text-gray-600">Turnovers</span>
                   <span className="font-semibold">{(game as any).to_def || 0}</span>
                 </div>
               </CardContent>
