@@ -1,12 +1,14 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, MapPin, Star, Users, Heart } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useGames } from '@/hooks/useGames';
 import { formatTeamName } from '@/utils/teamLogos';
+import EditGameLogModal from '@/components/EditGameLogModal';
+import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 
 const Timeline = () => {
   const { data: gameLogs, isLoading } = useGameLogs();
@@ -53,6 +55,9 @@ const Timeline = () => {
 };
 
 const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
+  const [showEditModal, setShowEditModal] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  
   // Fetch both NFL and MLB games to determine which league the game belongs to
   const { data: nflGames } = useGames({
     search: '',
@@ -156,95 +161,137 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   const rootedResult = getRootedTeamResult();
 
   return (
-    <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-      <CardContent className="p-6">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
-          {/* Game Info */}
-          <div className="flex-1 mb-4 lg:mb-0">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <Badge variant={league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
-                  {league}
-                </Badge>
-                {game.playoff && (
-                  <Badge variant="outline" className="border-sports-gold text-sports-gold">
-                    Playoff
+    <>
+      <Card className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+        <CardContent className="p-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
+            {/* Game Info */}
+            <div className="flex-1 mb-4 lg:mb-0">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <Badge variant={league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+                    {league}
                   </Badge>
+                  {game.playoff && (
+                    <Badge variant="outline" className="border-sports-gold text-sports-gold">
+                      Playoff
+                    </Badge>
+                  )}
+                  <Badge variant={log.mode === 'attended' ? 'default' : 'secondary'}>
+                    {log.mode === 'attended' ? 'Attended' : 'Watched'}
+                  </Badge>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowEditModal(true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDeleteModal(true)}
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  <div className="text-sm text-gray-500">
+                    Added {formatTime(log.created_at)} on {formatDate(log.created_at)}
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {formatTeamName(game.away_team, league)} @ {formatTeamName(game.home_team, league)}
+              </h3>
+
+              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  {formatDate(game.date)}
+                </div>
+                {game.result && (
+                  <div className="text-lg font-bold text-field-green">
+                    {game.result}
+                  </div>
                 )}
-                <Badge variant={log.mode === 'attended' ? 'default' : 'secondary'}>
-                  {log.mode === 'attended' ? 'Attended' : 'Watched'}
-                </Badge>
               </div>
-              <div className="text-sm text-gray-500">
-                Added {formatTime(log.created_at)} on {formatDate(log.created_at)}
-              </div>
-            </div>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {formatTeamName(game.away_team, league)} @ {formatTeamName(game.home_team, league)}
-            </h3>
-
-            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formatDate(game.date)}
-              </div>
-              {game.result && (
-                <div className="text-lg font-bold text-field-green">
-                  {game.result}
+              {/* Rating */}
+              {log.rating && (
+                <div className="flex items-center space-x-2 mb-3">
+                  <span className="text-sm font-medium text-gray-700">Rating:</span>
+                  <div className="flex">
+                    {renderStars(log.rating)}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Rating */}
-            {log.rating && (
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="text-sm font-medium text-gray-700">Rating:</span>
-                <div className="flex">
-                  {renderStars(log.rating)}
+            {/* Log Details */}
+            <div className="lg:w-1/3 space-y-3">
+              {log.company && (
+                <div className="flex items-center space-x-2 text-sm">
+                  <Users className="h-4 w-4 text-gray-500" />
+                  <span className="text-gray-700">{log.company}</span>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Log Details */}
-          <div className="lg:w-1/3 space-y-3">
-            {log.company && (
-              <div className="flex items-center space-x-2 text-sm">
-                <Users className="h-4 w-4 text-gray-500" />
-                <span className="text-gray-700">{log.company}</span>
-              </div>
-            )}
+              {log.rooted_for && log.rooted_for !== 'none' && (
+                <div className="flex items-center space-x-2 text-sm">
+                  <Heart className="h-4 w-4 text-red-500" />
+                  <span className="text-gray-700">
+                    Rooted for {formatTeamName(log.rooted_for, league)}
+                    {rootedResult && (
+                      <span className={`ml-2 font-semibold ${
+                        rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        ({rootedResult})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
 
-            {log.rooted_for && log.rooted_for !== 'none' && (
-              <div className="flex items-center space-x-2 text-sm">
-                <Heart className="h-4 w-4 text-red-500" />
-                <span className="text-gray-700">
-                  Rooted for {formatTeamName(log.rooted_for, league)}
-                  {rootedResult && (
-                    <span className={`ml-2 font-semibold ${
-                      rootedResult === 'Won' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      ({rootedResult})
-                    </span>
-                  )}
-                </span>
-              </div>
-            )}
+              {log.notes && (
+                <div className="bg-gray-50 p-3 rounded-md">
+                  <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
+                </div>
+              )}
 
-            {log.notes && (
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm text-gray-700 italic">"{log.notes}"</p>
+              <div className="text-xs text-gray-500 border-t pt-2">
+                Game played: {formatDate(game.date)}
               </div>
-            )}
-
-            <div className="text-xs text-gray-500 border-t pt-2">
-              Game played: {formatDate(game.date)}
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <EditGameLogModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          gameLog={log}
+          game={game}
+          league={league}
+        />
+      )}
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <DeleteGameLogModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          gameLog={log}
+          game={game}
+          league={league}
+        />
+      )}
+    </>
   );
 };
 
