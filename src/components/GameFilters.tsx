@@ -13,12 +13,12 @@ import { formatTeamName } from '@/utils/teamLogos';
 
 interface GameFiltersProps {
   filters: {
-    search: string;
+    startDate: string;
+    endDate: string;
     league: string;
     season: string;
     playoff: string;
-    startDate: string;
-    endDate: string;
+    search: string;
   };
   onFilterChange: (key: string, value: string) => void;
   onClearFilters: () => void;
