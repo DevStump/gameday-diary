@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,12 +61,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const score = getScore();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200 animate-fade-in">
+    <Card className="hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col">
       <Link 
         to={`/game/${game.league.toLowerCase()}/${game.game_id}`}
-        className="block"
+        className="block flex-1 flex flex-col"
       >
-        <CardContent className="p-6 cursor-pointer">
+        <CardContent className="p-6 cursor-pointer flex-1 flex flex-col">
+          {/* Top badges */}
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center space-x-2">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
@@ -79,21 +79,16 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                 </Badge>
               )}
             </div>
-            <div className="text-right">
-              <div className="flex items-center text-sm text-gray-600 mb-1">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formatDate(game.date)}
+            {game.venue && (
+              <div className="flex items-center text-sm text-gray-600">
+                <MapPin className="h-4 w-4 mr-1" />
+                {game.venue}
               </div>
-              {game.venue && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {game.venue}
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
-          <div className="text-center mb-4">
+          {/* Teams and Score - flex-1 to fill space */}
+          <div className="text-center mb-4 flex-1 flex flex-col justify-center">
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-3">
               <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
@@ -123,8 +118,17 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               </div>
             )}
           </div>
+
+          {/* Date at bottom */}
+          <div className="flex items-center justify-center text-sm text-gray-600">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formatDate(game.date)}
+          </div>
         </CardContent>
       </Link>
+
+      {/* Vertical divider */}
+      <div className="border-t border-gray-200"></div>
 
       <CardFooter className="p-6 pt-0">
         <div className="w-full space-y-3">
