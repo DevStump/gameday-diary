@@ -41,8 +41,11 @@ const Auth = () => {
       } else if (isSignUp) {
         toast({
           title: 'Success',
-          description: 'Account created successfully! Please check your email for verification.',
+          description: 'Account created successfully! Please sign in.',
         });
+        // Switch to sign in mode after successful signup
+        setIsSignUp(false);
+        setPassword(''); // Clear password for security
       }
     } catch (error) {
       toast({
