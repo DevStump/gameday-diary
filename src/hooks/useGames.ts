@@ -100,7 +100,7 @@ export const useGames = (filters: GameFilters) => {
       if (allGames.length > 0) {
         console.log('Sample game dates (first 5):');
         allGames.slice(0, 5).forEach((game, index) => {
-          console.log(`Game ${index + 1}: ${game.date} (${new Date(game.date).toISOString()})`);
+          console.log(`Game ${index + 1}: ${game.date} - ${game.away_team} @ ${game.home_team}`);
         });
         
         // Check for May 27, 2025 specifically
@@ -110,7 +110,10 @@ export const useGames = (filters: GameFilters) => {
         });
         console.log('May 27, 2025 games found:', may27Games.length);
         if (may27Games.length > 0) {
-          console.log('May 27 games:', may27Games.slice(0, 3));
+          console.log('May 27 games details:');
+          may27Games.forEach((game, index) => {
+            console.log(`  ${index + 1}. ${game.away_team} @ ${game.home_team} (${game.date})`);
+          });
         }
       }
       
@@ -124,8 +127,8 @@ export const useGames = (filters: GameFilters) => {
       console.log('Final games count:', sortedGames.length);
       console.log('Date range after sorting:');
       if (sortedGames.length > 0) {
-        console.log('Latest game:', sortedGames[0].date, sortedGames[0].home_team, 'vs', sortedGames[0].away_team);
-        console.log('Earliest game:', sortedGames[sortedGames.length - 1].date, sortedGames[sortedGames.length - 1].home_team, 'vs', sortedGames[sortedGames.length - 1].away_team);
+        console.log('Latest game:', sortedGames[0].date, '-', sortedGames[0].away_team, '@', sortedGames[0].home_team);
+        console.log('Earliest game:', sortedGames[sortedGames.length - 1].date, '-', sortedGames[sortedGames.length - 1].away_team, '@', sortedGames[sortedGames.length - 1].home_team);
       }
       
       return sortedGames;

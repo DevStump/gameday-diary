@@ -4,7 +4,9 @@ import { Calendar, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Link } from 'react-router-dom';
+import { getTeamLogo } from '@/utils/teamLogos';
 
 interface GameCardProps {
   game: {
@@ -80,9 +82,27 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           </div>
 
           <div className="text-center mb-4">
-            <div className="text-lg font-semibold text-gray-900 mb-2">
-              {game.away_team} @ {game.home_team}
+            {/* Team Logos and Names */}
+            <div className="flex items-center justify-center space-x-4 mb-3">
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={getTeamLogo(game.away_team)} alt={game.away_team} />
+                  <AvatarFallback className="text-xs">{game.away_team}</AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-gray-900">{game.away_team}</span>
+              </div>
+              
+              <span className="text-gray-500 font-medium">@</span>
+              
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-gray-900">{game.home_team}</span>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={getTeamLogo(game.home_team)} alt={game.home_team} />
+                  <AvatarFallback className="text-xs">{game.home_team}</AvatarFallback>
+                </Avatar>
+              </div>
             </div>
+            
             {score && (
               <div className="text-2xl font-bold text-field-green">
                 {score}
