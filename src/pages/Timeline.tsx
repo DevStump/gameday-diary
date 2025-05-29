@@ -237,6 +237,12 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               <Calendar className="h-4 w-4 mr-1" />
               {formatDate(game.date)}
             </div>
+
+            {rootedResult?.score && (
+            <div className="text-xl font-bold text-gray-900 mb-2">
+              {rootedResult.score}
+            </div>
+          )}
           </div>
 
           {/* Log Details */}
