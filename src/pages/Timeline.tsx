@@ -327,10 +327,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
                     {renderStars(log.rating)}
                   </div>
                 ) : (
-                  <div className="flex">
-                    {renderStars(0)}
-                    <span className="text-gray-400 italic text-sm ml-2">Not rated</span>
-                  </div>
+                  <span className="text-gray-400 italic text-sm">Not rated</span>
                 )}
               </div>
 
