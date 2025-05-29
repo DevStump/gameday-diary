@@ -38,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <Trophy className="h-8 w-8 text-field-green" />
-              <span className="text-xl font-bold text-gray-900">GameTracker</span>
+              <span className="text-xl font-bold text-gray-900">GameDiary</span>
             </Link>
 
             {/* Navigation */}
