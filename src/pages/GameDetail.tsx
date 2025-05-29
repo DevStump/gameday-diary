@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -167,7 +166,7 @@ const GameDetail = () => {
                   {score.away} - {score.home}
                 </div>
                 {game.league === 'MLB' && (game as any).walkoff && (
-                  <Zap className="h-8 w-8 text-sports-gold fill-current" title="Walk-off Game" />
+                  <Zap className="h-8 w-8 text-sports-gold fill-current" />
                 )}
               </div>
             )}
