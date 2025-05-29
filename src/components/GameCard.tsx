@@ -28,28 +28,28 @@ interface GameCardProps {
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const formatDate = (dateString: string) => {
-    console.log('Formatting date:', dateString, 'for game:', game.away_team, '@', game.home_team);
+    console.log('Raw date from database:', dateString, 'for game:', game.away_team, '@', game.home_team);
     
-    // Handle both date string formats
-    const date = new Date(dateString);
-    
-    // Check if date is valid
-    if (isNaN(date.getTime())) {
-      console.error('Invalid date:', dateString);
-      return dateString; // Return original string if invalid
+    // Just use the date string directly from database without timezone conversion
+    // Expected format from DB: YYYY-MM-DD
+    const dateParts = dateString.split('-');
+    if (dateParts.length === 3) {
+      const year = dateParts[0];
+      const month = dateParts[1];
+      const day = dateParts[2];
+      
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthName = monthNames[parseInt(month) - 1];
+      
+      const formattedDate = `${monthName} ${parseInt(day)}, ${year}`;
+      console.log('Formatted date result:', formattedDate);
+      return formattedDate;
     }
     
-    console.log('Parsed date object:', date);
-    
-    const formattedDate = date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-    
-    console.log('Formatted date result:', formattedDate);
-    return formattedDate;
+    // Fallback: return original string if parsing fails
+    console.log('Date parsing failed, returning original:', dateString);
+    return dateString;
   };
 
   const getScore = () => {
@@ -101,18 +101,18 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             <div className="flex items-center justify-center space-x-4 mb-3">
               <div className="flex items-center space-x-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={getTeamLogo(game.away_team)} alt={game.away_team} />
+                  <AvatarImage src={getTeamLogo(game.away_team, game.league)} alt={game.away_team} />
                   <AvatarFallback className="text-xs">{game.away_team}</AvatarFallback>
                 </Avatar>
-                <span className="font-medium text-gray-900">{formatTeamName(game.away_team)}</span>
+                <span className="font-medium text-gray-900">{formatTeamName(game.away_team, game.league)}</span>
               </div>
               
               <span className="text-gray-500 font-medium">@</span>
               
               <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{formatTeamName(game.home_team)}</span>
+                <span className="font-medium text-gray-900">{formatTeamName(game.home_team, game.league)}</span>
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={getTeamLogo(game.home_team)} alt={game.home_team} />
+                  <AvatarImage src={getTeamLogo(game.home_team, game.league)} alt={game.home_team} />
                   <AvatarFallback className="text-xs">{game.home_team}</AvatarFallback>
                 </Avatar>
               </div>

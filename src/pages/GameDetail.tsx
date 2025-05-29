@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -21,13 +20,33 @@ const GameDetail = () => {
   );
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    console.log('Raw date from database:', dateString);
+    
+    // Just use the date string directly from database without timezone conversion
+    // Expected format from DB: YYYY-MM-DD
+    const dateParts = dateString.split('-');
+    if (dateParts.length === 3) {
+      const year = dateParts[0];
+      const month = dateParts[1];
+      const day = dateParts[2];
+      
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                         'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthName = monthNames[parseInt(month) - 1];
+      
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      // Create date for day of week calculation (using UTC to avoid timezone issues)
+      const tempDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const dayName = dayNames[tempDate.getDay()];
+      
+      const formattedDate = `${dayName}, ${monthName} ${parseInt(day)}, ${year}`;
+      console.log('Formatted date result:', formattedDate);
+      return formattedDate;
+    }
+    
+    // Fallback: return original string if parsing fails
+    console.log('Date parsing failed, returning original:', dateString);
+    return dateString;
   };
 
   const handleAddToDiary = () => {
