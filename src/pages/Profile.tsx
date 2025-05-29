@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { User, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
@@ -9,9 +8,11 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { formatTeamName } from '@/utils/teamLogos';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Profile = () => {
   const { data: stats, isLoading } = useProfileStats();
+  const { user, signOut } = useAuth();
 
   if (isLoading) {
     return (
@@ -51,6 +52,18 @@ const Profile = () => {
               </Button>
             </Link>
           </div>
+
+          {/* User Info and Sign Out */}
+          {user && (
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <div className="text-center space-y-4">
+                <p className="text-sm text-gray-600">{user.email}</p>
+                <Button variant="outline" onClick={signOut}>
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </Layout>
     );
@@ -248,6 +261,18 @@ const Profile = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* User Info and Sign Out */}
+        {user && (
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="text-center space-y-4">
+              <p className="text-sm text-gray-600">{user.email}</p>
+              <Button variant="outline" onClick={signOut}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -12,7 +12,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const { user, signOut, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
@@ -66,16 +66,9 @@ const Layout = ({ children }: LayoutProps) => {
               })}
             </nav>
 
-            {/* Auth Button */}
+            {/* Auth Button - Only show sign in when not authenticated */}
             <div className="flex items-center space-x-4">
-              {user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">{user.email}</span>
-                  <Button variant="outline" size="sm" onClick={signOut}>
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
+              {!user && (
                 <Button size="sm" className="bg-field-green hover:bg-field-dark" asChild>
                   <Link to="/auth">Sign In</Link>
                 </Button>
