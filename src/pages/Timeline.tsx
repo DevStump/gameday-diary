@@ -1,7 +1,6 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Eye } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,9 +162,9 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     let awayScore, homeScore;
 
     if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      // For NFL: pts_off is away team score, pts_def is home team score
-      awayScore = game.pts_off;
-      homeScore = game.pts_def;
+      // For NFL: pts_def is away team score, pts_off is home team score
+      awayScore = game.pts_def;
+      homeScore = game.pts_off;
     } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
       // For MLB: runs_scored is home team score, runs_allowed is away team score
       awayScore = game.runs_allowed;
@@ -274,16 +273,17 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               {formatDate(game.date)}
             </div>
 
-            {/* View Boxscore Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleViewBoxscore}
-              className="text-xs"
-            >
-              <Eye className="h-3 w-3 mr-1" />
-              View Boxscore
-            </Button>
+            {/* View Boxscore Link - same as GameDetail */}
+            {(game as any).boxscore_url && (
+              <a 
+                href={(game as any).boxscore_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-field-green hover:underline font-semibold text-sm"
+              >
+                View Boxscore
+              </a>
+            )}
           </div>
 
           {/* Log Details */}
