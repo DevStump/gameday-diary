@@ -34,10 +34,10 @@ export const useProfileStats = () => {
       const gamesAttended = gameLogs.filter(log => log.mode === 'attended').length;
       const gamesWatched = gameLogs.filter(log => log.mode === 'watched').length;
       
-      // Average rating
+      // Average rating rounded to 2 decimal places
       const ratedGames = gameLogs.filter(log => log.rating && log.rating > 0);
       const avgRating = ratedGames.length > 0 
-        ? ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length 
+        ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 100) / 100
         : 0;
 
       // Win/Loss record based on rooted team
@@ -62,16 +62,6 @@ export const useProfileStats = () => {
         }
       });
 
-      // Total points/runs witnessed
-      let totalPoints = 0;
-      gameLogs.forEach(log => {
-        const game = allGames.find(g => g.game_id === log.game_id);
-        if (game && game.result) {
-          const [awayScore, homeScore] = game.result.split('-').map(Number);
-          totalPoints += awayScore + homeScore;
-        }
-      });
-
       // League breakdown
       const nflLogs = gameLogs.filter(log => 
         allGames.find(g => g.game_id === log.game_id && nflGames?.includes(g))
@@ -79,6 +69,22 @@ export const useProfileStats = () => {
       const mlbLogs = gameLogs.filter(log => 
         allGames.find(g => g.game_id === log.game_id && mlbGames?.includes(g))
       );
+
+      // Team breakdown - count games by team
+      const teamCounts: Record<string, number> = {};
+      gameLogs.forEach(log => {
+        const game = allGames.find(g => g.game_id === log.game_id);
+        if (game) {
+          // Count both home and away teams
+          teamCounts[game.home_team] = (teamCounts[game.home_team] || 0) + 1;
+          teamCounts[game.away_team] = (teamCounts[game.away_team] || 0) + 1;
+        }
+      });
+
+      // Sort teams by count and get top teams
+      const sortedTeams = Object.entries(teamCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5); // Top 5 teams
 
       // Playoff games
       const playoffGames = gameLogs.filter(log => {
@@ -90,13 +96,13 @@ export const useProfileStats = () => {
         totalGames,
         gamesWatched,
         gamesAttended,
-        avgRating: Math.round(avgRating * 10) / 10,
-        totalPoints,
+        avgRating,
         winRecord: { wins, losses },
         nflGames: nflLogs.length,
         mlbGames: mlbLogs.length,
         playoffGames,
         highestRatedGame: Math.max(...ratedGames.map(log => log.rating), 0),
+        teamBreakdown: sortedTeams,
       };
     },
     enabled: !!gameLogs && !!nflGames && !!mlbGames,

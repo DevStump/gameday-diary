@@ -1,11 +1,12 @@
 
 import React from 'react';
 import Layout from '@/components/Layout';
-import { Trophy, TrendingUp, Star, Calendar, Target, Zap } from 'lucide-react';
+import { Trophy, TrendingUp, Star, Calendar, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
+import { formatTeamName } from '@/utils/teamLogos';
 
 const Profile = () => {
   const { data: stats, isLoading } = useProfileStats();
@@ -30,12 +31,6 @@ const Profile = () => {
     { name: 'Attended', value: stats.gamesAttended, color: '#ca8a04' },
   ];
 
-  // Data for league breakdown
-  const leagueData = [
-    { name: 'NFL', value: stats.nflGames },
-    { name: 'MLB', value: stats.mlbGames },
-  ];
-
   const chartConfig = {
     watched: { label: 'Watched', color: '#16a34a' },
     attended: { label: 'Attended', color: '#ca8a04' },
@@ -56,7 +51,7 @@ const Profile = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="animate-fade-in">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -89,18 +84,6 @@ const Profile = () => {
                   <p className="text-3xl font-bold text-gray-900">{stats.avgRating || 'N/A'}</p>
                 </div>
                 <Star className="h-8 w-8 text-sports-gold opacity-80" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Points</p>
-                  <p className="text-3xl font-bold text-field-green">{stats.totalPoints}</p>
-                </div>
-                <Zap className="h-8 w-8 text-field-green opacity-80" />
               </div>
             </CardContent>
           </Card>
@@ -205,28 +188,27 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Game Highlights */}
+          {/* Team Breakdown */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
             <CardHeader>
-              <CardTitle>Game Highlights</CardTitle>
+              <CardTitle>Top Teams</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-field-green/10 rounded-lg">
-                  <span className="font-medium">Highest Rating</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-lg font-bold">{stats.highestRatedGame || 'N/A'}</div>
-                    <Star className="h-4 w-4 text-sports-gold" />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-sports-gold/10 rounded-lg">
-                  <span className="font-medium">Playoff Games</span>
-                  <div className="text-lg font-bold">{stats.playoffGames}</div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">Points Witnessed</span>
-                  <div className="text-lg font-bold">{stats.totalPoints.toLocaleString()}</div>
-                </div>
+                {stats.teamBreakdown.map(([team, count], index) => {
+                  // Determine league based on team format
+                  const league = team.length <= 3 && team === team.toLowerCase() ? 'NFL' : 'MLB';
+                  const leagueType = league as 'NFL' | 'MLB';
+                  
+                  return (
+                    <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="font-medium">{formatTeamName(team, leagueType)}</span>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-field-green">{count}</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
