@@ -49,7 +49,7 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
         mode,
         company: company || undefined,
         rating: rating || undefined,
-        rooted_for: rootedFor === 'none' ? undefined : rootedFor || undefined,
+        rooted_for: rootedFor === 'none' ? null : rootedFor,
         notes: notes || undefined,
       });
 

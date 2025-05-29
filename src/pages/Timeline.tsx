@@ -130,6 +130,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
 
   // Calculate if rooted team won and get the score
   const getRootedTeamResult = () => {
+    // Return null if no rooted team is selected (null, undefined, or 'none')
     if (!log.rooted_for || log.rooted_for === 'none' || !game) return null;
   
     let teamScore, oppScore;
@@ -233,18 +234,16 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             </div>
 
-              {rootedResult?.score && (
+            {rootedResult?.score && (
               <div className="text-xl font-bold text-gray-900 mb-2">
                 {rootedResult.score}
               </div>
-              )}
+            )}
             
             <div className="flex items-center justify-center text-sm text-gray-600">
               <Calendar className="h-4 w-4 mr-1" />
               {formatDate(game.date)}
             </div>
-
-
           </div>
 
           {/* Log Details */}
@@ -256,6 +255,7 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
               </div>
             )}
 
+            {/* Only show rooted team info if a team was actually selected (not null/undefined/none) */}
             {log.rooted_for && log.rooted_for !== 'none' && (
               <div className="flex items-center space-x-2 text-sm">
                 <Heart className="h-4 w-4 text-red-500" />
