@@ -230,6 +230,7 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     'sfo': '49ers',
     'tam': 'Buccaneers',
     'ten': 'Titans',
+    'oti': 'Titans',
     'was': 'Commanders',
   };
 
