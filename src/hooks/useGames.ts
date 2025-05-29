@@ -51,6 +51,13 @@ export const useGames = (filters: GameFilters) => {
           // Search by team abbreviation in home_team or away_team columns
           mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
         }
+        if (filters.season) {
+          // For MLB, filter by year from date since there's no season column
+          const year = parseInt(filters.season);
+          const startDate = `${year}-01-01`;
+          const endDate = `${year}-12-31`;
+          mlbQuery = mlbQuery.gte('date', startDate).lte('date', endDate);
+        }
         if (filters.playoff) {
           mlbQuery = mlbQuery.eq('playoff', filters.playoff === 'true');
         }
