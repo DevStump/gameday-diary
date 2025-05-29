@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -10,6 +9,86 @@ interface GameFilters {
   startDate: string;
   endDate: string;
 }
+
+// Helper function to get all possible team abbreviation variants
+const getTeamVariants = (teamAbbr: string, league: string): string[] => {
+  const upperTeam = teamAbbr.toUpperCase();
+  const lowerTeam = teamAbbr.toLowerCase();
+  
+  if (league === 'NFL') {
+    // NFL database stores lowercase, but handle all possible variants
+    const nflVariants: Record<string, string[]> = {
+      'ARI': ['ari', 'crd'],
+      'ATL': ['atl'],
+      'BAL': ['bal', 'rav'],
+      'BUF': ['buf'],
+      'CAR': ['car'],
+      'CHI': ['chi'],
+      'CIN': ['cin'],
+      'CLE': ['cle'],
+      'DAL': ['dal'],
+      'DEN': ['den'],
+      'DET': ['det'],
+      'GB': ['gnb', 'gb'],
+      'HOU': ['hou', 'htx'],
+      'IND': ['ind', 'clt'],
+      'JAX': ['jax', 'jac'],
+      'KC': ['kan', 'kc'],
+      'LV': ['rai', 'lv', 'oak'],
+      'LAC': ['lac', 'sdg', 'sd'],
+      'LAR': ['lar', 'ram', 'stl'],
+      'MIA': ['mia'],
+      'MIN': ['min'],
+      'NE': ['nwe', 'ne'],
+      'NO': ['nor', 'no'],
+      'NYG': ['nyg'],
+      'NYJ': ['nyj'],
+      'PHI': ['phi'],
+      'PIT': ['pit'],
+      'SF': ['sfo', 'sf'],
+      'SEA': ['sea'],
+      'TB': ['tam', 'tb'],
+      'TEN': ['ten', 'oti'],
+      'WAS': ['was', 'wsh']
+    };
+    return nflVariants[upperTeam] || [lowerTeam];
+  } else {
+    // MLB database stores uppercase, but handle variants
+    const mlbVariants: Record<string, string[]> = {
+      'ARI': ['ARI'],
+      'ATL': ['ATL'],
+      'BAL': ['BAL'],
+      'BOS': ['BOS'],
+      'CHC': ['CHC'],
+      'CWS': ['CWS', 'CHW'],
+      'CIN': ['CIN'],
+      'CLE': ['CLE'],
+      'COL': ['COL'],
+      'DET': ['DET'],
+      'HOU': ['HOU'],
+      'KC': ['KC', 'KCR'],
+      'LAA': ['LAA'],
+      'LAD': ['LAD'],
+      'MIA': ['MIA'],
+      'MIL': ['MIL'],
+      'MIN': ['MIN'],
+      'NYM': ['NYM'],
+      'NYY': ['NYY'],
+      'OAK': ['OAK', 'ATH'],
+      'PHI': ['PHI'],
+      'PIT': ['PIT'],
+      'SD': ['SD', 'SDP'],
+      'SF': ['SF', 'SFG'],
+      'SEA': ['SEA'],
+      'STL': ['STL'],
+      'TB': ['TB', 'TBR'],
+      'TEX': ['TEX'],
+      'TOR': ['TOR'],
+      'WSH': ['WSH', 'WSN']
+    };
+    return mlbVariants[upperTeam] || [upperTeam];
+  }
+};
 
 export const useGames = (filters: GameFilters) => {
   return useQuery({
@@ -42,9 +121,16 @@ export const useGames = (filters: GameFilters) => {
         if (searchTeam) {
           // Only filter NFL games if no league specified in search or NFL specified
           if (!searchLeague || searchLeague === 'NFL') {
-            // NFL stores team abbreviations in lowercase
-            const nflTeamCode = searchTeam.toLowerCase();
-            nflQuery = nflQuery.or(`home_team.eq.${nflTeamCode},away_team.eq.${nflTeamCode}`);
+            const teamVariants = getTeamVariants(searchTeam, 'NFL');
+            console.log('NFL team variants for', searchTeam, ':', teamVariants);
+            
+            // Create OR conditions for all variants
+            const orConditions = teamVariants.flatMap(variant => [
+              `home_team.eq.${variant}`,
+              `away_team.eq.${variant}`
+            ]).join(',');
+            
+            nflQuery = nflQuery.or(orConditions);
           } else {
             // If search is for MLB team specifically, don't return NFL games
             nflQuery = nflQuery.limit(0);
@@ -74,9 +160,16 @@ export const useGames = (filters: GameFilters) => {
         if (searchTeam) {
           // Only filter MLB games if no league specified in search or MLB specified
           if (!searchLeague || searchLeague === 'MLB') {
-            // MLB stores team abbreviations in uppercase
-            const mlbTeamCode = searchTeam.toUpperCase();
-            mlbQuery = mlbQuery.or(`home_team.eq.${mlbTeamCode},away_team.eq.${mlbTeamCode}`);
+            const teamVariants = getTeamVariants(searchTeam, 'MLB');
+            console.log('MLB team variants for', searchTeam, ':', teamVariants);
+            
+            // Create OR conditions for all variants
+            const orConditions = teamVariants.flatMap(variant => [
+              `home_team.eq.${variant}`,
+              `away_team.eq.${variant}`
+            ]).join(',');
+            
+            mlbQuery = mlbQuery.or(orConditions);
           } else {
             // If search is for NFL team specifically, don't return MLB games
             mlbQuery = mlbQuery.limit(0);
