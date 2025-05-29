@@ -13,63 +13,98 @@ export const useGames = (filters: GameFilters) => {
   return useQuery({
     queryKey: ['games', filters],
     queryFn: async () => {
-      // Fetch NFL games
-      let nflQuery = supabase.from('nfl_games').select('*');
+      console.log('Fetching games with filters:', filters);
       
-      if (filters.search) {
-        nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
-      }
-      if (filters.season) {
-        nflQuery = nflQuery.eq('season', parseInt(filters.season));
-      }
-      if (filters.playoff) {
-        nflQuery = nflQuery.eq('playoff', filters.playoff === 'true');
-      }
-
-      // Fetch MLB games
-      let mlbQuery = supabase.from('mlb_games').select('*');
-      
-      if (filters.search) {
-        mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
-      }
-      if (filters.playoff) {
-        mlbQuery = mlbQuery.eq('playoff', filters.playoff === 'true');
-      }
-
       const promises = [];
       
+      // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
+        let nflQuery = supabase.from('nfl_games').select('*');
+        
+        if (filters.search) {
+          nflQuery = nflQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+        }
+        if (filters.season) {
+          nflQuery = nflQuery.eq('season', parseInt(filters.season));
+        }
+        if (filters.playoff) {
+          nflQuery = nflQuery.eq('playoff', filters.playoff === 'true');
+        }
+        
         promises.push(nflQuery);
       }
+
+      // Fetch MLB games if no league filter or MLB is selected
       if (!filters.league || filters.league === 'MLB') {
+        let mlbQuery = supabase.from('mlb_games').select('*');
+        
+        if (filters.search) {
+          mlbQuery = mlbQuery.or(`home_team.ilike.%${filters.search}%,away_team.ilike.%${filters.search}%`);
+        }
+        if (filters.playoff) {
+          mlbQuery = mlbQuery.eq('playoff', filters.playoff === 'true');
+        }
+        
         promises.push(mlbQuery);
       }
 
+      if (promises.length === 0) {
+        console.log('No queries to execute');
+        return [];
+      }
+
       const results = await Promise.all(promises);
+      console.log('Query results:', results);
       
       let allGames: any[] = [];
       
+      // Process NFL games
       if (!filters.league || filters.league === 'NFL') {
-        const nflGames = results[0]?.data || [];
-        allGames = allGames.concat(nflGames.map((game: any) => ({
-          ...game,
-          league: 'NFL' as const,
-          venue: 'Stadium', // You can enhance this with actual venue data
-        })));
+        const nflIndex = 0;
+        const nflResult = results[nflIndex];
+        
+        if (nflResult?.error) {
+          console.error('NFL games error:', nflResult.error);
+        } else {
+          const nflGames = nflResult?.data || [];
+          console.log('NFL games count:', nflGames.length);
+          allGames = allGames.concat(nflGames.map((game: any) => ({
+            ...game,
+            league: 'NFL' as const,
+            venue: 'Stadium',
+          })));
+        }
       }
       
+      // Process MLB games
       if (!filters.league || filters.league === 'MLB') {
-        const mlbIndex = filters.league === 'NFL' ? 1 : 0;
-        const mlbGames = results[mlbIndex]?.data || [];
-        allGames = allGames.concat(mlbGames.map((game: any) => ({
-          ...game,
-          league: 'MLB' as const,
-          venue: 'Stadium', // You can enhance this with actual venue data
-        })));
+        const mlbIndex = (!filters.league || filters.league === 'NFL') ? 1 : 0;
+        const mlbResult = results[mlbIndex];
+        
+        if (mlbResult?.error) {
+          console.error('MLB games error:', mlbResult.error);
+        } else {
+          const mlbGames = mlbResult?.data || [];
+          console.log('MLB games count:', mlbGames.length);
+          allGames = allGames.concat(mlbGames.map((game: any) => ({
+            ...game,
+            league: 'MLB' as const,
+            venue: 'Stadium',
+          })));
+        }
       }
 
+      console.log('Total games before sorting:', allGames.length);
+      
       // Sort by date (newest first)
-      return allGames.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      const sortedGames = allGames.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      console.log('Final games count:', sortedGames.length);
+      return sortedGames;
     },
   });
 };
