@@ -4,7 +4,7 @@ import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
 import GameFilters from '@/components/GameFilters';
 import GameLogModal from '@/components/GameLogModal';
-import { Loader2, Trophy } from 'lucide-react';
+import { Loader2, Pen } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -75,11 +75,11 @@ const Games = () => {
         {/* Hero Section */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
-            <Trophy className="h-10 w-10 text-field-green" />
+            <Pen className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Game Search</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Relive your favorite moments. Search for any NFL or MLB game you’ve seen — live or on screen — and add it to your diary.
+            Relive your favorite moments. Search for any NFL or MLB game you've seen — live or on screen — and add it to your diary.
           </p>
           {!user && (
             <p className="text-sm text-sports-gold mt-2 font-medium">
@@ -132,7 +132,7 @@ const Games = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <Pen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No games found</h3>
                 <p className="text-gray-600">Try adjusting your filters to see more games.</p>
               </div>
