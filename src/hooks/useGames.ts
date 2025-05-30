@@ -290,7 +290,7 @@ export const useGames = (filters: GameFilters) => {
 
       console.log('Total games before sorting:', allGames.length);
       
-      // Sort by date and time (newest first - descending)
+      // Sort by date and time (newest first - descending), then by venue (ascending)
       const sortedGames = allGames.sort((a, b) => {
         const dateA = a.date || a.game_date;
         const dateB = b.date || b.game_date;
@@ -307,10 +307,16 @@ export const useGames = (filters: GameFilters) => {
         
         // For datetime fields, compare directly
         if (timeA && timeB) {
-          return timeB.localeCompare(timeA);
+          const timeComparison = timeB.localeCompare(timeA);
+          if (timeComparison !== 0) {
+            return timeComparison;
+          }
         }
         
-        return 0;
+        // If date and time are the same, sort by venue (ascending)
+        const venueA = a.venue || a.venue_name || '';
+        const venueB = b.venue || b.venue_name || '';
+        return venueA.localeCompare(venueB);
       });
       
       console.log('Final games count:', sortedGames.length);
