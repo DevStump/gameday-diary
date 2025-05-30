@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
+import { getTeamLogo } from '@/utils/teamLogos';
 
 interface HotGamesProps {
   games: Array<{
@@ -53,13 +53,13 @@ const HotGames = ({ games }: HotGamesProps) => {
                     alt={game.away_team}
                     className="h-6 w-6 object-contain"
                   />
-                  <span className="font-medium text-sm">{formatTeamName(game.away_team, game.league)}</span>
+                  <span className="font-medium text-sm">{game.away_team}</span>
                 </div>
                 
                 <span className="text-gray-500 text-sm">@</span>
                 
                 <div className="flex items-center space-x-1">
-                  <span className="font-medium text-sm">{formatTeamName(game.home_team, game.league)}</span>
+                  <span className="font-medium text-sm">{game.home_team}</span>
                   <img 
                     src={getTeamLogo(game.home_team, game.league)} 
                     alt={game.home_team}

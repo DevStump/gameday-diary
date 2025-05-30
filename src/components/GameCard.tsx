@@ -152,7 +152,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const pitchingResults = getPitchingResults();
 
   return (
-    <Card className={`hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
+    <Card className={`transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
       game.is_future ? 'bg-gray-50' : ''
     }`}>
       <CardContent className="p-4 flex-1 flex flex-col">
@@ -258,7 +258,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               e.preventDefault();
               onAddToDiary(game.game_id);
             }}
-            className="w-full bg-field-green hover:bg-field-dark transition-colors"
+            className="w-full bg-field-green transition-colors"
             size="sm"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -272,7 +272,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                 href={game.boxscore_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 underline hover:text-gray-700"
+                className="text-sm text-gray-500 underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 View Boxscore
