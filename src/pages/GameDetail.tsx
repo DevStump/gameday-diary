@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Calendar, MapPin, ArrowLeft, Plus, Trophy, Zap } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, Plus, Trophy, Zap, ExternalLink } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
@@ -57,6 +56,64 @@ const GameDetail = () => {
     setShowGameLogModal(true);
   };
 
+  // Generate Baseball Reference boxscore URL for MLB games
+  const getBaseballReferenceBoxscoreUrl = (game: any) => {
+    if (game.league !== 'MLB' || !game.game_date || !game.home_team) {
+      return null;
+    }
+
+    // Map team names to Baseball Reference codes
+    const teamToBBRefCode: Record<string, string> = {
+      'Arizona Diamondbacks': 'ARI',
+      'Atlanta Braves': 'ATL',
+      'Baltimore Orioles': 'BAL',
+      'Boston Red Sox': 'BOS',
+      'Chicago Cubs': 'CHN',
+      'Chicago White Sox': 'CHA',
+      'Cincinnati Reds': 'CIN',
+      'Cleveland Guardians': 'CLE',
+      'Colorado Rockies': 'COL',
+      'Detroit Tigers': 'DET',
+      'Houston Astros': 'HOU',
+      'Kansas City Royals': 'KCA',
+      'Los Angeles Angels': 'LAA',
+      'Los Angeles Dodgers': 'LAN',
+      'Miami Marlins': 'MIA',
+      'Milwaukee Brewers': 'MIL',
+      'Minnesota Twins': 'MIN',
+      'New York Mets': 'NYN',
+      'New York Yankees': 'NYA',
+      'Oakland Athletics': 'OAK',
+      'Athletics': 'OAK',
+      'Philadelphia Phillies': 'PHI',
+      'Pittsburgh Pirates': 'PIT',
+      'San Diego Padres': 'SDN',
+      'San Francisco Giants': 'SFN',
+      'Seattle Mariners': 'SEA',
+      'St. Louis Cardinals': 'SLN',
+      'Tampa Bay Rays': 'TBA',
+      'Texas Rangers': 'TEX',
+      'Toronto Blue Jays': 'TOR',
+      'Washington Nationals': 'WAS'
+    };
+
+    const homeTeamCode = teamToBBRefCode[game.home_team];
+    if (!homeTeamCode) {
+      return null;
+    }
+
+    // Extract year from game_date
+    const year = game.game_date.split('-')[0];
+    
+    // Format date as YYYYMMDD
+    const gameDate = game.game_date.replace(/-/g, '');
+    
+    // Add game number (0 for single games, could be 1 for doubleheaders)
+    const gameId = gameDate + '0';
+    
+    return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${year}${gameId}.shtml`;
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -98,6 +155,10 @@ const GameDetail = () => {
       const nflGame = game as any;
       if (nflGame.pts_off !== undefined && nflGame.pts_off !== null && 
           nflGame.pts_def !== undefined && nflGame.pts_def !== null) {
+        // Only show score if it's not 0-0 (meaning a real game was played)
+        if (nflGame.pts_off === 0 && nflGame.pts_def === 0) {
+          return null;
+        }
         // Away team score first, then home team score
         return { away: nflGame.pts_def, home: nflGame.pts_off };
       }
@@ -106,6 +167,10 @@ const GameDetail = () => {
       const mlbGame = game as any;
       if (mlbGame.runs_scored !== undefined && mlbGame.runs_scored !== null && 
           mlbGame.runs_allowed !== undefined && mlbGame.runs_allowed !== null) {
+        // Only show score if it's not 0-0 (meaning a real game was played)
+        if (mlbGame.runs_scored === 0 && mlbGame.runs_allowed === 0) {
+          return null;
+        }
         // Away team score first, then home team score
         return { away: mlbGame.runs_allowed, home: mlbGame.runs_scored };
       }
@@ -115,6 +180,7 @@ const GameDetail = () => {
 
   const score = getScore();
   const gameTitle = `${formatTeamName(game.away_team, game.league)} @ ${formatTeamName(game.home_team, game.league)}`;
+  const boxscoreUrl = game.league === 'MLB' ? getBaseballReferenceBoxscoreUrl(game) : (game as any).boxscore_url;
 
   return (
     <TooltipProvider>
@@ -222,21 +288,28 @@ const GameDetail = () => {
                   {user ? 'Add to My Diary' : 'Sign in to Add to Diary'}
                 </Button>
                 
-                {/* View Boxscore for both NFL and MLB games - only show for completed games */}
-                {(game as any).boxscore_url && !game.is_future && (
-                  <a 
-                    href={(game as any).boxscore_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-field-green hover:underline font-semibold"
+                {/* View Boxscore button for completed games */}
+                {boxscoreUrl && !game.is_future && (
+                  <Button 
+                    variant="outline"
+                    asChild
+                    className="border-field-green text-field-green hover:bg-field-green hover:text-white"
                   >
-                    View Boxscore
-                  </a>
+                    <a 
+                      href={boxscoreUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Boxscore
+                    </a>
+                  </Button>
                 )}
               </div>
             </CardContent>
           </Card>
 
+          {/* NFL Specific Stats */}
           {game.league === 'NFL' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <Card>
