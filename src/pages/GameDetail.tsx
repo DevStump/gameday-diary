@@ -111,7 +111,7 @@ const GameDetail = () => {
     // Add game number (0 for single games, could be 1 for doubleheaders)
     const gameId = gameDate + '0';
     
-    return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${year}${gameId}.shtml`;
+    return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${year}${gameId}.shtml`;
   };
 
   if (isLoading) {
