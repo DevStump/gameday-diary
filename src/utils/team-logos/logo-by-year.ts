@@ -63,11 +63,15 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'MIA': {
-    '2012-current': 'https://www.mlbstatic.com/team-logos/146.svg',
+    '2019-current': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20194007.png',
+    '2017-2018': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20179087.png',
+    '2012-2016': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20128805.png',
     '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png'
   },
   'MIL': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2020-current': 'https://content.sportslogos.net/logos/54/64/full/6474_milwaukee_brewers-primary-2020.png',
+    '2018-2019': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20187469.png',
+    '2000-2017': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20004922.png'
   },
   'MIN': {
     '2023-current': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_2023_sportslogosnet-3953.png',
@@ -75,7 +79,7 @@ export const mlbLogosByYear: LogoByYear = {
     '1994-2009': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_1994_sportslogosnet-3849.png'
   },
   'NYM': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1999-current': 'https://content.sportslogos.net/logos/54/67/full/new_york_mets_logo_primary_1999sportslogosnet8711.png'
   },
   'NYY': {
     '1968-current': 'https://content.sportslogos.net/logos/53/68/full/new_york_yankees_logo_primary_19685115.png'
@@ -85,13 +89,20 @@ export const mlbLogosByYear: LogoByYear = {
     '1993-2024': 'https://content.sportslogos.net/logos/53/69/full/6xk2lpc36146pbg2kydf13e50.png'
   },
   'PHI': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2019-current': 'https://content.sportslogos.net/logos/54/70/full/philadelphia_phillies_logo_primary_20193931.png',
+    '1992-2018': 'https://content.sportslogos.net/logos/54/70/full/philadelphia_phillies_logo_primary_19922235.png'
   },
   'PIT': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2014-current': 'https://content.sportslogos.net/logos/54/71/full/1250_pittsburgh_pirates-primary-2014.png',
+    '1997-2013': 'https://content.sportslogos.net/logos/54/71/full/uorovupw0jagctt6iu1huivi9.png'
   },
   'SD': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2020-current': 'https://content.sportslogos.net/logos/54/73/full/7517_san_diego_padres-primary-2020.png',
+    '2015-2019': 'https://content.sportslogos.net/logos/54/73/full/4344_san_diego_padres-primary-2015.png',
+    '2012-2014': 'https://content.sportslogos.net/logos/54/73/full/ebjtzdtqw33dahm7k8zojhe45.png',
+    '2011-2011': 'https://content.sportslogos.net/logos/54/73/full/xsq9eeflri96j9uo52fg1vk6o.png',
+    '2004-2010': 'https://content.sportslogos.net/logos/54/73/full/5gasxjdlnb5gfhhgeey3z8aob.png',
+    '1992-2003': 'https://content.sportslogos.net/logos/54/73/full/mb1r3sruahwcke10gaxlg8pxr.png'
   },
   'SEA': {
     '1993-current': 'https://content.sportslogos.net/logos/53/75/full/seattle_mariners_logo_primary_19933809.png'
