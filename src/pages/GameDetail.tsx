@@ -102,9 +102,16 @@ const GameDetail = () => {
       return null;
     }
 
-    // Format date as YYYYMMDD and add game number (0 for single games)
+    // Format date as YYYYMMDD
     const gameDate = game.game_date.replace(/-/g, '');
-    const gameId = gameDate + '0';
+    
+    // Handle doubleheaders - use game_num if doubleheader is "S", otherwise use "0"
+    let gameNumber = '0';
+    if (game.doubleheader === 'S' && game.game_num) {
+      gameNumber = game.game_num.toString();
+    }
+    
+    const gameId = gameDate + gameNumber;
     
     return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${gameId}.shtml`;
   };
