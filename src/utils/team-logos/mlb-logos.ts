@@ -72,7 +72,7 @@ const teamVariations: Record<string, string> = {
   'KC': 'KC', 'KCR': 'KC',
   
   // Los Angeles Angels
-  'LAA': 'LAA',
+  'LAA': 'LAA', 'ANA': 'LAA',
   
   // Los Angeles Dodgers
   'LAD': 'LAD',
