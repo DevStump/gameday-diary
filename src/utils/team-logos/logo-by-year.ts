@@ -19,7 +19,8 @@ export const mlbLogosByYear: LogoByYear = {
     '1999-2008': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_19999188.png'
   },
   'BOS': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2009-current': 'https://content.sportslogos.net/logos/53/53/full/boston_red_sox_logo_primary_20097510.png'
+    '1976-2008': 'https://content.sportslogos.net/logos/53/53/full/boston_red_sox_logo_primary_19768800.png'
   },
   'CHC': {
     '2000-current': 'https://content.sportslogos.net/logos/'
@@ -28,14 +29,15 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'CLE': {
-    '2014-current': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png',
+    '2022-current': 'https://content.sportslogos.net/logos/53/6804/full/cleveland_guardians_logo_primary_20227577.png',
+    '2014-2021': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png'
     '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png'
   },
   'COL': {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'CWS': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1991-current': 'https://content.sportslogos.net/logos/53/55/full/chicago_white_sox_logo_primary_19911413.png'
   },
   'DET': {
     '2000-current': 'https://content.sportslogos.net/logos/'
