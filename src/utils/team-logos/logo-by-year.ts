@@ -14,7 +14,9 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/',
   },
   'BAL': {
-    '2000-current': 'https://content.sportslogos.net/logos/',
+    '2019-current': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_20195398.png',
+    '2009-2018': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_20097723.png',
+    '1999-2008': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_19999188.png',
   },
   'BOS': {
     '2000-current': 'https://content.sportslogos.net/logos/',
@@ -70,7 +72,8 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/',
   },
   'OAK': {
-    '2000-current': 'https://content.sportslogos.net/logos/',
+    '2025-current': 'https://content.sportslogos.net/logos/53/6921/full/athletics__logo_primary_2025_sportslogosnet-5001.png',
+    '1993-2024': 'https://content.sportslogos.net/logos/53/69/full/6xk2lpc36146pbg2kydf13e50.png,
   },
   'PHI': {
     '2000-current': 'https://content.sportslogos.net/logos/',
