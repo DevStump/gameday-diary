@@ -34,6 +34,8 @@ interface GameCardProps {
     home_probable_pitcher?: string;
     away_probable_pitcher?: string;
     diaryEntries?: number;
+    doubleheader?: string;
+    game_num?: number;
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
@@ -51,7 +53,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       // Use home team abbreviation (uppercase) and date without dashes
       const date = game.date.replace(/-/g, '');
       const homeTeamCode = homeTeamAbbr.toUpperCase();
-      return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}0.shtml`;
+      
+      // Handle doubleheader games
+      let gameNumber = '0';
+      if (game.doubleheader === 'S' && game.game_num) {
+        gameNumber = game.game_num.toString();
+      }
+      
+      return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}${gameNumber}.shtml`;
     } else {
       // Use existing boxscore_url for NFL
       return game.boxscore_url;
