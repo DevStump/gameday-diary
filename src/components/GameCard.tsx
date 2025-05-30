@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, MapPin, Plus } from 'lucide-react';
+import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,9 +74,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const getScore = () => {
-    // Don't show score for future games
+    // For future games, show placeholder
     if (game.is_future) {
-      return null;
+      return (
+        <div className="text-2xl font-bold text-gray-300">
+          — : —
+        </div>
+      );
     }
     
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
@@ -134,8 +138,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   // Limit venue text to prevent line breaks
   const formatVenue = (venue?: string) => {
     if (!venue) return null;
-    // Limit to 15 characters and add ellipsis if longer
-    return venue.length > 15 ? `${venue.substring(0, 15)}...` : venue;
+    // Limit to 12 characters and add ellipsis if longer
+    return venue.length > 12 ? `${venue.substring(0, 12)}...` : venue;
   };
 
   const score = getScore();
@@ -144,7 +148,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const pitchingResults = getPitchingResults();
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col">
+    <Card className={`hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
+      game.is_future ? 'bg-gray-50' : ''
+    }`}>
       <Link 
         to={`/game/${game.league.toLowerCase()}/${game.game_id}`}
         className="block flex-1 flex flex-col"
@@ -162,6 +168,12 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                 </Badge>
               )}
               {statusTag}
+              {game.is_future && (
+                <Badge variant="outline" className="border-gray-300 text-gray-500">
+                  <Clock className="h-3 w-3 mr-1" />
+                  Scheduled
+                </Badge>
+              )}
             </div>
             {game.venue && (
               <div className="flex items-center text-sm text-gray-600">
@@ -179,19 +191,27 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                 <img 
                   src={getTeamLogo(game.away_team, game.league)} 
                   alt={game.away_team}
-                  className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0"
+                  className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0 ${
+                    game.is_future ? 'opacity-70' : ''
+                  }`}
                 />
-                <span className="font-medium text-gray-900 text-sm sm:text-base truncate">{formatTeamName(game.away_team, game.league)}</span>
+                <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+                  game.is_future ? 'text-gray-600' : ''
+                }`}>{formatTeamName(game.away_team, game.league)}</span>
               </div>
               
               <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
               
               <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-start">
-                <span className="font-medium text-gray-900 text-sm sm:text-base truncate">{formatTeamName(game.home_team, game.league)}</span>
+                <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+                  game.is_future ? 'text-gray-600' : ''
+                }`}>{formatTeamName(game.home_team, game.league)}</span>
                 <img 
                   src={getTeamLogo(game.home_team, game.league)} 
                   alt={game.home_team}
-                  className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0"
+                  className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0 ${
+                    game.is_future ? 'opacity-70' : ''
+                  }`}
                 />
               </div>
             </div>
@@ -199,8 +219,15 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {/* Score container - fixed height */}
             <div className="h-[32px] flex items-center justify-center">
               {score && (
-                <div className="text-2xl font-bold text-field-green">
+                <div className={`text-2xl font-bold ${
+                  game.is_future ? 'text-gray-300' : 'text-field-green'
+                }`}>
                   {score}
+                </div>
+              )}
+              {game.is_future && !score && (
+                <div className="text-sm italic text-gray-500">
+                  Not yet played
                 </div>
               )}
             </div>

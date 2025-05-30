@@ -22,32 +22,34 @@ export const useGame = (gameId: string, league: 'NFL' | 'MLB') => {
       }
 
       if (league === 'MLB') {
-        // Map new field names to old structure for compatibility
+        // Handle MLB data structure with safe property access
+        const mlbData = data as any;
         return {
-          ...data,
+          ...mlbData,
           league,
-          date: data.game_date || data.date,
-          home_team: data.home_name || data.home_team,
-          away_team: data.away_name || data.away_team,
-          runs_scored: data.home_score || null,
-          runs_allowed: data.away_score || null,
-          playoff: data.game_type ? ['W', 'D', 'L'].includes(data.game_type) : false,
-          venue: data.venue_name || 'Stadium',
-          winning_pitcher: data.winning_pitcher || null,
-          losing_pitcher: data.losing_pitcher || null,
-          save_pitcher: data.save_pitcher || null,
+          date: mlbData.game_date || mlbData.date || null,
+          home_team: mlbData.home_name || mlbData.home_team || null,
+          away_team: mlbData.away_name || mlbData.away_team || null,
+          runs_scored: mlbData.home_score || null,
+          runs_allowed: mlbData.away_score || null,
+          playoff: mlbData.game_type ? ['W', 'D', 'L'].includes(mlbData.game_type) : false,
+          venue: mlbData.venue_name || 'Stadium',
+          winning_pitcher: mlbData.winning_pitcher || null,
+          losing_pitcher: mlbData.losing_pitcher || null,
+          save_pitcher: mlbData.save_pitcher || null,
           // Check if game is in the future (no final score and status not final)
-          is_future: !data.home_score && !data.away_score && data.status !== 'Final',
+          is_future: !mlbData.home_score && !mlbData.away_score && mlbData.status !== 'Final',
         };
       }
 
-      // NFL data structure
+      // Handle NFL data structure with safe property access
+      const nflData = data as any;
       return {
-        ...data,
+        ...nflData,
         league,
         venue: 'Stadium',
         // Check if game is in the future (no final score)
-        is_future: !data.pts_off && !data.pts_def,
+        is_future: !nflData.pts_off && !nflData.pts_def,
       };
     },
     enabled: !!gameId && !!league,
