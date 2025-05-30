@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, Plus, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -51,11 +52,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   // Generate boxscore URL based on league
   const generateBoxscoreUrl = () => {
     if (game.league === 'MLB') {
+      // Special mapping for LAA to ANA for Baseball Reference URLs
+      const urlTeamCode = homeTeamAbbr === 'LAA' ? 'ANA' : homeTeamAbbr;
+      
       // Use team_code from database for Baseball Reference URL
       // Look up by file_code (our abbreviation) to get the correct Baseball Reference team_code
       // Ensure uppercase lookup for consistent mapping
-      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      const homeTeamCode = (mappedTeamCode || homeTeamAbbr).toUpperCase();
+      const mappedTeamCode = teamCodeMap[urlTeamCode.toUpperCase()];
+      const homeTeamCode = (mappedTeamCode || urlTeamCode).toUpperCase();
       const date = game.date.replace(/-/g, '');
       
       // Handle doubleheader games
@@ -64,7 +68,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         gameNumber = game.game_num.toString();
       }
       
-      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, mapped_code=${mappedTeamCode}, final_code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
+      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, url_team=${urlTeamCode}, mapped_code=${mappedTeamCode}, final_code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
       return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}${gameNumber}.shtml`;
     } else {
       // Use existing boxscore_url for NFL
