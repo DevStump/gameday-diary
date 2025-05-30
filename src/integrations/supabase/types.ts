@@ -9,60 +9,141 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      mlb_games: {
+      mlb_schedule: {
         Row: {
-          attendance: number | null
-          away_team: string | null
-          boxscore_url: string | null
-          date: string | null
-          game_id: string
-          home_team: string | null
-          innings: number | null
+          away_id: number | null
+          away_name: string | null
+          away_pitcher_note: string | null
+          away_probable_pitcher: string | null
+          away_score: number | null
+          created_at: string | null
+          current_inning: number | null
+          doubleheader: string | null
+          game_date: string | null
+          game_datetime: string | null
+          game_id: number
+          game_num: number | null
+          game_type: string | null
+          home_id: number | null
+          home_name: string | null
+          home_pitcher_note: string | null
+          home_probable_pitcher: string | null
+          home_score: number | null
+          id: string
+          inning_state: string | null
           losing_pitcher: string | null
-          playoff: boolean | null
-          result: string | null
-          runs_allowed: number | null
-          runs_scored: number | null
-          saving_pitcher: string | null
-          time_of_game: number | null
-          walkoff: boolean | null
+          losing_team: string | null
+          save_pitcher: string | null
+          season: number
+          status: string | null
+          summary: string | null
+          venue_id: number | null
+          venue_name: string | null
           winning_pitcher: string | null
+          winning_team: string | null
         }
         Insert: {
-          attendance?: number | null
-          away_team?: string | null
-          boxscore_url?: string | null
-          date?: string | null
-          game_id: string
-          home_team?: string | null
-          innings?: number | null
+          away_id?: number | null
+          away_name?: string | null
+          away_pitcher_note?: string | null
+          away_probable_pitcher?: string | null
+          away_score?: number | null
+          created_at?: string | null
+          current_inning?: number | null
+          doubleheader?: string | null
+          game_date?: string | null
+          game_datetime?: string | null
+          game_id: number
+          game_num?: number | null
+          game_type?: string | null
+          home_id?: number | null
+          home_name?: string | null
+          home_pitcher_note?: string | null
+          home_probable_pitcher?: string | null
+          home_score?: number | null
+          id?: string
+          inning_state?: string | null
           losing_pitcher?: string | null
-          playoff?: boolean | null
-          result?: string | null
-          runs_allowed?: number | null
-          runs_scored?: number | null
-          saving_pitcher?: string | null
-          time_of_game?: number | null
-          walkoff?: boolean | null
+          losing_team?: string | null
+          save_pitcher?: string | null
+          season: number
+          status?: string | null
+          summary?: string | null
+          venue_id?: number | null
+          venue_name?: string | null
           winning_pitcher?: string | null
+          winning_team?: string | null
         }
         Update: {
-          attendance?: number | null
-          away_team?: string | null
-          boxscore_url?: string | null
-          date?: string | null
-          game_id?: string
-          home_team?: string | null
-          innings?: number | null
+          away_id?: number | null
+          away_name?: string | null
+          away_pitcher_note?: string | null
+          away_probable_pitcher?: string | null
+          away_score?: number | null
+          created_at?: string | null
+          current_inning?: number | null
+          doubleheader?: string | null
+          game_date?: string | null
+          game_datetime?: string | null
+          game_id?: number
+          game_num?: number | null
+          game_type?: string | null
+          home_id?: number | null
+          home_name?: string | null
+          home_pitcher_note?: string | null
+          home_probable_pitcher?: string | null
+          home_score?: number | null
+          id?: string
+          inning_state?: string | null
           losing_pitcher?: string | null
-          playoff?: boolean | null
-          result?: string | null
-          runs_allowed?: number | null
-          runs_scored?: number | null
-          saving_pitcher?: string | null
-          time_of_game?: number | null
-          walkoff?: boolean | null
+          losing_team?: string | null
+          save_pitcher?: string | null
+          season?: number
+          status?: string | null
+          summary?: string | null
+          venue_id?: number | null
+          venue_name?: string | null
           winning_pitcher?: string | null
+          winning_team?: string | null
+        }
+        Relationships: []
+      }
+      mlb_teams: {
+        Row: {
+          created_at: string | null
+          file_code: string | null
+          id: string
+          location_name: string | null
+          mlb_team_id: number
+          name: string | null
+          short_name: string | null
+          team_code: string | null
+          team_name: string | null
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          file_code?: string | null
+          id?: string
+          location_name?: string | null
+          mlb_team_id: number
+          name?: string | null
+          short_name?: string | null
+          team_code?: string | null
+          team_name?: string | null
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          file_code?: string | null
+          id?: string
+          location_name?: string | null
+          mlb_team_id?: number
+          name?: string | null
+          short_name?: string | null
+          team_code?: string | null
+          team_name?: string | null
+          year?: number
         }
         Relationships: []
       }

@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -53,38 +54,38 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
     };
     return nflVariants[upperTeam] || [lowerTeam];
   } else {
-    // MLB database stores uppercase, but handle variants
+    // MLB database stores team names as full names, not abbreviations
     const mlbVariants: Record<string, string[]> = {
-      'ARI': ['ARI'],
-      'ATL': ['ATL'],
-      'BAL': ['BAL'],
-      'BOS': ['BOS'],
-      'CHC': ['CHC'],
-      'CWS': ['CWS', 'CHW'],
-      'CIN': ['CIN'],
-      'CLE': ['CLE'],
-      'COL': ['COL'],
-      'DET': ['DET'],
-      'HOU': ['HOU'],
-      'KC': ['KC', 'KCR'],
-      'LAA': ['LAA'],
-      'LAD': ['LAD'],
-      'MIA': ['MIA'],
-      'MIL': ['MIL'],
-      'MIN': ['MIN'],
-      'NYM': ['NYM'],
-      'NYY': ['NYY'],
-      'OAK': ['OAK', 'ATH'],
-      'PHI': ['PHI'],
-      'PIT': ['PIT'],
-      'SD': ['SD', 'SDP'],
-      'SF': ['SF', 'SFG'],
-      'SEA': ['SEA'],
-      'STL': ['STL'],
-      'TB': ['TB', 'TBR'],
-      'TEX': ['TEX'],
-      'TOR': ['TOR'],
-      'WSH': ['WSH', 'WSN']
+      'ARI': ['Arizona Diamondbacks'],
+      'ATL': ['Atlanta Braves'],
+      'BAL': ['Baltimore Orioles'],
+      'BOS': ['Boston Red Sox'],
+      'CHC': ['Chicago Cubs'],
+      'CWS': ['Chicago White Sox'],
+      'CIN': ['Cincinnati Reds'],
+      'CLE': ['Cleveland Guardians'],
+      'COL': ['Colorado Rockies'],
+      'DET': ['Detroit Tigers'],
+      'HOU': ['Houston Astros'],
+      'KC': ['Kansas City Royals'],
+      'LAA': ['Los Angeles Angels'],
+      'LAD': ['Los Angeles Dodgers'],
+      'MIA': ['Miami Marlins'],
+      'MIL': ['Milwaukee Brewers'],
+      'MIN': ['Minnesota Twins'],
+      'NYM': ['New York Mets'],
+      'NYY': ['New York Yankees'],
+      'OAK': ['Oakland Athletics'],
+      'PHI': ['Philadelphia Phillies'],
+      'PIT': ['Pittsburgh Pirates'],
+      'SD': ['San Diego Padres'],
+      'SF': ['San Francisco Giants'],
+      'SEA': ['Seattle Mariners'],
+      'STL': ['St. Louis Cardinals'],
+      'TB': ['Tampa Bay Rays'],
+      'TEX': ['Texas Rangers'],
+      'TOR': ['Toronto Blue Jays'],
+      'WSH': ['Washington Nationals']
     };
     return mlbVariants[upperTeam] || [upperTeam];
   }
@@ -155,7 +156,7 @@ export const useGames = (filters: GameFilters) => {
 
       // Fetch MLB games if no league filter or MLB is selected
       if (!filters.league || filters.league === 'MLB') {
-        let mlbQuery = supabase.from('mlb_games').select('*').order('date', { ascending: false });
+        let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false });
         
         if (searchTeam) {
           // Only filter MLB games if no league specified in search or MLB specified
@@ -165,8 +166,8 @@ export const useGames = (filters: GameFilters) => {
             
             // Create OR conditions for all variants
             const orConditions = teamVariants.flatMap(variant => [
-              `home_team.eq.${variant}`,
-              `away_team.eq.${variant}`
+              `home_name.eq.${variant}`,
+              `away_name.eq.${variant}`
             ]).join(',');
             
             mlbQuery = mlbQuery.or(orConditions);
@@ -177,20 +178,17 @@ export const useGames = (filters: GameFilters) => {
         }
         
         if (filters.season) {
-          // For MLB, filter by year from date since there's no season column
-          const year = parseInt(filters.season);
-          const startDate = `${year}-01-01`;
-          const endDate = `${year}-12-31`;
-          mlbQuery = mlbQuery.gte('date', startDate).lte('date', endDate);
+          mlbQuery = mlbQuery.eq('season', parseInt(filters.season));
         }
         if (filters.playoff) {
-          mlbQuery = mlbQuery.eq('playoff', filters.playoff === 'true');
+          // Filter by game_type for playoffs
+          mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']); // Wild Card, Division, League Championship, World Series
         }
         if (filters.startDate) {
-          mlbQuery = mlbQuery.gte('date', filters.startDate);
+          mlbQuery = mlbQuery.gte('game_date', filters.startDate);
         }
         if (filters.endDate) {
-          mlbQuery = mlbQuery.lte('date', filters.endDate);
+          mlbQuery = mlbQuery.lte('game_date', filters.endDate);
         }
         
         promises.push(mlbQuery);
@@ -237,7 +235,14 @@ export const useGames = (filters: GameFilters) => {
           allGames = allGames.concat(mlbGames.map((game: any) => ({
             ...game,
             league: 'MLB' as const,
-            venue: 'Stadium',
+            // Map new field names to old structure for compatibility
+            date: game.game_date,
+            home_team: game.home_name,
+            away_team: game.away_name,
+            runs_scored: game.home_score,
+            runs_allowed: game.away_score,
+            playoff: ['W', 'D', 'L'].includes(game.game_type),
+            venue: game.venue_name || 'Stadium',
           })));
         }
       }
@@ -246,7 +251,9 @@ export const useGames = (filters: GameFilters) => {
       
       // Sort by date (newest first - descending) using string comparison since dates are in YYYY-MM-DD format
       const sortedGames = allGames.sort((a, b) => {
-        return b.date.localeCompare(a.date);
+        const dateA = a.date || a.game_date;
+        const dateB = b.date || b.game_date;
+        return dateB.localeCompare(dateA);
       });
       
       console.log('Final games count:', sortedGames.length);
