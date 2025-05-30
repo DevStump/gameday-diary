@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -125,7 +124,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     
     return (
       <div className="text-sm text-gray-600">
-        <span className="font-medium">Probable Pitchers:</span> {game.away_probable_pitcher} ({formatTeamName(game.away_team, game.league)}) vs. {game.home_probable_pitcher} ({formatTeamName(game.home_team, game.league)})
+        <span className="font-medium">Probable Pitchers:</span> {game.away_probable_pitcher} ({game.away_team}) vs. {game.home_probable_pitcher} ({game.home_team})
       </div>
     );
   };
@@ -178,33 +177,39 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         {/* Teams and Score - fixed height container */}
         <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
           {/* Team Logos and Names */}
-          <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-1">
-            <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
-              <img 
-                src={getTeamLogo(game.away_team, game.league)} 
-                alt={game.away_team}
-                className={`max-h-10 max-w-10 object-scale-down flex-shrink-0 ${
-                  game.is_future ? 'opacity-70' : ''
-                }`}
-              />
-              <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+          <div className="flex items-center justify-between space-x-4 mb-1">
+            {/* Away Team */}
+            <div className="flex items-center space-x-2 flex-1 justify-end">
+              <div className="w-10 min-w-10 flex justify-center">
+                <img 
+                  src={getTeamLogo(game.away_team, game.league)} 
+                  alt={game.away_team}
+                  className={`max-h-10 max-w-10 object-scale-down ${
+                    game.is_future ? 'opacity-70' : ''
+                  }`}
+                />
+              </div>
+              <span className={`font-medium text-gray-900 text-sm sm:text-base ${
                 game.is_future ? 'text-gray-600' : ''
-              }`}>{formatTeamName(game.away_team, game.league)}</span>
+              }`}>{game.away_team}</span>
             </div>
             
             <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
             
-            <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-start">
-              <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+            {/* Home Team */}
+            <div className="flex items-center space-x-2 flex-1 justify-start">
+              <span className={`font-medium text-gray-900 text-sm sm:text-base ${
                 game.is_future ? 'text-gray-600' : ''
-              }`}>{formatTeamName(game.home_team, game.league)}</span>
-              <img 
-                src={getTeamLogo(game.home_team, game.league)} 
-                alt={game.home_team}
-                className={`max-h-10 max-w-10 object-scale-down flex-shrink-0 ${
-                  game.is_future ? 'opacity-70' : ''
-                }`}
-              />
+              }`}>{game.home_team}</span>
+              <div className="w-10 min-w-10 flex justify-center">
+                <img 
+                  src={getTeamLogo(game.home_team, game.league)} 
+                  alt={game.home_team}
+                  className={`max-h-10 max-w-10 object-scale-down ${
+                    game.is_future ? 'opacity-70' : ''
+                  }`}
+                />
+              </div>
             </div>
           </div>
           
