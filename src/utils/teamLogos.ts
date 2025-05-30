@@ -4,20 +4,20 @@ import { mlbLogos } from './team-logos/mlb-logos';
 import { nflLogos, getNFLCanonicalAbbreviation } from './team-logos/nfl-logos';
 import { mlbNames } from './team-logos/mlb-names';
 import { nflNames } from './team-logos/nfl-names';
-import { normalizeTeamName, mlbNameToCode, nflNameToCode } from './team-name-map';
+import { getHistoricalTeamCode } from './team-name-map';
 
-export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
   if (!teamCode) return '/placeholder.svg';
   
   if (league === 'MLB') {
-    // First try to normalize the team name to get the correct abbreviation
-    const abbr = normalizeTeamName(teamCode, 'MLB');
+    // Get historical team code based on game date
+    const abbr = getHistoricalTeamCode(teamCode, 'MLB', gameDate);
     return mlbLogos[abbr?.toUpperCase()] || mlbLogos[abbr] || '/placeholder.svg';
   }
   
   if (league === 'NFL') {
-    // First try to normalize the team name to get the correct abbreviation
-    const abbr = normalizeTeamName(teamCode, 'NFL');
+    // Get historical team code based on game date
+    const abbr = getHistoricalTeamCode(teamCode, 'NFL', gameDate);
     return nflLogos[abbr?.toUpperCase()] || nflLogos[abbr] || '/placeholder.svg';
   }
   
@@ -25,36 +25,36 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
   return logoMap[teamCode?.toUpperCase()] || logoMap[teamCode] || '/placeholder.svg';
 };
 
-export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
   if (!teamCode) return teamCode;
   
   if (league === 'MLB') {
-    // Use the normalized mapping to get consistent abbreviations
-    return normalizeTeamName(teamCode, 'MLB');
+    // Use historical mapping to get correct abbreviation for the time period
+    return getHistoricalTeamCode(teamCode, 'MLB', gameDate);
   }
   
   if (league === 'NFL') {
-    // Use the normalized mapping, then get canonical NFL abbreviation
-    const normalized = normalizeTeamName(teamCode, 'NFL');
-    return getNFLCanonicalAbbreviation(normalized);
+    // Use historical mapping, then get canonical NFL abbreviation
+    const historical = getHistoricalTeamCode(teamCode, 'NFL', gameDate);
+    return getNFLCanonicalAbbreviation(historical);
   }
   
   return teamCode;
 };
 
-export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
   if (!teamCode) return teamCode;
   
   if (league === 'MLB') {
-    // First normalize to get the correct abbreviation, then get the short name
-    const abbr = normalizeTeamName(teamCode, 'MLB');
+    // Get historical abbreviation first, then get the short name
+    const abbr = getHistoricalTeamCode(teamCode, 'MLB', gameDate);
     return mlbNames[abbr?.toUpperCase()] || mlbNames[abbr] || teamCode;
   }
   
   if (league === 'NFL') {
-    // First normalize to get the correct abbreviation, then get canonical abbreviation
-    const normalized = normalizeTeamName(teamCode, 'NFL');
-    const canonicalAbbr = getNFLCanonicalAbbreviation(normalized);
+    // Get historical abbreviation first, then get canonical abbreviation
+    const historical = getHistoricalTeamCode(teamCode, 'NFL', gameDate);
+    const canonicalAbbr = getNFLCanonicalAbbreviation(historical);
     return nflNames[canonicalAbbr] || teamCode;
   }
   

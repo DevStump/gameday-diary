@@ -1,5 +1,5 @@
 
-// MLB team logos mapping - optimized structure
+// MLB team logos mapping - optimized structure with historical teams
 const logoUrls: Record<string, string> = {
   'ARI': 'https://www.mlbstatic.com/team-logos/109.svg',
   'ATL': 'https://www.mlbstatic.com/team-logos/144.svg',
@@ -31,6 +31,12 @@ const logoUrls: Record<string, string> = {
   'TEX': 'https://www.mlbstatic.com/team-logos/140.svg',
   'TOR': 'https://www.mlbstatic.com/team-logos/141.svg',
   'WSH': 'https://www.mlbstatic.com/team-logos/120.svg',
+  
+  // Historical team logos
+  'MON': 'https://content.sportslogos.net/logos/54/68/full/8121_montreal_expos-primary-1969.png', // Montreal Expos
+  'FLA': 'https://content.sportslogos.net/logos/54/3637/full/7913_florida_marlins-primary-1993.png', // Florida Marlins
+  'ANA': 'https://content.sportslogos.net/logos/53/6521/full/8771_anaheim_angels-primary-1997.png', // Anaheim Angels
+  'CAL': 'https://content.sportslogos.net/logos/53/6521/full/anaheim_angels_logo_primary_19651996.png', // California Angels
 };
 
 // Team code variations mapping to primary codes
@@ -56,7 +62,7 @@ const teamVariations: Record<string, string> = {
   // Cincinnati Reds
   'CIN': 'CIN',
   
-  // Cleveland Guardians
+  // Cleveland Guardians/Indians
   'CLE': 'CLE',
   
   // Colorado Rockies
@@ -71,14 +77,14 @@ const teamVariations: Record<string, string> = {
   // Kansas City Royals
   'KC': 'KC', 'KCR': 'KC',
   
-  // Los Angeles Angels
-  'LAA': 'LAA', 'ANA': 'LAA',
+  // Los Angeles Angels (and historical)
+  'LAA': 'LAA', 'ANA': 'ANA', 'CAL': 'CAL',
   
   // Los Angeles Dodgers
   'LAD': 'LAD',
   
-  // Miami Marlins
-  'MIA': 'MIA',
+  // Miami Marlins / Florida Marlins
+  'MIA': 'MIA', 'FLA': 'FLA',
   
   // Milwaukee Brewers
   'MIL': 'MIL',
@@ -122,8 +128,8 @@ const teamVariations: Record<string, string> = {
   // Toronto Blue Jays
   'TOR': 'TOR',
   
-  // Washington Nationals
-  'WSH': 'WSH', 'WSN': 'WSH',
+  // Washington Nationals / Montreal Expos
+  'WSH': 'WSH', 'WSN': 'WSH', 'MON': 'MON',
 };
 
 // Generate the final mapping

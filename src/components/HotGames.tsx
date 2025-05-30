@@ -56,30 +56,30 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
           const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
           
           return (
-            <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 h-full flex flex-col">
-              <CardContent className="p-4 flex-1 flex flex-col">
-                {/* Top badges - fixed height */}
-                <div className="flex justify-between items-start mb-3 min-h-[32px]">
-                  <div className="flex items-center space-x-2 flex-wrap">
-                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
+            <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+              <CardContent className="p-3">
+                {/* Top badges - compact */}
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs px-2 py-0.5">
                       #{index + 1} Hot
                     </Badge>
-                    <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+                    <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-xs px-2 py-0.5">
                       {game.league}
                     </Badge>
                   </div>
                 </div>
 
-                {/* Venue row - same as regular cards */}
+                {/* Venue row - compact */}
                 {game.venue && (
-                  <div className="flex items-center justify-center text-sm text-gray-600 mb-3 min-h-[20px]">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-center">{game.venue}</span>
+                  <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    <span className="text-center truncate">{game.venue}</span>
                   </div>
                 )}
 
-                {/* Teams and logos - using same component as regular cards */}
-                <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
+                {/* Teams and logos - compact */}
+                <div className="text-center mb-2">
                   <GameTeamDisplay 
                     homeTeam={homeTeamAbbr}
                     awayTeam={awayTeamAbbr}
@@ -88,33 +88,31 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                   />
                 </div>
 
-                {/* Date with same format as regular cards */}
-                <div className="text-center min-h-[50px] flex flex-col justify-start">
+                {/* Date - compact */}
+                <div className="text-center mb-2">
                   <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
                 </div>
 
-                {/* Add to Diary Button */}
+                {/* Add to Diary Button - compact */}
                 {onAddToDiary && (
-                  <div className="mt-auto pt-3">
-                    <Button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onAddToDiary(
-                          game.game_id,
-                          `${game.away_team} @ ${game.home_team}`,
-                          game.home_team,
-                          game.away_team,
-                          game.league
-                        );
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onAddToDiary(
+                        game.game_id,
+                        `${game.away_team} @ ${game.home_team}`,
+                        game.home_team,
+                        game.away_team,
+                        game.league
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors text-xs py-1"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                  </Button>
                 )}
               </CardContent>
             </Card>
@@ -123,36 +121,36 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
       </div>
 
       {/* Mobile: single column with expand functionality */}
-      <div className="md:hidden space-y-4">
+      <div className="md:hidden space-y-3">
         {displayedGames.map((game, index) => {
           const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
           const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
           
           return (
-            <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 h-full flex flex-col">
-              <CardContent className="p-4 flex-1 flex flex-col">
-                {/* Top badges - fixed height */}
-                <div className="flex justify-between items-start mb-3 min-h-[32px]">
-                  <div className="flex items-center space-x-2 flex-wrap">
-                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
+            <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+              <CardContent className="p-3">
+                {/* Top badges - compact */}
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs px-2 py-0.5">
                       #{index + 1} Hot
                     </Badge>
-                    <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+                    <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-xs px-2 py-0.5">
                       {game.league}
                     </Badge>
                   </div>
                 </div>
 
-                {/* Venue row - same as regular cards */}
+                {/* Venue row - compact */}
                 {game.venue && (
-                  <div className="flex items-center justify-center text-sm text-gray-600 mb-3 min-h-[20px]">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-center">{game.venue}</span>
+                  <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    <span className="text-center truncate">{game.venue}</span>
                   </div>
                 )}
 
-                {/* Teams and logos - using same component as regular cards */}
-                <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
+                {/* Teams and logos - compact */}
+                <div className="text-center mb-2">
                   <GameTeamDisplay 
                     homeTeam={homeTeamAbbr}
                     awayTeam={awayTeamAbbr}
@@ -161,33 +159,31 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                   />
                 </div>
 
-                {/* Date with same format as regular cards */}
-                <div className="text-center min-h-[50px] flex flex-col justify-start">
+                {/* Date - compact */}
+                <div className="text-center mb-2">
                   <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
                 </div>
 
-                {/* Add to Diary Button */}
+                {/* Add to Diary Button - compact */}
                 {onAddToDiary && (
-                  <div className="mt-auto pt-3">
-                    <Button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onAddToDiary(
-                          game.game_id,
-                          `${game.away_team} @ ${game.home_team}`,
-                          game.home_team,
-                          game.away_team,
-                          game.league
-                        );
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onAddToDiary(
+                        game.game_id,
+                        `${game.away_team} @ ${game.home_team}`,
+                        game.home_team,
+                        game.away_team,
+                        game.league
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors text-xs py-1"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                  </Button>
                 )}
               </CardContent>
             </Card>

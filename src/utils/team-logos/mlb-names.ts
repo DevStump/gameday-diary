@@ -1,5 +1,5 @@
 
-// MLB team names mapping
+// MLB team names mapping including historical teams
 export const mlbNames: Record<string, string> = {
   'ARI': 'Diamondbacks',
   'ATL': 'Braves',
@@ -38,4 +38,10 @@ export const mlbNames: Record<string, string> = {
   'TOR': 'Blue Jays',
   'WSH': 'Nationals',
   'WSN': 'Nationals',
+  
+  // Historical teams
+  'MON': 'Expos',
+  'FLA': 'Marlins',
+  'ANA': 'Angels',
+  'CAL': 'Angels',
 };
