@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
+import { Calendar, MapPin, Plus, Clock, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -147,11 +148,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     );
   };
 
-  // Limit venue text to prevent line breaks
-  const formatVenue = (venue?: string) => {
-    if (!venue) return null;
-    // Limit to 12 characters and add ellipsis if longer
-    return venue.length > 12 ? `${venue.substring(0, 12)}...` : venue;
+  // Generate random diary entries count
+  const getDiaryEntriesCount = () => {
+    return Math.floor(Math.random() * (10000 - 9 + 1)) + 9;
   };
 
   const score = getScore();
@@ -168,7 +167,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         className="block flex-1 flex flex-col"
       >
         <CardContent className="p-4 cursor-pointer flex-1 flex flex-col">
-          {/* Top badges - fixed height */}
+          {/* Top badges and diary counter - fixed height */}
           <div className="flex justify-between items-start mb-2 min-h-[32px]">
             <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
@@ -176,13 +175,18 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               </Badge>
               {statusTag}
             </div>
-            {game.venue && (
-              <div className="flex items-center text-sm text-gray-600">
-                <MapPin className="h-4 w-4 mr-1" />
-                <span className="truncate">{formatVenue(game.venue)}</span>
-              </div>
-            )}
+            <div className="flex items-center text-xs text-gray-600">
+              📖 <span className="ml-1">Diary Entries: {getDiaryEntriesCount()}</span>
+            </div>
           </div>
+
+          {/* Venue row - fixed height container */}
+          {game.venue && (
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{game.venue}</span>
+            </div>
+          )}
 
           {/* Teams and Score - fixed height container */}
           <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
