@@ -45,9 +45,9 @@ interface GameCardProps {
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
   
-  // Convert team names to abbreviations
-  const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
-  const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
+  // Convert team names to abbreviations with game date for historical accuracy
+  const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+  const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
 
   // Generate boxscore URL based on league
   const generateBoxscoreUrl = () => {
@@ -133,12 +133,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
         {/* Teams and Score - fixed height container */}
         <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
-          {/* Team Logos and Names */}
+          {/* Team Logos and Names - pass game date for historical logos */}
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
             league={game.league}
             isFuture={game.is_future}
+            gameDate={game.date}
           />
           
           {/* Score/Status container - fixed height */}

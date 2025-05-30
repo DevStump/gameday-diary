@@ -1,53 +1,43 @@
 
 import React from 'react';
-import { getTeamLogo } from '@/utils/teamLogos';
+import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
 
 interface GameTeamDisplayProps {
   homeTeam: string;
   awayTeam: string;
   league: 'NFL' | 'MLB';
   isFuture?: boolean;
+  gameDate?: string;
 }
 
-const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture }: GameTeamDisplayProps) => {
+const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: GameTeamDisplayProps) => {
   return (
-    <div className="flex items-center justify-center space-x-4 mb-2">
+    <div className="flex items-center justify-between space-x-2 mb-3">
       {/* Away Team */}
-      <div className="flex items-center space-x-2 min-w-0 flex-1 justify-end">
-        <div className="flex items-center space-x-1">
-          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-            <img 
-              src={getTeamLogo(awayTeam, league)} 
-              alt={awayTeam}
-              className={`max-h-10 max-w-10 object-contain ${
-                isFuture ? 'opacity-70' : ''
-              }`}
-            />
-          </div>
-          <span className={`font-medium text-gray-900 text-sm sm:text-base whitespace-nowrap ${
-            isFuture ? 'text-gray-600' : ''
-          }`}>{awayTeam}</span>
-        </div>
+      <div className="flex items-center space-x-2 flex-1">
+        <img 
+          src={getTeamLogo(awayTeam, league, gameDate)} 
+          alt={awayTeam}
+          className="h-8 w-8 object-contain flex-shrink-0"
+        />
+        <span className="text-sm font-medium text-gray-900 truncate">
+          {formatTeamName(awayTeam, league, gameDate)}
+        </span>
       </div>
       
-      <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0 px-2">@</span>
+      {/* @ symbol */}
+      <span className="text-gray-500 font-medium px-2">@</span>
       
       {/* Home Team */}
-      <div className="flex items-center space-x-2 min-w-0 flex-1 justify-start">
-        <div className="flex items-center space-x-1">
-          <span className={`font-medium text-gray-900 text-sm sm:text-base whitespace-nowrap ${
-            isFuture ? 'text-gray-600' : ''
-          }`}>{homeTeam}</span>
-          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-            <img 
-              src={getTeamLogo(homeTeam, league)} 
-              alt={homeTeam}
-              className={`max-h-10 max-w-10 object-contain ${
-                isFuture ? 'opacity-70' : ''
-              }`}
-            />
-          </div>
-        </div>
+      <div className="flex items-center space-x-2 flex-1 justify-end">
+        <span className="text-sm font-medium text-gray-900 truncate">
+          {formatTeamName(homeTeam, league, gameDate)}
+        </span>
+        <img 
+          src={getTeamLogo(homeTeam, league, gameDate)} 
+          alt={homeTeam}
+          className="h-8 w-8 object-contain flex-shrink-0"
+        />
       </div>
     </div>
   );

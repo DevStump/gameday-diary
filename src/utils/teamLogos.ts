@@ -5,24 +5,33 @@ import { nflLogos, getNFLCanonicalAbbreviation } from './team-logos/nfl-logos';
 import { mlbNames } from './team-logos/mlb-names';
 import { nflNames } from './team-logos/nfl-names';
 import { getHistoricalTeamCode } from './team-name-map';
+import { getLogoByYear } from './team-logos/logo-by-year';
 
 export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
   if (!teamCode) return '/placeholder.svg';
   
+  // Get historical team code based on game date
+  const historicalTeamCode = getHistoricalTeamCode(teamCode, league || 'MLB', gameDate);
+  
+  // If we have a game date, try to get year-specific logo first
+  if (gameDate && league) {
+    const year = new Date(gameDate).getFullYear();
+    const yearBasedLogo = getLogoByYear(historicalTeamCode, year, league);
+    if (yearBasedLogo) {
+      return yearBasedLogo;
+    }
+  }
+  
   if (league === 'MLB') {
-    // Get historical team code based on game date
-    const abbr = getHistoricalTeamCode(teamCode, 'MLB', gameDate);
-    return mlbLogos[abbr?.toUpperCase()] || mlbLogos[abbr] || '/placeholder.svg';
+    return mlbLogos[historicalTeamCode?.toUpperCase()] || mlbLogos[historicalTeamCode] || '/placeholder.svg';
   }
   
   if (league === 'NFL') {
-    // Get historical team code based on game date
-    const abbr = getHistoricalTeamCode(teamCode, 'NFL', gameDate);
-    return nflLogos[abbr?.toUpperCase()] || nflLogos[abbr] || '/placeholder.svg';
+    return nflLogos[historicalTeamCode?.toUpperCase()] || nflLogos[historicalTeamCode] || '/placeholder.svg';
   }
   
   const logoMap = league === 'NFL' ? nflLogos : mlbLogos;
-  return logoMap[teamCode?.toUpperCase()] || logoMap[teamCode] || '/placeholder.svg';
+  return logoMap[historicalTeamCode?.toUpperCase()] || logoMap[historicalTeamCode] || '/placeholder.svg';
 };
 
 export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
