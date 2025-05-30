@@ -12,6 +12,7 @@ interface GameCardProps {
   game: {
     game_id: string;
     date: string;
+    game_datetime?: string;
     home_team: string;
     away_team: string;
     league: 'NFL' | 'MLB';
@@ -23,14 +24,42 @@ interface GameCardProps {
     venue?: string;
     boxscore_url?: string;
     is_future?: boolean;
+    status?: string;
+    summary?: string;
+    doubleheader?: string;
+    game_num?: number;
+    game_type?: string;
+    winning_pitcher?: string;
+    losing_pitcher?: string;
+    save_pitcher?: string;
+    home_probable_pitcher?: string;
+    away_probable_pitcher?: string;
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
 }
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
-  const formatDate = (dateString: string) => {
-    // Just use the date string directly from database
+  const formatDateTime = (dateString: string, datetimeString?: string) => {
+    if (datetimeString) {
+      try {
+        const date = new Date(datetimeString);
+        const options: Intl.DateTimeFormatOptions = {
+          timeZone: 'America/New_York',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        };
+        return date.toLocaleDateString('en-US', options) + ' EST';
+      } catch (e) {
+        console.error('Error parsing datetime:', e);
+      }
+    }
+    
+    // Fallback to date string formatting
     const dateParts = dateString.split('-');
     if (dateParts.length === 3) {
       const year = dateParts[0];
@@ -41,8 +70,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const monthName = monthNames[parseInt(month) - 1];
       
-      const formattedDate = `${monthName} ${parseInt(day)}, ${year}`;
-      return formattedDate;
+      return `${monthName} ${parseInt(day)}, ${year}`;
     }
     
     return dateString;
@@ -55,17 +83,69 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }
     
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      // Fixed: Show home team score on the right (pts_def - pts_off instead of pts_off - pts_def)
       return `${game.pts_def} - ${game.pts_off}`;
     }
     if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      // Keep MLB scores as they are (away team score first, then home team score)
       return `${game.runs_allowed} - ${game.runs_scored}`;
     }
     return null;
   };
 
+  const getDoubleheaderInfo = () => {
+    if (game.doubleheader && game.game_num) {
+      return `Doubleheader Game ${game.game_num}`;
+    }
+    return null;
+  };
+
+  const getStatusTag = () => {
+    if (!game.status) return null;
+    
+    const status = game.status.toLowerCase();
+    if (status.includes('spring training') || status.includes('exhibition') || status.includes('playoff')) {
+      return (
+        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+          {game.status}
+        </Badge>
+      );
+    }
+    return null;
+  };
+
+  const getProbablePitchers = () => {
+    if (!game.is_future || !game.away_probable_pitcher || !game.home_probable_pitcher) {
+      return null;
+    }
+    
+    return (
+      <div className="text-sm text-gray-600 mt-2">
+        <span className="font-medium">Probable Pitchers:</span> {game.away_probable_pitcher} ({formatTeamName(game.away_team, game.league)}) vs. {game.home_probable_pitcher} ({formatTeamName(game.home_team, game.league)})
+      </div>
+    );
+  };
+
+  const getPitchingResults = () => {
+    if (game.is_future) return null;
+    
+    const results = [];
+    if (game.winning_pitcher) results.push(`WP: ${game.winning_pitcher}`);
+    if (game.losing_pitcher) results.push(`LP: ${game.losing_pitcher}`);
+    if (game.save_pitcher) results.push(`SV: ${game.save_pitcher}`);
+    
+    if (results.length === 0) return null;
+    
+    return (
+      <div className="text-sm text-gray-600 mt-1">
+        {results.join(', ')}
+      </div>
+    );
+  };
+
   const score = getScore();
+  const doubleheaderInfo = getDoubleheaderInfo();
+  const statusTag = getStatusTag();
+  const probablePitchers = getProbablePitchers();
+  const pitchingResults = getPitchingResults();
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col">
@@ -76,7 +156,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         <CardContent className="p-6 cursor-pointer flex-1 flex flex-col">
           {/* Top badges */}
           <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
               </Badge>
@@ -85,11 +165,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                   Playoff
                 </Badge>
               )}
-              {game.is_future && (
-                <Badge variant="outline" className="border-gray-400 text-gray-600">
-                  Future Game
-                </Badge>
-              )}
+              {statusTag}
             </div>
             {game.venue && (
               <div className="flex items-center text-sm text-gray-600">
@@ -131,10 +207,39 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             )}
           </div>
 
-          {/* Date at bottom */}
-          <div className="flex items-center justify-center text-sm text-gray-600">
-            <Calendar className="h-4 w-4 mr-1" />
-            {formatDate(game.date)}
+          {/* Date and additional info at bottom */}
+          <div className="text-center">
+            <div className="flex items-center justify-center text-sm text-gray-600">
+              <Calendar className="h-4 w-4 mr-1" />
+              {formatDateTime(game.date, game.game_datetime)}
+            </div>
+            
+            {doubleheaderInfo && (
+              <div className="text-sm text-gray-600 mt-1">
+                {doubleheaderInfo}
+              </div>
+            )}
+            
+            {game.is_future && game.status && (
+              <div className="text-sm text-gray-600 mt-1">
+                {game.status}
+              </div>
+            )}
+            
+            {!game.is_future && game.summary && (
+              <div className="text-sm text-gray-600 mt-1">
+                {game.summary}
+              </div>
+            )}
+            
+            {!game.is_future && game.status && !game.summary && (
+              <div className="text-sm text-gray-600 mt-1">
+                {game.status}
+              </div>
+            )}
+            
+            {pitchingResults}
+            {probablePitchers}
           </div>
         </CardContent>
       </Link>

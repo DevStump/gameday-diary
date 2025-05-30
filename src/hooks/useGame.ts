@@ -41,6 +41,7 @@ export const useGame = (gameId: string, league: 'NFL' | 'MLB') => {
         };
       }
 
+      // NFL data structure
       return {
         ...data,
         league,
