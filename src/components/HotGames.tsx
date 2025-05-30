@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
-import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameDateTime from './game-card/GameDateTime';
 
@@ -52,8 +52,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
       {/* Desktop: show all 3 games in grid */}
       <div className="hidden md:grid md:grid-cols-3 gap-4">
         {hotGames.map((game, index) => {
-          const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
-          const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
+          const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+          const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
           
           return (
             <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
@@ -85,6 +85,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     awayTeam={awayTeamAbbr}
                     league={game.league}
                     isFuture={game.is_future}
+                    gameDate={game.date}
                   />
                 </div>
 
@@ -123,8 +124,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
       {/* Mobile: single column with expand functionality */}
       <div className="md:hidden space-y-3">
         {displayedGames.map((game, index) => {
-          const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
-          const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
+          const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+          const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
           
           return (
             <Card key={game.game_id} className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
@@ -156,6 +157,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     awayTeam={awayTeamAbbr}
                     league={game.league}
                     isFuture={game.is_future}
+                    gameDate={game.date}
                   />
                 </div>
 

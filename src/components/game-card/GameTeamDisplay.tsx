@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
+import { getTeamLogo } from '@/utils/teamLogos';
 
 interface GameTeamDisplayProps {
   homeTeam: string;
@@ -21,7 +21,7 @@ const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: Gam
           className="h-8 w-8 object-contain flex-shrink-0"
         />
         <span className="text-sm font-medium text-gray-900 truncate">
-          {formatTeamName(awayTeam, league, gameDate)}
+          {awayTeam}
         </span>
       </div>
       
@@ -31,7 +31,7 @@ const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: Gam
       {/* Home Team */}
       <div className="flex items-center space-x-2 flex-1 justify-end">
         <span className="text-sm font-medium text-gray-900 truncate">
-          {formatTeamName(homeTeam, league, gameDate)}
+          {homeTeam}
         </span>
         <img 
           src={getTeamLogo(homeTeam, league, gameDate)} 
