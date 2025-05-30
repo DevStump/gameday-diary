@@ -115,9 +115,17 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
+      // Get today's date for filtering future games
+      const today = new Date().toISOString().split('T')[0];
+      
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
+        
+        // Filter out future games by default (unless date filters are specified)
+        if (!filters.startDate && !filters.endDate) {
+          nflQuery = nflQuery.lte('date', today);
+        }
         
         if (searchTeam) {
           // Only filter NFL games if no league specified in search or NFL specified
@@ -157,6 +165,11 @@ export const useGames = (filters: GameFilters) => {
       // Fetch MLB games if no league filter or MLB is selected
       if (!filters.league || filters.league === 'MLB') {
         let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false });
+        
+        // Filter out future games by default (unless date filters are specified)
+        if (!filters.startDate && !filters.endDate) {
+          mlbQuery = mlbQuery.lte('game_date', today);
+        }
         
         if (searchTeam) {
           // Only filter MLB games if no league specified in search or MLB specified
@@ -218,6 +231,7 @@ export const useGames = (filters: GameFilters) => {
             ...game,
             league: 'NFL' as const,
             venue: 'Stadium',
+            is_future: !game.pts_off && !game.pts_def,
           })));
         }
       }
@@ -243,6 +257,7 @@ export const useGames = (filters: GameFilters) => {
             runs_allowed: game.away_score,
             playoff: ['W', 'D', 'L'].includes(game.game_type),
             venue: game.venue_name || 'Stadium',
+            is_future: !game.home_score && !game.away_score && game.status !== 'Final',
           })));
         }
       }

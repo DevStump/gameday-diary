@@ -89,6 +89,11 @@ const GameDetail = () => {
   }
 
   const getScore = () => {
+    // Don't show score for future games
+    if (game.is_future) {
+      return null;
+    }
+    
     if (game.league === 'NFL') {
       const nflGame = game as any;
       if (nflGame.pts_off !== undefined && nflGame.pts_def !== undefined) {
@@ -131,6 +136,11 @@ const GameDetail = () => {
               {(game as any).playoff && (
                 <Badge variant="outline" className="border-sports-gold text-sports-gold">
                   Playoff Game
+                </Badge>
+              )}
+              {game.is_future && (
+                <Badge variant="outline" className="border-gray-400 text-gray-600">
+                  Future Game
                 </Badge>
               )}
             </div>
@@ -210,8 +220,8 @@ const GameDetail = () => {
                   {user ? 'Add to My Diary' : 'Sign in to Add to Diary'}
                 </Button>
                 
-                {/* View Boxscore for both NFL and MLB games */}
-                {(game as any).boxscore_url && (
+                {/* View Boxscore for both NFL and MLB games - only show for completed games */}
+                {(game as any).boxscore_url && !game.is_future && (
                   <a 
                     href={(game as any).boxscore_url} 
                     target="_blank" 

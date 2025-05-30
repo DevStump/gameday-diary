@@ -22,6 +22,7 @@ interface GameCardProps {
     playoff?: boolean;
     venue?: string;
     boxscore_url?: string;
+    is_future?: boolean;
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
@@ -48,6 +49,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const getScore = () => {
+    // Don't show score for future games
+    if (game.is_future) {
+      return null;
+    }
+    
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
       // Fixed: Show home team score on the right (pts_def - pts_off instead of pts_off - pts_def)
       return `${game.pts_def} - ${game.pts_off}`;
@@ -77,6 +83,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {game.playoff && (
                 <Badge variant="outline" className="border-sports-gold text-sports-gold">
                   Playoff
+                </Badge>
+              )}
+              {game.is_future && (
+                <Badge variant="outline" className="border-gray-400 text-gray-600">
+                  Future Game
                 </Badge>
               )}
             </div>
@@ -129,12 +140,12 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       </Link>
 
       {/* Vertical divider with margins */}
-      <div className="border-t border-gray-200 mx-2"></div>
+      <div className="border-t border-gray-200 mx-6"></div>
 
       <CardFooter className="p-6 pt-0">
         <div className="w-full space-y-3">
-          {/* View Boxscore Link with padding */}
-          {game.boxscore_url && (
+          {/* View Boxscore Link with padding - only show for completed games */}
+          {game.boxscore_url && !game.is_future && (
             <div className="flex justify-center pt-2">
               <a 
                 href={game.boxscore_url} 
