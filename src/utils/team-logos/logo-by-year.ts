@@ -23,8 +23,8 @@ export const mlbLogosByYear: LogoByYear = {
   },
   'TB': {
     '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20196768.png', // Tampa Bay Rays
-    '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png' // Tampa Bay Devil Rays
-    '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png' // Tampa Bay Devil Rays
+    '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png', // Tampa Bay Devil Rays
+    '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png', // Tampa Bay Devil Rays
     '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png' // Tampa Bay Devil Rays
   },
   'CLE': {
