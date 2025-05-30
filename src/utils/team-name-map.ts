@@ -43,13 +43,6 @@ export const mlbNameToCode: Record<string, string> = {
   "Tampa Bay Devil Rays": "TB", // 1998-2007 (became Rays in 2008)
   "Cleveland Indians": "CLE", // Pre-2021 (became Guardians in 2022)
   
-  // Variations and abbreviations sometimes found in data
-  "Miami Marlins": "MIA",
-  "Washington Nationals": "WSH",
-  "Los Angeles Angels": "LAA",
-  "Tampa Bay Rays": "TB",
-  "Cleveland Guardians": "CLE",
-  
   // Common shortened versions
   "Diamondbacks": "ARI",
   "Braves": "ATL",
