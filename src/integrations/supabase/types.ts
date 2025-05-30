@@ -225,6 +225,21 @@ export type Database = {
         }
         Relationships: []
       }
+      nfl_teams: {
+        Row: {
+          abbr: string
+          display_abbr: string
+        }
+        Insert: {
+          abbr: string
+          display_abbr: string
+        }
+        Update: {
+          abbr?: string
+          display_abbr?: string
+        }
+        Relationships: []
+      }
       user_game_logs: {
         Row: {
           company: string | null

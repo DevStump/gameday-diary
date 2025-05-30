@@ -40,6 +40,42 @@ const mlbTeamNameToAbbr: Record<string, string> = {
   'Washington Nationals': 'WSH'
 };
 
+// Map full team names to abbreviations for NFL
+const nflTeamNameToAbbr: Record<string, string> = {
+  'Arizona Cardinals': 'ARI',
+  'Atlanta Falcons': 'ATL',
+  'Baltimore Ravens': 'BAL',
+  'Buffalo Bills': 'BUF',
+  'Carolina Panthers': 'CAR',
+  'Chicago Bears': 'CHI',
+  'Cincinnati Bengals': 'CIN',
+  'Cleveland Browns': 'CLE',
+  'Dallas Cowboys': 'DAL',
+  'Denver Broncos': 'DEN',
+  'Detroit Lions': 'DET',
+  'Green Bay Packers': 'GB',
+  'Houston Texans': 'HOU',
+  'Indianapolis Colts': 'IND',
+  'Jacksonville Jaguars': 'JAX',
+  'Kansas City Chiefs': 'KC',
+  'Las Vegas Raiders': 'LV',
+  'Los Angeles Chargers': 'LAC',
+  'Los Angeles Rams': 'LAR',
+  'Miami Dolphins': 'MIA',
+  'Minnesota Vikings': 'MIN',
+  'New England Patriots': 'NE',
+  'New Orleans Saints': 'NO',
+  'New York Giants': 'NYG',
+  'New York Jets': 'NYJ',
+  'Philadelphia Eagles': 'PHI',
+  'Pittsburgh Steelers': 'PIT',
+  'San Francisco 49ers': 'SF',
+  'Seattle Seahawks': 'SEA',
+  'Tampa Bay Buccaneers': 'TB',
+  'Tennessee Titans': 'TEN',
+  'Washington Commanders': 'WAS'
+};
+
 export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
   if (league === 'MLB') {
     // If it's a full team name, convert to abbreviation first
@@ -47,8 +83,34 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
     return mlbLogos[abbr?.toUpperCase()] || mlbLogos[abbr] || '/placeholder.svg';
   }
   
+  if (league === 'NFL') {
+    // If it's a full team name, convert to abbreviation first
+    const abbr = nflTeamNameToAbbr[teamCode] || teamCode;
+    return nflLogos[abbr?.toUpperCase()] || nflLogos[abbr] || '/placeholder.svg';
+  }
+  
   const logoMap = league === 'NFL' ? nflLogos : mlbLogos;
   return logoMap[teamCode?.toUpperCase()] || logoMap[teamCode] || '/placeholder.svg';
+};
+
+export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+  if (league === 'MLB') {
+    // If it's a full team name, convert to abbreviation
+    const abbr = mlbTeamNameToAbbr[teamCode];
+    if (abbr) return abbr;
+    // If it's already an abbreviation, return as is
+    return teamCode;
+  }
+  
+  if (league === 'NFL') {
+    // If it's a full team name, convert to abbreviation
+    const abbr = nflTeamNameToAbbr[teamCode];
+    if (abbr) return abbr;
+    // If it's already an abbreviation, return as is
+    return teamCode;
+  }
+  
+  return teamCode;
 };
 
 export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string => {

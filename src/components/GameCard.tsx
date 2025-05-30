@@ -1,9 +1,14 @@
+
 import React from 'react';
-import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getTeamLogo } from '@/utils/teamLogos';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
+import GameTeamDisplay from './game-card/GameTeamDisplay';
+import GameScore from './game-card/GameScore';
+import GameDateTime from './game-card/GameDateTime';
+import GamePitchers from './game-card/GamePitchers';
 
 interface GameCardProps {
   game: {
@@ -35,57 +40,9 @@ interface GameCardProps {
 }
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
-  const formatDateTime = (dateString: string, datetimeString?: string) => {
-    if (datetimeString) {
-      try {
-        const date = new Date(datetimeString);
-        const options: Intl.DateTimeFormatOptions = {
-          timeZone: 'America/New_York',
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        };
-        return date.toLocaleDateString('en-US', options) + ' EST';
-      } catch (e) {
-        console.error('Error parsing datetime:', e);
-      }
-    }
-    
-    // Fallback to date string formatting
-    const dateParts = dateString.split('-');
-    if (dateParts.length === 3) {
-      const year = dateParts[0];
-      const month = dateParts[1];
-      const day = dateParts[2];
-      
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const monthName = monthNames[parseInt(month) - 1];
-      
-      return `${monthName} ${parseInt(day)}, ${year}`;
-    }
-    
-    return dateString;
-  };
-
-  const getScore = () => {
-    if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      // Only return score if both values are not null/0 or if it's not a future game
-      if (!game.is_future && (game.pts_off !== 0 || game.pts_def !== 0)) {
-        return `${game.pts_def} - ${game.pts_off}`;
-      }
-    }
-    if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      // Only return score if both values are not null/0 or if it's not a future game
-      if (!game.is_future && (game.runs_scored !== 0 || game.runs_allowed !== 0)) {
-        return `${game.runs_allowed} - ${game.runs_scored}`;
-      }
-    }
-    return null;
-  };
+  // Convert team names to abbreviations
+  const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
+  const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
 
   const getStatusTag = () => {
     // Check game_type for MLB games
@@ -117,39 +74,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     return null;
   };
 
-  const getProbablePitchers = () => {
-    if (!game.is_future || !game.away_probable_pitcher || !game.home_probable_pitcher) {
-      return null;
-    }
-    
-    return (
-      <div className="text-sm text-gray-600">
-        <span className="font-medium">Probable Pitchers:</span> {game.away_probable_pitcher} ({game.away_team}) vs. {game.home_probable_pitcher} ({game.home_team})
-      </div>
-    );
-  };
-
-  const getPitchingResults = () => {
-    if (game.is_future) return null;
-    
-    const results = [];
-    if (game.winning_pitcher) results.push(`WP: ${game.winning_pitcher}`);
-    if (game.losing_pitcher) results.push(`LP: ${game.losing_pitcher}`);
-    if (game.save_pitcher) results.push(`SV: ${game.save_pitcher}`);
-    
-    if (results.length === 0) return null;
-    
-    return (
-      <div className="text-sm text-gray-600">
-        {results.join(', ')}
-      </div>
-    );
-  };
-
-  const score = getScore();
   const statusTag = getStatusTag();
-  const probablePitchers = getProbablePitchers();
-  const pitchingResults = getPitchingResults();
 
   return (
     <Card className={`transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
@@ -177,73 +102,39 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         {/* Teams and Score - fixed height container */}
         <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
           {/* Team Logos and Names */}
-          <div className="flex items-center justify-between space-x-4 mb-1">
-            {/* Away Team */}
-            <div className="flex items-center space-x-2 flex-1 justify-end">
-              <div className="w-10 min-w-10 flex justify-center">
-                <img 
-                  src={getTeamLogo(game.away_team, game.league)} 
-                  alt={game.away_team}
-                  className={`max-h-10 max-w-10 object-scale-down ${
-                    game.is_future ? 'opacity-70' : ''
-                  }`}
-                />
-              </div>
-              <span className={`font-medium text-gray-900 text-sm sm:text-base ${
-                game.is_future ? 'text-gray-600' : ''
-              }`}>{game.away_team}</span>
-            </div>
-            
-            <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
-            
-            {/* Home Team */}
-            <div className="flex items-center space-x-2 flex-1 justify-start">
-              <span className={`font-medium text-gray-900 text-sm sm:text-base ${
-                game.is_future ? 'text-gray-600' : ''
-              }`}>{game.home_team}</span>
-              <div className="w-10 min-w-10 flex justify-center">
-                <img 
-                  src={getTeamLogo(game.home_team, game.league)} 
-                  alt={game.home_team}
-                  className={`max-h-10 max-w-10 object-scale-down ${
-                    game.is_future ? 'opacity-70' : ''
-                  }`}
-                />
-              </div>
-            </div>
-          </div>
+          <GameTeamDisplay 
+            homeTeam={homeTeamAbbr}
+            awayTeam={awayTeamAbbr}
+            league={game.league}
+            isFuture={game.is_future}
+          />
           
           {/* Score/Status container - fixed height */}
-          <div className="h-[32px] flex items-center justify-center">
-            {score ? (
-              <div className="text-2xl font-bold text-field-green">
-                {score}
-              </div>
-            ) : game.is_future ? (
-              <Badge variant="outline" className="border-gray-300 text-gray-500">
-                <Clock className="h-3 w-3 mr-1" />
-                Scheduled
-              </Badge>
-            ) : (
-              <div className="text-sm italic text-gray-500">
-                Score unavailable
-              </div>
-            )}
-          </div>
+          <GameScore 
+            league={game.league}
+            ptsOff={game.pts_off}
+            ptsDef={game.pts_def}
+            runsScored={game.runs_scored}
+            runsAllowed={game.runs_allowed}
+            isFuture={game.is_future}
+          />
         </div>
 
         {/* Date and additional info - fixed height container with reduced spacing */}
         <div className="text-center min-h-[50px] flex flex-col justify-start">
-          <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
-            <Calendar className="h-4 w-4 mr-1" />
-            {formatDateTime(game.date, game.game_datetime)}
-          </div>
+          <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           
           {/* Additional info container - fixed height with reduced spacing */}
-          <div className="min-h-[15px] flex flex-col justify-start">
-            {pitchingResults}
-            {probablePitchers}
-          </div>
+          <GamePitchers 
+            isFuture={game.is_future}
+            awayProbablePitcher={game.away_probable_pitcher}
+            homeProbablePitcher={game.home_probable_pitcher}
+            awayTeam={awayTeamAbbr}
+            homeTeam={homeTeamAbbr}
+            winningPitcher={game.winning_pitcher}
+            losingPitcher={game.losing_pitcher}
+            savePitcher={game.save_pitcher}
+          />
         </div>
       </CardContent>
 
