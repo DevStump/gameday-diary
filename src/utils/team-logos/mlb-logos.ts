@@ -34,9 +34,8 @@ const logoUrls: Record<string, string> = {
   
   // Historical team logos
   'MON': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png', // Montreal Expos
-  'FLA': 'https://content.sportslogos.net/logos/54/3637/full/7913_florida_marlins-primary-1993.png', // Florida Marlins
-  'ANA': 'https://content.sportslogos.net/logos/53/6521/full/8771_anaheim_angels-primary-1997.png', // Anaheim Angels
-  'CAL': 'https://content.sportslogos.net/logos/53/6521/full/anaheim_angels_logo_primary_19651996.png', // California Angels
+  'FLA': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png', // Florida Marlins
+  'ANA': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png', // Anaheim Angels
 };
 
 // Team code variations mapping to primary codes
