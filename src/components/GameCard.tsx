@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus, Clock, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -148,9 +147,10 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     );
   };
 
-  // Generate random diary entries count
+  // Generate random diary entries count and format with commas
   const getDiaryEntriesCount = () => {
-    return Math.floor(Math.random() * (10000 - 9 + 1)) + 9;
+    const count = Math.floor(Math.random() * (10000 - 9 + 1)) + 9;
+    return count.toLocaleString();
   };
 
   const score = getScore();

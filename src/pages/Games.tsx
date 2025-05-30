@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
 import GameFilters from '@/components/GameFilters';
 import GameLogModal from '@/components/GameLogModal';
+import HotGames from '@/components/HotGames';
 import { Loader2, Trophy } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,6 +69,23 @@ const Games = () => {
     setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
+  // Get games from last 24 hours for hot games section
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayString = yesterday.toISOString().split('T')[0];
+  
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
+
+  const { data: hotGamesData = [] } = useGames({
+    search: '',
+    league: '',
+    season: '',
+    playoff: '',
+    startDate: yesterdayString,
+    endDate: todayString
+  });
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -79,7 +96,7 @@ const Games = () => {
             <h1 className="text-4xl font-bold text-gray-900">Games</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Relive your favorite moments. Search for any NFL or MLB game you’ve seen — live or on screen — and add it to your diary.
+            Relive your favorite moments. Search for any NFL or MLB game you've seen — live or on screen — and add it to your diary.
           </p>
           {!user && (
             <p className="text-sm text-sports-gold mt-2 font-medium">
@@ -87,6 +104,9 @@ const Games = () => {
             </p>
           )}
         </div>
+
+        {/* Hot Games Section */}
+        <HotGames games={hotGamesData} />
 
         {/* Filters */}
         <GameFilters
