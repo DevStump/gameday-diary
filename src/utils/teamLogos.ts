@@ -1,7 +1,7 @@
 
 // Main utility for team logos and names by league
 import { mlbLogos } from './team-logos/mlb-logos';
-import { nflLogos } from './team-logos/nfl-logos';
+import { nflLogos, getNFLCanonicalAbbreviation } from './team-logos/nfl-logos';
 import { mlbNames } from './team-logos/mlb-names';
 import { nflNames } from './team-logos/nfl-names';
 
@@ -106,8 +106,8 @@ export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL'): s
     // If it's a full team name, convert to abbreviation
     const abbr = nflTeamNameToAbbr[teamCode];
     if (abbr) return abbr;
-    // If it's already an abbreviation, return as is
-    return teamCode;
+    // Get canonical NFL abbreviation for any variation
+    return getNFLCanonicalAbbreviation(teamCode);
   }
   
   return teamCode;
@@ -122,6 +122,12 @@ export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string
     }
     // Otherwise treat as abbreviation
     return mlbNames[teamCode?.toUpperCase()] || mlbNames[teamCode] || teamCode;
+  }
+  
+  if (league === 'NFL') {
+    // Get canonical abbreviation first for NFL
+    const canonicalAbbr = getNFLCanonicalAbbreviation(teamCode);
+    return nflNames[canonicalAbbr] || teamCode;
   }
   
   const nameMap = league === 'NFL' ? nflNames : mlbNames;

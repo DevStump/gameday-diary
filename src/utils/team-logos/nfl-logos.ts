@@ -134,9 +134,18 @@ const nflTeamLogos = {
 // Generate the final mapping
 export const nflLogos: Record<string, string> = {};
 
-// Map all variations to their corresponding logo URLs
+// Generate reverse mapping from variations to primary codes
+export const nflVariationToPrimary: Record<string, string> = {};
+
+// Map all variations to their corresponding logo URLs and primary codes
 Object.entries(nflTeamLogos).forEach(([primaryCode, teamData]) => {
   teamData.variations.forEach(variation => {
     nflLogos[variation] = teamData.url;
+    nflVariationToPrimary[variation] = primaryCode;
   });
 });
+
+// Function to get canonical NFL abbreviation
+export const getNFLCanonicalAbbreviation = (teamCode: string): string => {
+  return nflVariationToPrimary[teamCode] || nflVariationToPrimary[teamCode.toUpperCase()] || nflVariationToPrimary[teamCode.toLowerCase()] || teamCode;
+};
