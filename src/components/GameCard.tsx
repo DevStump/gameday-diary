@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Plus } from 'lucide-react';
+import { MapPin, Plus, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -142,34 +142,42 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       <div className="border-t border-gray-200 mx-4"></div>
 
       <CardFooter className="p-4 pt-3">
-        <div className="w-full space-y-2">
-          {/* Add to Diary Button */}
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              onAddToDiary(game.game_id);
-            }}
-            className="w-full bg-field-green transition-colors"
-            size="sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
-          </Button>
+        <div className="w-full">
+          {/* Dual Button Layout */}
+          <div className="flex gap-x-2">
+            {/* Add to Diary Button */}
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                onAddToDiary(game.game_id);
+              }}
+              className="flex-1 bg-field-green transition-colors"
+              size="sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+            </Button>
 
-          {/* View Boxscore Link - only show for signed-in users and not future games */}
-          {isAuthenticated && !game.is_future && (
-            <div className="text-center mt-2">
+            {/* View Boxscore Button - only show for signed-in users and not future games */}
+            {isAuthenticated && !game.is_future && (
               <a 
                 href={game.boxscore_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 underline hover:text-gray-700"
+                className="flex-1"
                 onClick={(e) => e.stopPropagation()}
               >
-                View Boxscore
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Boxscore
+                </Button>
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </CardFooter>
     </Card>
