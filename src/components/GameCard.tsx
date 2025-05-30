@@ -131,6 +131,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     );
   };
 
+  // Limit venue text to prevent line breaks
+  const formatVenue = (venue?: string) => {
+    if (!venue) return null;
+    // Limit to 15 characters and add ellipsis if longer
+    return venue.length > 15 ? `${venue.substring(0, 15)}...` : venue;
+  };
+
   const score = getScore();
   const statusTag = getStatusTag();
   const probablePitchers = getProbablePitchers();
@@ -144,7 +151,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       >
         <CardContent className="p-4 cursor-pointer flex-1 flex flex-col">
           {/* Top badges - fixed height */}
-          <div className="flex justify-between items-start mb-3 min-h-[32px]">
+          <div className="flex justify-between items-start mb-2 min-h-[32px]">
             <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
@@ -159,15 +166,15 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {game.venue && (
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-1" />
-                {game.venue}
+                <span className="truncate">{formatVenue(game.venue)}</span>
               </div>
             )}
           </div>
 
           {/* Teams and Score - fixed height container */}
-          <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[100px]">
+          <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
             {/* Team Logos and Names */}
-            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-2">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-1">
               <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
                 <img 
                   src={getTeamLogo(game.away_team, game.league)} 
@@ -200,14 +207,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           </div>
 
           {/* Date and additional info - fixed height container with reduced spacing */}
-          <div className="text-center min-h-[60px] flex flex-col justify-start">
+          <div className="text-center min-h-[50px] flex flex-col justify-start">
             <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
               <Calendar className="h-4 w-4 mr-1" />
               {formatDateTime(game.date, game.game_datetime)}
             </div>
             
             {/* Additional info container - fixed height with reduced spacing */}
-            <div className="min-h-[20px] flex flex-col justify-start space-y-1">
+            <div className="min-h-[15px] flex flex-col justify-start">
               {pitchingResults}
               {probablePitchers}
             </div>
