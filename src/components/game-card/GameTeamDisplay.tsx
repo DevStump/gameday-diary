@@ -12,25 +12,27 @@ interface GameTeamDisplayProps {
 
 const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: GameTeamDisplayProps) => {
   return (
-    <div className="flex items-center justify-between space-x-2 mb-3">
-      {/* Away Team */}
-      <div className="flex items-center space-x-2 flex-1">
+    <div className="flex items-center justify-center gap-x-1.5 mb-3">
+      {/* Away Team - Fixed width container */}
+      <div className="flex items-center gap-x-2 w-[100px] justify-end">
         <img 
           src={getTeamLogo(awayTeam, league, gameDate)} 
           alt={awayTeam}
           className="h-8 w-8 object-contain flex-shrink-0"
         />
-        <span className="text-sm font-medium text-gray-900 truncate">
+        <span className="text-sm font-medium text-gray-900">
           {awayTeam}
         </span>
       </div>
       
-      {/* @ symbol */}
-      <span className="text-gray-500 font-medium px-2">@</span>
+      {/* @ symbol - Fixed width center container */}
+      <div className="w-[24px] text-center">
+        <span className="text-gray-500 font-medium">@</span>
+      </div>
       
-      {/* Home Team */}
-      <div className="flex items-center space-x-2 flex-1 justify-end">
-        <span className="text-sm font-medium text-gray-900 truncate">
+      {/* Home Team - Fixed width container */}
+      <div className="flex items-center gap-x-2 w-[100px] justify-start">
+        <span className="text-sm font-medium text-gray-900">
           {homeTeam}
         </span>
         <img 
