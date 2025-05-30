@@ -21,7 +21,7 @@ interface GameLogModalProps {
 }
 
 const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, league }: GameLogModalProps) => {
-  const [mode, setMode] = useState<'attended' | 'watched'>('watched');
+  const [mode, setMode] = useState<'attended' | 'watched'>('attended');
   const [company, setCompany] = useState('');
   const [rating, setRating] = useState(0);
   const [rootedFor, setRootedFor] = useState('none');
@@ -52,7 +52,7 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
 
       onClose();
       // Reset form
-      setMode('watched');
+      setMode('attended');
       setCompany('');
       setRating(0);
       setRootedFor('none');
@@ -87,19 +87,10 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="watched">Watched</SelectItem>
                 <SelectItem value="attended">Attended</SelectItem>
+                <SelectItem value="watched">Watched</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Who did you watch with? (optional)</label>
-            <Input
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder="e.g., Friends, Family, Alone"
-            />
           </div>
 
           <div>
@@ -114,6 +105,15 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
                 <SelectItem value={homeTeam}>{formatTeamName(homeTeam, leagueType)}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Who did you watch with? (optional)</label>
+            <Input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="e.g., Friends, Family, Alone"
+            />
           </div>
 
           <div>
