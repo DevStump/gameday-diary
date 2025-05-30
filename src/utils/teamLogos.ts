@@ -1,3 +1,4 @@
+
 // Main utility for team logos and names by league
 import { mlbLogos } from './team-logos/mlb-logos';
 import { nflLogos } from './team-logos/nfl-logos';
@@ -26,6 +27,7 @@ const mlbTeamNameToAbbr: Record<string, string> = {
   'New York Mets': 'NYM',
   'New York Yankees': 'NYY',
   'Oakland Athletics': 'OAK',
+  'Athletics': 'OAK', // Handle both "Athletics" and "Oakland Athletics"
   'Philadelphia Phillies': 'PHI',
   'Pittsburgh Pirates': 'PIT',
   'San Diego Padres': 'SD',
