@@ -120,7 +120,7 @@ export const useGames = (filters: GameFilters) => {
       
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
-        let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false });
+        let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false }).order('game_time', { ascending: false });
         
         // Filter out future games by default (unless date filters are specified)
         if (!filters.startDate && !filters.endDate) {
@@ -164,7 +164,7 @@ export const useGames = (filters: GameFilters) => {
 
       // Fetch MLB games if no league filter or MLB is selected
       if (!filters.league || filters.league === 'MLB') {
-        let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false });
+        let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
         
         // Filter out future games by default (unless date filters are specified)
         if (!filters.startDate && !filters.endDate) {
@@ -264,11 +264,27 @@ export const useGames = (filters: GameFilters) => {
 
       console.log('Total games before sorting:', allGames.length);
       
-      // Sort by date (newest first - descending) using string comparison since dates are in YYYY-MM-DD format
+      // Sort by date and time (newest first - descending)
       const sortedGames = allGames.sort((a, b) => {
         const dateA = a.date || a.game_date;
         const dateB = b.date || b.game_date;
-        return dateB.localeCompare(dateA);
+        
+        // First sort by date
+        const dateComparison = dateB.localeCompare(dateA);
+        if (dateComparison !== 0) {
+          return dateComparison;
+        }
+        
+        // If dates are the same, sort by time
+        const timeA = a.game_datetime || a.game_time || '';
+        const timeB = b.game_datetime || b.game_time || '';
+        
+        // For datetime fields, compare directly
+        if (timeA && timeB) {
+          return timeB.localeCompare(timeA);
+        }
+        
+        return 0;
       });
       
       console.log('Final games count:', sortedGames.length);

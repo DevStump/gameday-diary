@@ -108,7 +108,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }
     
     return (
-      <div className="text-sm text-gray-600 mt-2">
+      <div className="text-sm text-gray-600">
         <span className="font-medium">Probable Pitchers:</span> {game.away_probable_pitcher} ({formatTeamName(game.away_team, game.league)}) vs. {game.home_probable_pitcher} ({formatTeamName(game.home_team, game.league)})
       </div>
     );
@@ -125,7 +125,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     if (results.length === 0) return null;
     
     return (
-      <div className="text-sm text-gray-600 mt-1">
+      <div className="text-sm text-gray-600">
         {results.join(', ')}
       </div>
     );
@@ -142,9 +142,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         to={`/game/${game.league.toLowerCase()}/${game.game_id}`}
         className="block flex-1 flex flex-col"
       >
-        <CardContent className="p-6 cursor-pointer flex-1 flex flex-col">
+        <CardContent className="p-4 cursor-pointer flex-1 flex flex-col">
           {/* Top badges - fixed height */}
-          <div className="flex justify-between items-start mb-4 min-h-[32px]">
+          <div className="flex justify-between items-start mb-3 min-h-[32px]">
             <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
@@ -165,9 +165,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           </div>
 
           {/* Teams and Score - fixed height container */}
-          <div className="text-center mb-4 flex-1 flex flex-col justify-center min-h-[120px]">
+          <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[100px]">
             {/* Team Logos and Names */}
-            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-3">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-2">
               <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
                 <img 
                   src={getTeamLogo(game.away_team, game.league)} 
@@ -190,7 +190,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             </div>
             
             {/* Score container - fixed height */}
-            <div className="h-[40px] flex items-center justify-center">
+            <div className="h-[32px] flex items-center justify-center">
               {score && (
                 <div className="text-2xl font-bold text-field-green">
                   {score}
@@ -199,15 +199,15 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             </div>
           </div>
 
-          {/* Date and additional info - fixed height container */}
-          <div className="text-center min-h-[80px] flex flex-col justify-start">
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
+          {/* Date and additional info - fixed height container with reduced spacing */}
+          <div className="text-center min-h-[60px] flex flex-col justify-start">
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
               <Calendar className="h-4 w-4 mr-1" />
               {formatDateTime(game.date, game.game_datetime)}
             </div>
             
-            {/* Additional info container - fixed height */}
-            <div className="min-h-[40px] flex flex-col justify-start">
+            {/* Additional info container - fixed height with reduced spacing */}
+            <div className="min-h-[20px] flex flex-col justify-start space-y-1">
               {pitchingResults}
               {probablePitchers}
             </div>
@@ -216,13 +216,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       </Link>
 
       {/* Vertical divider with margins */}
-      <div className="border-t border-gray-200 mx-6"></div>
+      <div className="border-t border-gray-200 mx-4"></div>
 
-      <CardFooter className="p-6 pt-0">
-        <div className="w-full space-y-3">
-          {/* View Boxscore Link with padding - only show for completed games */}
+      <CardFooter className="p-4 pt-0">
+        <div className="w-full space-y-2">
+          {/* View Boxscore Link with reduced padding - only show for completed games */}
           {game.boxscore_url && !game.is_future && (
-            <div className="flex justify-center pt-2">
+            <div className="flex justify-center pt-1">
               <a 
                 href={game.boxscore_url} 
                 target="_blank" 
