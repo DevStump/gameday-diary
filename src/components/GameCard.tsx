@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Calendar, MapPin, Plus, Clock, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface GameCardProps {
     save_pitcher?: string;
     home_probable_pitcher?: string;
     away_probable_pitcher?: string;
+    diaryEntries?: number;
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
@@ -147,12 +149,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     );
   };
 
-  // Generate random diary entries count and format with commas
-  const getDiaryEntriesCount = () => {
-    const count = Math.floor(Math.random() * (10000 - 9 + 1)) + 9;
-    return count.toLocaleString();
-  };
-
   const score = getScore();
   const statusTag = getStatusTag();
   const probablePitchers = getProbablePitchers();
@@ -176,15 +172,15 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {statusTag}
             </div>
             <div className="flex items-center text-xs text-gray-600">
-              📖 <span className="ml-1">Diary Entries: {getDiaryEntriesCount()}</span>
+              📖 <span className="ml-1">Diary Entries: {game.diaryEntries?.toLocaleString() || '0'}</span>
             </div>
           </div>
 
-          {/* Venue row - fixed height container */}
+          {/* Venue row - full width without character limit */}
           {game.venue && (
             <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
               <MapPin className="h-4 w-4 mr-1" />
-              <span>{game.venue}</span>
+              <span className="text-center">{game.venue}</span>
             </div>
           )}
 

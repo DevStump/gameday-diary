@@ -91,6 +91,14 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
   }
 };
 
+// Function to generate consistent random diary entries based on game_id
+const generateDiaryEntries = (gameId: string): number => {
+  // Use game_id to seed randomization for consistency
+  const seed = gameId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const random = (seed * 9301 + 49297) % 233280 / 233280;
+  return Math.floor(random * (10000 - 9 + 1)) + 9;
+};
+
 export const useGames = (filters: GameFilters) => {
   return useQuery({
     queryKey: ['games', filters],
@@ -232,6 +240,7 @@ export const useGames = (filters: GameFilters) => {
             league: 'NFL' as const,
             venue: 'Stadium',
             is_future: !game.pts_off && !game.pts_def,
+            diaryEntries: generateDiaryEntries(game.game_id),
           })));
         }
       }
@@ -258,6 +267,7 @@ export const useGames = (filters: GameFilters) => {
             playoff: ['W', 'D', 'L'].includes(game.game_type),
             venue: game.venue_name || 'Stadium',
             is_future: !game.home_score && !game.away_score && game.status !== 'Final',
+            diaryEntries: generateDiaryEntries(game.game_id.toString()),
           })));
         }
       }

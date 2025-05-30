@@ -12,19 +12,16 @@ interface HotGamesProps {
     away_team: string;
     league: 'NFL' | 'MLB';
     venue?: string;
+    diaryEntries?: number;
   }>;
 }
 
 const HotGames = ({ games }: HotGamesProps) => {
-  // Generate hot games with random diary entries (sorted high to low)
+  // Get top 3 games with highest diary entries (already consistent from useGames)
   const hotGames = games
-    .slice(0, 10) // Take first 10 games
-    .map(game => ({
-      ...game,
-      diaryEntries: Math.floor(Math.random() * (10000 - 500 + 1)) + 500 // Higher range for hot games
-    }))
-    .sort((a, b) => b.diaryEntries - a.diaryEntries)
-    .slice(0, 3); // Take top 3
+    .filter(game => game.diaryEntries !== undefined)
+    .sort((a, b) => (b.diaryEntries || 0) - (a.diaryEntries || 0))
+    .slice(0, 3);
 
   if (hotGames.length === 0) {
     return null;
@@ -73,7 +70,7 @@ const HotGames = ({ games }: HotGamesProps) => {
               
               <div className="text-center">
                 <div className="text-lg font-bold text-orange-600">
-                  📖 {game.diaryEntries.toLocaleString()} entries
+                  📖 {(game.diaryEntries || 0).toLocaleString()} entries
                 </div>
                 <div className="text-xs text-gray-600">
                   {new Date(game.date).toLocaleDateString('en-US', { 
