@@ -13,6 +13,8 @@ interface HotGamesProps {
     league: 'NFL' | 'MLB';
     venue?: string;
     diaryEntries?: number;
+    boxscore_url?: string;
+    is_future?: boolean;
   }>;
 }
 

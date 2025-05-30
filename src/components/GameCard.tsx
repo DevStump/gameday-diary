@@ -82,7 +82,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }`}>
       <CardContent className="p-4 flex-1 flex flex-col">
         {/* Top badges - fixed height */}
-        <div className="flex justify-between items-start mb-2 min-h-[32px]">
+        <div className="flex justify-between items-start mb-3 min-h-[32px]">
           <div className="flex items-center space-x-2 flex-wrap">
             <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
               {game.league}
@@ -93,14 +93,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
         {/* Venue row - full width without character limit */}
         {game.venue && (
-          <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-3 min-h-[20px]">
             <MapPin className="h-4 w-4 mr-1" />
             <span className="text-center">{game.venue}</span>
           </div>
         )}
 
         {/* Teams and Score - fixed height container */}
-        <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
+        <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
           {/* Team Logos and Names */}
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
@@ -120,11 +120,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           />
         </div>
 
-        {/* Date and additional info - fixed height container with reduced spacing */}
+        {/* Date and additional info - fixed height container */}
         <div className="text-center min-h-[50px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           
-          {/* Additional info container - fixed height with reduced spacing */}
+          {/* Additional info container - fixed height */}
           <GamePitchers 
             isFuture={game.is_future}
             awayProbablePitcher={game.away_probable_pitcher}
@@ -141,7 +141,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
       {/* Vertical divider with margins */}
       <div className="border-t border-gray-200 mx-4"></div>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-3">
         <div className="w-full space-y-2">
           {/* Add to Diary Button */}
           <Button
@@ -156,14 +156,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
           </Button>
 
-          {/* View Boxscore Link - only show for signed-in users */}
+          {/* View Boxscore Link - only show for signed-in users with boxscore_url and not future games */}
           {isAuthenticated && game.boxscore_url && !game.is_future && (
-            <div className="flex justify-center pt-1">
+            <div className="text-center mt-2">
               <a 
                 href={game.boxscore_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-sm text-gray-500 underline"
+                className="text-sm text-gray-500 underline hover:text-gray-700"
                 onClick={(e) => e.stopPropagation()}
               >
                 View Boxscore
