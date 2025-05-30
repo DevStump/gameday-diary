@@ -78,8 +78,8 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
+      {/* Main Content with mobile bottom padding when authenticated (bottom nav present) */}
+      <main className={`flex-1 ${user ? 'pb-20 md:pb-0' : ''}`}>
         {children}
       </main>
 

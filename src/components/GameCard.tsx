@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { MapPin, Plus, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
+import { useMLBTeamCodes } from '@/hooks/useMLBTeamCodes';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameScore from './game-card/GameScore';
 import GameDateTime from './game-card/GameDateTime';
@@ -42,6 +42,8 @@ interface GameCardProps {
 }
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
+  const { data: teamCodeMap = {} } = useMLBTeamCodes();
+  
   // Convert team names to abbreviations
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
@@ -49,10 +51,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   // Generate boxscore URL based on league
   const generateBoxscoreUrl = () => {
     if (game.league === 'MLB') {
-      // Format: https://www.baseball-reference.com/boxes/SEA/SEA202505280.shtml
-      // Use home team abbreviation (uppercase) and date without dashes
+      // Use team_code from database for Baseball Reference URL
+      const homeTeamCode = teamCodeMap[game.home_team] || homeTeamAbbr.toUpperCase();
       const date = game.date.replace(/-/g, '');
-      const homeTeamCode = homeTeamAbbr.toUpperCase();
       
       // Handle doubleheader games
       let gameNumber = '0';
@@ -60,6 +61,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         gameNumber = game.game_num.toString();
       }
       
+      console.log(`Generating MLB boxscore URL: team=${game.home_team}, code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
       return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}${gameNumber}.shtml`;
     } else {
       // Use existing boxscore_url for NFL
