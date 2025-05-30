@@ -53,7 +53,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     if (game.league === 'MLB') {
       // Use team_code from database for Baseball Reference URL
       // Look up by file_code (our abbreviation) to get the correct Baseball Reference team_code
-      const homeTeamCode = teamCodeMap[homeTeamAbbr] || homeTeamAbbr.toUpperCase();
+      // Ensure uppercase lookup for consistent mapping
+      const homeTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()] || homeTeamAbbr.toUpperCase();
       const date = game.date.replace(/-/g, '');
       
       // Handle doubleheader games
@@ -62,7 +63,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         gameNumber = game.game_num.toString();
       }
       
-      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
+      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, mapped_code=${teamCodeMap[homeTeamAbbr.toUpperCase()]}, final_code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
       return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}${gameNumber}.shtml`;
     } else {
       // Use existing boxscore_url for NFL

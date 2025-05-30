@@ -17,10 +17,11 @@ export const useMLBTeamCodes = () => {
       }
 
       // Create a mapping from file_code to team_code (what Baseball Reference uses)
+      // Ensure keys are uppercase for consistent lookup
       const teamCodeMap: Record<string, string> = {};
       data?.forEach((team) => {
         if (team.file_code && team.team_code) {
-          teamCodeMap[team.file_code] = team.team_code;
+          teamCodeMap[team.file_code.toUpperCase()] = team.team_code;
         }
       });
 
