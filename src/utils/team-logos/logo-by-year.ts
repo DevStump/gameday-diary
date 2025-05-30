@@ -70,13 +70,15 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'MIN': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2023-current': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_2023_sportslogosnet-3953.png',
+    '2010-2022': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_20102311.png',
+    '1994-2009': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_1994_sportslogosnet-3849.png'
   },
   'NYM': {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'NYY': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1968-current': 'https://content.sportslogos.net/logos/53/68/full/new_york_yankees_logo_primary_19685115.png'
   },
   'OAK': {
     '2025-current': 'https://content.sportslogos.net/logos/53/6921/full/athletics__logo_primary_2025_sportslogosnet-5001.png',
@@ -92,7 +94,7 @@ export const mlbLogosByYear: LogoByYear = {
     '2000-current': 'https://content.sportslogos.net/logos/'
   },
   'SEA': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1993-current': 'https://content.sportslogos.net/logos/53/75/full/seattle_mariners_logo_primary_19933809.png'
   },
   'SF': {
     '2000-current': 'https://content.sportslogos.net/logos/'
@@ -107,10 +109,17 @@ export const mlbLogosByYear: LogoByYear = {
     '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png'
   },
   'TEX': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2024-current': 'https://content.sportslogos.net/logos/53/77/full/texas_rangers_logo_primary_2024_sportslogosnet-5505.png',
+    '2003-2023': 'https://content.sportslogos.net/logos/53/77/full/ajfeh4oqeealq37er15r3673h.png',
+    '1994-2002': 'https://content.sportslogos.net/logos/53/77/full/iujd65xfkrfaovlu1hzd17kst.png'
+
   },
   'TOR': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2020-current': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20208446.png',
+    '2012-2019': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20129486.png',
+    '2004-2011': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20041790.png',
+    '2003-2003': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20032287.png',
+    '1997-2002': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_19975318.png',
   },
   'WSH': {
     '2005-current': 'https://www.mlbstatic.com/team-logos/120.svg',
