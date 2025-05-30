@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -200,24 +199,22 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
         {/* Show More/Show Less Button - only on mobile */}
         {hasMoreGames && (
           <div className="text-center">
-            <Button
+            <button
               onClick={() => setShowAll(!showAll)}
-              variant="outline"
-              size="sm"
-              className="text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
             >
               {showAll ? (
                 <>
-                  <ChevronUp className="h-4 w-4 mr-1" />
+                  <ChevronUp className="h-3 w-3 inline mr-1" />
                   Show Less
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-4 w-4 mr-1" />
+                  <ChevronDown className="h-3 w-3 inline mr-1" />
                   Show More ({hotGames.length - 1} more)
                 </>
               )}
-            </Button>
+            </button>
           </div>
         )}
       </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -106,6 +107,15 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
       return `${teamAbbr} - ${teamName}`;
     }
     return selectedTeam;
+  };
+
+  const handleApplyFilters = () => {
+    setIsOpen(false);
+  };
+
+  const handleClearAndClose = () => {
+    onClearFilters();
+    setIsOpen(false);
   };
 
   // Filter content component to avoid duplication
@@ -344,29 +354,33 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[80vh]">
             <SheetHeader>
-              <SheetTitle className="flex items-center justify-between">
+              <SheetTitle>
                 <div className="flex items-center space-x-2">
                   <Filter className="h-5 w-5 text-gray-600" />
                   <span>Filter Games</span>
                 </div>
-                {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      onClearFilters();
-                      setIsOpen(false);
-                    }}
-                    className="text-gray-600 hover:text-gray-900"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Clear All
-                  </Button>
-                )}
               </SheetTitle>
             </SheetHeader>
-            <div className="mt-6 overflow-y-auto">
+            <div className="mt-6 overflow-y-auto flex-1 pb-20">
               <FilterContent />
+            </div>
+            {/* Bottom Action Buttons */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={handleClearAndClose}
+                  className="flex-1"
+                >
+                  Clear All
+                </Button>
+                <Button
+                  onClick={handleApplyFilters}
+                  className="flex-1"
+                >
+                  Apply Filters
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
