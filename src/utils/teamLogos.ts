@@ -4,88 +4,20 @@ import { mlbLogos } from './team-logos/mlb-logos';
 import { nflLogos, getNFLCanonicalAbbreviation } from './team-logos/nfl-logos';
 import { mlbNames } from './team-logos/mlb-names';
 import { nflNames } from './team-logos/nfl-names';
-
-// Map full team names to abbreviations for MLB
-const mlbTeamNameToAbbr: Record<string, string> = {
-  'Arizona Diamondbacks': 'ARI',
-  'Atlanta Braves': 'ATL',
-  'Baltimore Orioles': 'BAL',
-  'Boston Red Sox': 'BOS',
-  'Chicago Cubs': 'CHC',
-  'Chicago White Sox': 'CWS',
-  'Cincinnati Reds': 'CIN',
-  'Cleveland Guardians': 'CLE',
-  'Colorado Rockies': 'COL',
-  'Detroit Tigers': 'DET',
-  'Houston Astros': 'HOU',
-  'Kansas City Royals': 'KC',
-  'Los Angeles Angels': 'LAA',
-  'Los Angeles Dodgers': 'LAD',
-  'Miami Marlins': 'MIA',
-  'Milwaukee Brewers': 'MIL',
-  'Minnesota Twins': 'MIN',
-  'New York Mets': 'NYM',
-  'New York Yankees': 'NYY',
-  'Oakland Athletics': 'OAK',
-  'Athletics': 'OAK', // Handle both "Athletics" and "Oakland Athletics"
-  'Philadelphia Phillies': 'PHI',
-  'Pittsburgh Pirates': 'PIT',
-  'San Diego Padres': 'SD',
-  'San Francisco Giants': 'SF',
-  'Seattle Mariners': 'SEA',
-  'St. Louis Cardinals': 'STL',
-  'Tampa Bay Rays': 'TB',
-  'Texas Rangers': 'TEX',
-  'Toronto Blue Jays': 'TOR',
-  'Washington Nationals': 'WSH'
-};
-
-// Map full team names to abbreviations for NFL
-const nflTeamNameToAbbr: Record<string, string> = {
-  'Arizona Cardinals': 'ARI',
-  'Atlanta Falcons': 'ATL',
-  'Baltimore Ravens': 'BAL',
-  'Buffalo Bills': 'BUF',
-  'Carolina Panthers': 'CAR',
-  'Chicago Bears': 'CHI',
-  'Cincinnati Bengals': 'CIN',
-  'Cleveland Browns': 'CLE',
-  'Dallas Cowboys': 'DAL',
-  'Denver Broncos': 'DEN',
-  'Detroit Lions': 'DET',
-  'Green Bay Packers': 'GB',
-  'Houston Texans': 'HOU',
-  'Indianapolis Colts': 'IND',
-  'Jacksonville Jaguars': 'JAX',
-  'Kansas City Chiefs': 'KC',
-  'Las Vegas Raiders': 'LV',
-  'Los Angeles Chargers': 'LAC',
-  'Los Angeles Rams': 'LAR',
-  'Miami Dolphins': 'MIA',
-  'Minnesota Vikings': 'MIN',
-  'New England Patriots': 'NE',
-  'New Orleans Saints': 'NO',
-  'New York Giants': 'NYG',
-  'New York Jets': 'NYJ',
-  'Philadelphia Eagles': 'PHI',
-  'Pittsburgh Steelers': 'PIT',
-  'San Francisco 49ers': 'SF',
-  'Seattle Seahawks': 'SEA',
-  'Tampa Bay Buccaneers': 'TB',
-  'Tennessee Titans': 'TEN',
-  'Washington Commanders': 'WAS'
-};
+import { normalizeTeamName, mlbNameToCode, nflNameToCode } from './team-name-map';
 
 export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+  if (!teamCode) return '/placeholder.svg';
+  
   if (league === 'MLB') {
-    // If it's a full team name, convert to abbreviation first
-    const abbr = mlbTeamNameToAbbr[teamCode] || teamCode;
+    // First try to normalize the team name to get the correct abbreviation
+    const abbr = normalizeTeamName(teamCode, 'MLB');
     return mlbLogos[abbr?.toUpperCase()] || mlbLogos[abbr] || '/placeholder.svg';
   }
   
   if (league === 'NFL') {
-    // If it's a full team name, convert to abbreviation first
-    const abbr = nflTeamNameToAbbr[teamCode] || teamCode;
+    // First try to normalize the team name to get the correct abbreviation
+    const abbr = normalizeTeamName(teamCode, 'NFL');
     return nflLogos[abbr?.toUpperCase()] || nflLogos[abbr] || '/placeholder.svg';
   }
   
@@ -94,39 +26,35 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL'): string =>
 };
 
 export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+  if (!teamCode) return teamCode;
+  
   if (league === 'MLB') {
-    // If it's a full team name, convert to abbreviation
-    const abbr = mlbTeamNameToAbbr[teamCode];
-    if (abbr) return abbr;
-    // If it's already an abbreviation, return as is
-    return teamCode;
+    // Use the normalized mapping to get consistent abbreviations
+    return normalizeTeamName(teamCode, 'MLB');
   }
   
   if (league === 'NFL') {
-    // If it's a full team name, convert to abbreviation
-    const abbr = nflTeamNameToAbbr[teamCode];
-    if (abbr) return abbr;
-    // Get canonical NFL abbreviation for any variation
-    return getNFLCanonicalAbbreviation(teamCode);
+    // Use the normalized mapping, then get canonical NFL abbreviation
+    const normalized = normalizeTeamName(teamCode, 'NFL');
+    return getNFLCanonicalAbbreviation(normalized);
   }
   
   return teamCode;
 };
 
 export const formatTeamName = (teamCode: string, league?: 'MLB' | 'NFL'): string => {
+  if (!teamCode) return teamCode;
+  
   if (league === 'MLB') {
-    // If it's already a full team name, return the short version
-    if (mlbTeamNameToAbbr[teamCode]) {
-      const abbr = mlbTeamNameToAbbr[teamCode];
-      return mlbNames[abbr] || teamCode;
-    }
-    // Otherwise treat as abbreviation
-    return mlbNames[teamCode?.toUpperCase()] || mlbNames[teamCode] || teamCode;
+    // First normalize to get the correct abbreviation, then get the short name
+    const abbr = normalizeTeamName(teamCode, 'MLB');
+    return mlbNames[abbr?.toUpperCase()] || mlbNames[abbr] || teamCode;
   }
   
   if (league === 'NFL') {
-    // Get canonical abbreviation first for NFL
-    const canonicalAbbr = getNFLCanonicalAbbreviation(teamCode);
+    // First normalize to get the correct abbreviation, then get canonical abbreviation
+    const normalized = normalizeTeamName(teamCode, 'NFL');
+    const canonicalAbbr = getNFLCanonicalAbbreviation(normalized);
     return nflNames[canonicalAbbr] || teamCode;
   }
   

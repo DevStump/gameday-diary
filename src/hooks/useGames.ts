@@ -1,6 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeTeamName } from '@/utils/team-name-map';
 
 interface GameFilters {
   search: string;
@@ -54,7 +55,8 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
     };
     return nflVariants[upperTeam] || [lowerTeam];
   } else {
-    // MLB database stores team names as full names, not abbreviations
+    // MLB database stores team names as full names, use the normalization map
+    const normalizedAbbr = normalizeTeamName(teamAbbr, 'MLB');
     const mlbVariants: Record<string, string[]> = {
       'ARI': ['Arizona Diamondbacks'],
       'ATL': ['Atlanta Braves'],
@@ -63,14 +65,14 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
       'CHC': ['Chicago Cubs'],
       'CWS': ['Chicago White Sox'],
       'CIN': ['Cincinnati Reds'],
-      'CLE': ['Cleveland Guardians'],
+      'CLE': ['Cleveland Guardians', 'Cleveland Indians'], // Include historical name
       'COL': ['Colorado Rockies'],
       'DET': ['Detroit Tigers'],
       'HOU': ['Houston Astros'],
       'KC': ['Kansas City Royals'],
-      'LAA': ['Los Angeles Angels'],
+      'LAA': ['Los Angeles Angels', 'Anaheim Angels', 'California Angels', 'Los Angeles Angels of Anaheim'], // Include historical names
       'LAD': ['Los Angeles Dodgers'],
-      'MIA': ['Miami Marlins'],
+      'MIA': ['Miami Marlins', 'Florida Marlins'], // Include historical name
       'MIL': ['Milwaukee Brewers'],
       'MIN': ['Minnesota Twins'],
       'NYM': ['New York Mets'],
@@ -82,12 +84,12 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
       'SF': ['San Francisco Giants'],
       'SEA': ['Seattle Mariners'],
       'STL': ['St. Louis Cardinals'],
-      'TB': ['Tampa Bay Rays'],
+      'TB': ['Tampa Bay Rays', 'Tampa Bay Devil Rays'], // Include historical name
       'TEX': ['Texas Rangers'],
       'TOR': ['Toronto Blue Jays'],
-      'WSH': ['Washington Nationals']
+      'WSH': ['Washington Nationals', 'Montreal Expos'] // Include historical name
     };
-    return mlbVariants[upperTeam] || [upperTeam];
+    return mlbVariants[normalizedAbbr] || mlbVariants[upperTeam] || [upperTeam];
   }
 };
 
