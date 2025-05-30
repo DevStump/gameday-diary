@@ -143,8 +143,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         className="block flex-1 flex flex-col"
       >
         <CardContent className="p-6 cursor-pointer flex-1 flex flex-col">
-          {/* Top badges */}
-          <div className="flex justify-between items-start mb-4">
+          {/* Top badges - fixed height */}
+          <div className="flex justify-between items-start mb-4 min-h-[32px]">
             <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
@@ -164,8 +164,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             )}
           </div>
 
-          {/* Teams and Score - flex-1 to fill space */}
-          <div className="text-center mb-4 flex-1 flex flex-col justify-center">
+          {/* Teams and Score - fixed height container */}
+          <div className="text-center mb-4 flex-1 flex flex-col justify-center min-h-[120px]">
             {/* Team Logos and Names */}
             <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-3">
               <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
@@ -189,34 +189,28 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               </div>
             </div>
             
-            {score && (
-              <div className="text-2xl font-bold text-field-green">
-                {score}
-              </div>
-            )}
+            {/* Score container - fixed height */}
+            <div className="h-[40px] flex items-center justify-center">
+              {score && (
+                <div className="text-2xl font-bold text-field-green">
+                  {score}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Date and additional info at bottom */}
-          <div className="text-center">
-            <div className="flex items-center justify-center text-sm text-gray-600">
+          {/* Date and additional info - fixed height container */}
+          <div className="text-center min-h-[80px] flex flex-col justify-start">
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
               <Calendar className="h-4 w-4 mr-1" />
               {formatDateTime(game.date, game.game_datetime)}
             </div>
             
-            {game.is_future && game.status && (
-              <div className="text-sm text-gray-600 mt-1">
-                {game.status}
-              </div>
-            )}
-            
-            {!game.is_future && game.status && (
-              <div className="text-sm text-gray-600 mt-1">
-                {game.status}
-              </div>
-            )}
-            
-            {pitchingResults}
-            {probablePitchers}
+            {/* Additional info container - fixed height */}
+            <div className="min-h-[40px] flex flex-col justify-start">
+              {pitchingResults}
+              {probablePitchers}
+            </div>
           </div>
         </CardContent>
       </Link>

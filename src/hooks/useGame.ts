@@ -35,7 +35,7 @@ export const useGame = (gameId: string, league: 'NFL' | 'MLB') => {
           venue: data.venue_name || 'Stadium',
           winning_pitcher: data.winning_pitcher,
           losing_pitcher: data.losing_pitcher,
-          saving_pitcher: data.save_pitcher,
+          save_pitcher: data.save_pitcher,
           // Check if game is in the future (no final score and status not final)
           is_future: !data.home_score && !data.away_score && data.status !== 'Final',
         };
