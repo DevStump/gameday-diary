@@ -26,8 +26,8 @@ export const mlbLogosByYear: LogoByYear = {
     '1998-2007': 'https://content.sportslogos.net/logos/54/3020/full/tampa_bay_devil_rays_logo_primary_19985456.png' // Tampa Bay Devil Rays
   },
   'CLE': {
-    '2022-current': 'https://www.mlbstatic.com/team-logos/114.svg', // Cleveland Guardians
-    '1915-2021': 'https://content.sportslogos.net/logos/54/57/full/cleveland_indians_logo_primary_19485457.png' // Cleveland Indians
+    '2014-current': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png', // Cleveland Guardians
+    '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png' // Cleveland Indians
   }
 };
 
