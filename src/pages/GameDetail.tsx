@@ -102,16 +102,11 @@ const GameDetail = () => {
       return null;
     }
 
-    // Extract year from game_date
-    const year = game.game_date.split('-')[0];
-    
-    // Format date as YYYYMMDD
+    // Format date as YYYYMMDD and add game number (0 for single games)
     const gameDate = game.game_date.replace(/-/g, '');
-    
-    // Add game number (0 for single games, could be 1 for doubleheaders)
     const gameId = gameDate + '0';
     
-    return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${year}${gameId}.shtml`;
+    return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${gameId}.shtml`;
   };
 
   if (isLoading) {
@@ -155,7 +150,7 @@ const GameDetail = () => {
       const nflGame = game as any;
       if (nflGame.pts_off !== undefined && nflGame.pts_off !== null && 
           nflGame.pts_def !== undefined && nflGame.pts_def !== null) {
-        // Only show score if it's not 0-0 (meaning a real game was played)
+        // Show score if at least one team scored (not both 0)
         if (nflGame.pts_off === 0 && nflGame.pts_def === 0) {
           return null;
         }
@@ -167,7 +162,7 @@ const GameDetail = () => {
       const mlbGame = game as any;
       if (mlbGame.runs_scored !== undefined && mlbGame.runs_scored !== null && 
           mlbGame.runs_allowed !== undefined && mlbGame.runs_allowed !== null) {
-        // Only show score if it's not 0-0 (meaning a real game was played)
+        // Show score if at least one team scored (not both 0)
         if (mlbGame.runs_scored === 0 && mlbGame.runs_allowed === 0) {
           return null;
         }
