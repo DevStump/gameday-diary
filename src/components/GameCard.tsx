@@ -52,14 +52,22 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   // Generate boxscore URL based on league
   const generateBoxscoreUrl = () => {
     if (game.league === 'MLB') {
-      // Special mapping for LAA to ANA for Baseball Reference URLs
-      const urlTeamCode = homeTeamAbbr === 'LAA' ? 'ANA' : homeTeamAbbr;
+      const year = new Date(game.date).getFullYear();
       
-      // Use team_code from database for Baseball Reference URL
-      // Look up by file_code (our abbreviation) to get the correct Baseball Reference team_code
-      // Ensure uppercase lookup for consistent mapping
-      const mappedTeamCode = teamCodeMap[urlTeamCode.toUpperCase()];
-      const homeTeamCode = (mappedTeamCode || urlTeamCode).toUpperCase();
+      // Get the correct Baseball Reference team code
+      let bbrefTeamCode = homeTeamAbbr;
+      
+      // Handle historical team code mappings for Baseball Reference
+      if (homeTeamAbbr === 'FLA' && year <= 2002) {
+        bbrefTeamCode = 'FLO'; // Florida Marlins used FLO on Baseball Reference in early years
+      } else if (homeTeamAbbr === 'LAA') {
+        bbrefTeamCode = 'ANA'; // Angels always use ANA on Baseball Reference
+      } else {
+        // Use team_code from database for Baseball Reference URL
+        const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
+        bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
+      }
+      
       const date = game.date.replace(/-/g, '');
       
       // Handle doubleheader games
@@ -68,8 +76,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         gameNumber = game.game_num.toString();
       }
       
-      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, url_team=${urlTeamCode}, mapped_code=${mappedTeamCode}, final_code=${homeTeamCode}, date=${date}, game=${gameNumber}`);
-      return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date}${gameNumber}.shtml`;
+      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, bbref_code=${bbrefTeamCode}, date=${date}, game=${gameNumber}`);
+      return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
     } else {
       // Use existing boxscore_url for NFL
       return game.boxscore_url;

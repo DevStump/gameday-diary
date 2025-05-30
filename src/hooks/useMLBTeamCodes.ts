@@ -2,6 +2,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+// Baseball Reference specific team code mappings for historical accuracy
+const baseballReferenceOverrides: Record<string, string> = {
+  'FLA': 'FLO', // Florida Marlins used FLO on Baseball Reference
+  'ANA': 'ANA', // Anaheim Angels
+  'CAL': 'CAL', // California Angels
+  'MON': 'MON', // Montreal Expos
+};
+
 export const useMLBTeamCodes = () => {
   return useQuery({
     queryKey: ['mlb-team-codes'],
@@ -21,11 +29,18 @@ export const useMLBTeamCodes = () => {
       const teamCodeMap: Record<string, string> = {};
       data?.forEach((team) => {
         if (team.file_code && team.team_code) {
-          teamCodeMap[team.file_code.toUpperCase()] = team.team_code;
+          let bbrefCode = team.team_code;
+          
+          // Apply Baseball Reference specific overrides
+          if (baseballReferenceOverrides[team.file_code.toUpperCase()]) {
+            bbrefCode = baseballReferenceOverrides[team.file_code.toUpperCase()];
+          }
+          
+          teamCodeMap[team.file_code.toUpperCase()] = bbrefCode;
         }
       });
 
-      console.log('MLB team code mapping (file_code -> team_code):', teamCodeMap);
+      console.log('MLB team code mapping (file_code -> bbref_code):', teamCodeMap);
       return teamCodeMap;
     },
     staleTime: 1000 * 60 * 60 * 24, // Cache for 24 hours since team codes don't change often
