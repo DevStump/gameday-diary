@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -74,15 +73,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const getScore = () => {
-    // For future games, show placeholder
-    if (game.is_future) {
-      return (
-        <div className="text-2xl font-bold text-gray-300">
-          — : —
-        </div>
-      );
-    }
-    
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
       return `${game.pts_def} - ${game.pts_off}`;
     }
@@ -168,12 +158,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                 </Badge>
               )}
               {statusTag}
-              {game.is_future && (
-                <Badge variant="outline" className="border-gray-300 text-gray-500">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Scheduled
-                </Badge>
-              )}
             </div>
             {game.venue && (
               <div className="flex items-center text-sm text-gray-600">
@@ -216,18 +200,20 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               </div>
             </div>
             
-            {/* Score container - fixed height */}
+            {/* Score/Status container - fixed height */}
             <div className="h-[32px] flex items-center justify-center">
-              {score && (
-                <div className={`text-2xl font-bold ${
-                  game.is_future ? 'text-gray-300' : 'text-field-green'
-                }`}>
+              {score ? (
+                <div className="text-2xl font-bold text-field-green">
                   {score}
                 </div>
-              )}
-              {game.is_future && !score && (
+              ) : game.is_future ? (
+                <Badge variant="outline" className="border-gray-300 text-gray-500">
+                  <Clock className="h-3 w-3 mr-1" />
+                  Scheduled
+                </Badge>
+              ) : (
                 <div className="text-sm italic text-gray-500">
-                  Not yet played
+                  Score unavailable
                 </div>
               )}
             </div>
