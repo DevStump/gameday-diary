@@ -108,10 +108,10 @@ export const mlbLogosByYear: LogoByYear = {
     '1993-current': 'https://content.sportslogos.net/logos/53/75/full/seattle_mariners_logo_primary_19933809.png'
   },
   'SF': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2000-current': 'https://content.sportslogos.net/logos/54/74/full/san_francisco_giants_logo_primary_20002208.png'
   },
   'STL': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1999-current': 'https://content.sportslogos.net/logos/54/72/full/3zhma0aeq17tktge1huh7yok5.png'
   },
   'TB': {
     '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20196768.png',
@@ -133,8 +133,9 @@ export const mlbLogosByYear: LogoByYear = {
     '1997-2002': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_19975318.png',
   },
   'WSH': {
-    '2005-current': 'https://www.mlbstatic.com/team-logos/120.svg',
-    '1969-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png'
+    '2011-current': 'https://content.sportslogos.net/logos/54/578/full/washington_nationals_logo_primary_20117280.png',
+    '2005-2010': 'https://content.sportslogos.net/logos/54/578/full/x1hlmovt2m0mgs7ghwzgu6lht.png',
+    '1992-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png'
   },
 };
 
