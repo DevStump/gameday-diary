@@ -68,6 +68,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
       }
       
+      // Ensure the team code is uppercase for Baseball Reference
+      bbrefTeamCode = bbrefTeamCode.toUpperCase();
+      
       const date = game.date.replace(/-/g, '');
       
       // Handle doubleheader games
