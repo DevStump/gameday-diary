@@ -156,8 +156,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
           </Button>
 
-          {/* View Boxscore Link - only show for signed-in users with boxscore_url and not future games */}
-          {isAuthenticated && game.boxscore_url && !game.is_future && (
+          {/* View Boxscore Link - only show for signed-in users and not future games */}
+          {isAuthenticated && !game.is_future && (
             <div className="text-center mt-2">
               <a 
                 href={game.boxscore_url} 
