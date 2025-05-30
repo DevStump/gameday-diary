@@ -69,9 +69,6 @@ const HotGames = ({ games }: HotGamesProps) => {
               </div>
               
               <div className="text-center">
-                <div className="text-lg font-bold text-orange-600">
-                  📖 {(game.diaryEntries || 0).toLocaleString()} entries
-                </div>
                 <div className="text-xs text-gray-600">
                   {new Date(game.date).toLocaleDateString('en-US', { 
                     month: 'short', 

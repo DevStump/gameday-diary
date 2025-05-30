@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Calendar, MapPin, Plus, Clock, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -163,16 +162,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         className="block flex-1 flex flex-col"
       >
         <CardContent className="p-4 cursor-pointer flex-1 flex flex-col">
-          {/* Top badges and diary counter - fixed height */}
+          {/* Top badges - fixed height */}
           <div className="flex justify-between items-start mb-2 min-h-[32px]">
             <div className="flex items-center space-x-2 flex-wrap">
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
               </Badge>
               {statusTag}
-            </div>
-            <div className="flex items-center text-xs text-gray-600">
-              📖 <span className="ml-1">Diary Entries: {game.diaryEntries?.toLocaleString() || '0'}</span>
             </div>
           </div>
 
