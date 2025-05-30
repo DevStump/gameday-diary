@@ -73,7 +73,7 @@ export const mlbLogosByYear: LogoByYear = {
   },
   'OAK': {
     '2025-current': 'https://content.sportslogos.net/logos/53/6921/full/athletics__logo_primary_2025_sportslogosnet-5001.png',
-    '1993-2024': 'https://content.sportslogos.net/logos/53/69/full/6xk2lpc36146pbg2kydf13e50.png
+    '1993-2024': 'https://content.sportslogos.net/logos/53/69/full/6xk2lpc36146pbg2kydf13e50.png'
   },
   'PHI': {
     '2000-current': 'https://content.sportslogos.net/logos/'
