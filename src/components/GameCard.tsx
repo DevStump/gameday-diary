@@ -25,9 +25,6 @@ interface GameCardProps {
     boxscore_url?: string;
     is_future?: boolean;
     status?: string;
-    summary?: string;
-    doubleheader?: string;
-    game_num?: number;
     game_type?: string;
     winning_pitcher?: string;
     losing_pitcher?: string;
@@ -91,13 +88,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     return null;
   };
 
-  const getDoubleheaderInfo = () => {
-    if (game.doubleheader && game.game_num) {
-      return `Doubleheader Game ${game.game_num}`;
-    }
-    return null;
-  };
-
   const getStatusTag = () => {
     if (!game.status) return null;
     
@@ -142,7 +132,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const score = getScore();
-  const doubleheaderInfo = getDoubleheaderInfo();
   const statusTag = getStatusTag();
   const probablePitchers = getProbablePitchers();
   const pitchingResults = getPitchingResults();
@@ -214,25 +203,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {formatDateTime(game.date, game.game_datetime)}
             </div>
             
-            {doubleheaderInfo && (
-              <div className="text-sm text-gray-600 mt-1">
-                {doubleheaderInfo}
-              </div>
-            )}
-            
             {game.is_future && game.status && (
               <div className="text-sm text-gray-600 mt-1">
                 {game.status}
               </div>
             )}
             
-            {!game.is_future && game.summary && (
-              <div className="text-sm text-gray-600 mt-1">
-                {game.summary}
-              </div>
-            )}
-            
-            {!game.is_future && game.status && !game.summary && (
+            {!game.is_future && game.status && (
               <div className="text-sm text-gray-600 mt-1">
                 {game.status}
               </div>
