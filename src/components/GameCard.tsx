@@ -1,10 +1,9 @@
+
 import React from 'react';
-import { Calendar, MapPin, Plus, Clock, BookOpen } from 'lucide-react';
+import { Calendar, MapPin, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Link } from 'react-router-dom';
 import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
 
 interface GameCardProps {
@@ -157,117 +156,97 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     <Card className={`hover:shadow-lg transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
       game.is_future ? 'bg-gray-50' : ''
     }`}>
-      <Link 
-        to={`/game/${game.league.toLowerCase()}/${game.game_id}`}
-        className="block flex-1 flex flex-col"
-      >
-        <CardContent className="p-4 cursor-pointer flex-1 flex flex-col">
-          {/* Top badges - fixed height */}
-          <div className="flex justify-between items-start mb-2 min-h-[32px]">
-            <div className="flex items-center space-x-2 flex-wrap">
-              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
-                {game.league}
+      <CardContent className="p-4 flex-1 flex flex-col">
+        {/* Top badges - fixed height */}
+        <div className="flex justify-between items-start mb-2 min-h-[32px]">
+          <div className="flex items-center space-x-2 flex-wrap">
+            <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+              {game.league}
+            </Badge>
+            {statusTag}
+          </div>
+        </div>
+
+        {/* Venue row - full width without character limit */}
+        {game.venue && (
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span className="text-center">{game.venue}</span>
+          </div>
+        )}
+
+        {/* Teams and Score - fixed height container */}
+        <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
+          {/* Team Logos and Names */}
+          <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-1">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
+              <img 
+                src={getTeamLogo(game.away_team, game.league)} 
+                alt={game.away_team}
+                className={`max-h-10 max-w-10 object-scale-down flex-shrink-0 ${
+                  game.is_future ? 'opacity-70' : ''
+                }`}
+              />
+              <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+                game.is_future ? 'text-gray-600' : ''
+              }`}>{formatTeamName(game.away_team, game.league)}</span>
+            </div>
+            
+            <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
+            
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-start">
+              <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
+                game.is_future ? 'text-gray-600' : ''
+              }`}>{formatTeamName(game.home_team, game.league)}</span>
+              <img 
+                src={getTeamLogo(game.home_team, game.league)} 
+                alt={game.home_team}
+                className={`max-h-10 max-w-10 object-scale-down flex-shrink-0 ${
+                  game.is_future ? 'opacity-70' : ''
+                }`}
+              />
+            </div>
+          </div>
+          
+          {/* Score/Status container - fixed height */}
+          <div className="h-[32px] flex items-center justify-center">
+            {score ? (
+              <div className="text-2xl font-bold text-field-green">
+                {score}
+              </div>
+            ) : game.is_future ? (
+              <Badge variant="outline" className="border-gray-300 text-gray-500">
+                <Clock className="h-3 w-3 mr-1" />
+                Scheduled
               </Badge>
-              {statusTag}
-            </div>
-          </div>
-
-          {/* Venue row - full width without character limit */}
-          {game.venue && (
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
-              <MapPin className="h-4 w-4 mr-1" />
-              <span className="text-center">{game.venue}</span>
-            </div>
-          )}
-
-          {/* Teams and Score - fixed height container */}
-          <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
-            {/* Team Logos and Names */}
-            <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-1">
-              <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-end">
-                <img 
-                  src={getTeamLogo(game.away_team, game.league)} 
-                  alt={game.away_team}
-                  className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0 ${
-                    game.is_future ? 'opacity-70' : ''
-                  }`}
-                />
-                <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
-                  game.is_future ? 'text-gray-600' : ''
-                }`}>{formatTeamName(game.away_team, game.league)}</span>
+            ) : (
+              <div className="text-sm italic text-gray-500">
+                Score unavailable
               </div>
-              
-              <span className="text-gray-500 font-medium text-sm sm:text-base flex-shrink-0">@</span>
-              
-              <div className="flex items-center space-x-1 sm:space-x-2 flex-1 justify-start">
-                <span className={`font-medium text-gray-900 text-sm sm:text-base truncate ${
-                  game.is_future ? 'text-gray-600' : ''
-                }`}>{formatTeamName(game.home_team, game.league)}</span>
-                <img 
-                  src={getTeamLogo(game.home_team, game.league)} 
-                  alt={game.home_team}
-                  className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 object-contain flex-shrink-0 ${
-                    game.is_future ? 'opacity-70' : ''
-                  }`}
-                />
-              </div>
-            </div>
-            
-            {/* Score/Status container - fixed height */}
-            <div className="h-[32px] flex items-center justify-center">
-              {score ? (
-                <div className="text-2xl font-bold text-field-green">
-                  {score}
-                </div>
-              ) : game.is_future ? (
-                <Badge variant="outline" className="border-gray-300 text-gray-500">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Scheduled
-                </Badge>
-              ) : (
-                <div className="text-sm italic text-gray-500">
-                  Score unavailable
-                </div>
-              )}
-            </div>
+            )}
           </div>
+        </div>
 
-          {/* Date and additional info - fixed height container with reduced spacing */}
-          <div className="text-center min-h-[50px] flex flex-col justify-start">
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
-              <Calendar className="h-4 w-4 mr-1" />
-              {formatDateTime(game.date, game.game_datetime)}
-            </div>
-            
-            {/* Additional info container - fixed height with reduced spacing */}
-            <div className="min-h-[15px] flex flex-col justify-start">
-              {pitchingResults}
-              {probablePitchers}
-            </div>
+        {/* Date and additional info - fixed height container with reduced spacing */}
+        <div className="text-center min-h-[50px] flex flex-col justify-start">
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-1">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formatDateTime(game.date, game.game_datetime)}
           </div>
-        </CardContent>
-      </Link>
+          
+          {/* Additional info container - fixed height with reduced spacing */}
+          <div className="min-h-[15px] flex flex-col justify-start">
+            {pitchingResults}
+            {probablePitchers}
+          </div>
+        </div>
+      </CardContent>
 
       {/* Vertical divider with margins */}
       <div className="border-t border-gray-200 mx-4"></div>
 
       <CardFooter className="p-4 pt-0">
         <div className="w-full space-y-2">
-          {/* View Boxscore Link with reduced padding - only show for completed games */}
-          {game.boxscore_url && !game.is_future && (
-            <div className="flex justify-center pt-1">
-              <a 
-                href={game.boxscore_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-field-green hover:underline font-semibold text-sm"
-                onClick={(e) => e.stopPropagation()}
-              >
-                View Boxscore
-              </a>
-            </div>
-          )}
-          
           {/* Add to Diary Button */}
           <Button
             onClick={(e) => {
@@ -280,6 +259,21 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             <Plus className="h-4 w-4 mr-2" />
             {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
           </Button>
+
+          {/* View Boxscore Link - only show for signed-in users */}
+          {isAuthenticated && game.boxscore_url && !game.is_future && (
+            <div className="flex justify-center pt-1">
+              <a 
+                href={game.boxscore_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-gray-500 underline hover:text-gray-700"
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Boxscore
+              </a>
+            </div>
+          )}
         </div>
       </CardFooter>
     </Card>
