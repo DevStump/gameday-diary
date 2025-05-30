@@ -22,8 +22,10 @@ export const mlbLogosByYear: LogoByYear = {
     '1969-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png' // Montreal Expos
   },
   'TB': {
-    '2008-current': 'https://www.mlbstatic.com/team-logos/139.svg', // Tampa Bay Rays
-    '1998-2007': 'https://content.sportslogos.net/logos/54/3020/full/tampa_bay_devil_rays_logo_primary_19985456.png' // Tampa Bay Devil Rays
+    '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20196768.png', // Tampa Bay Rays
+    '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png' // Tampa Bay Devil Rays
+    '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png' // Tampa Bay Devil Rays
+    '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png' // Tampa Bay Devil Rays
   },
   'CLE': {
     '2014-current': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png', // Cleveland Guardians
