@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectLa
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { formatTeamName } from '@/utils/teamLogos';
@@ -25,6 +26,7 @@ interface GameFiltersProps {
 }
 
 const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
   // Show years from 2000 to 2025 for MLB data coverage
@@ -106,26 +108,9 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     return selectedTeam;
   };
 
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Filter Games</h3>
-        </div>
-        {hasActiveFilters && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Clear All
-          </Button>
-        )}
-      </div>
-
+  // Filter content component to avoid duplication
+  const FilterContent = () => (
+    <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
@@ -316,7 +301,77 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           )}
         </div>
       )}
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Version */}
+      <div className="hidden md:block bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Filter Games</h3>
+          </div>
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onClearFilters}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Clear All
+            </Button>
+          )}
+        </div>
+        <FilterContent />
+      </div>
+
+      {/* Mobile Version */}
+      <div className="md:hidden mb-6">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter Games
+              {hasActiveFilters && (
+                <Badge variant="secondary" className="ml-2">
+                  {Object.values(filters).filter(v => v !== '').length}
+                </Badge>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[80vh]">
+            <SheetHeader>
+              <SheetTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Filter className="h-5 w-5 text-gray-600" />
+                  <span>Filter Games</span>
+                </div>
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onClearFilters();
+                      setIsOpen(false);
+                    }}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Clear All
+                  </Button>
+                )}
+              </SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 overflow-y-auto">
+              <FilterContent />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 };
 
