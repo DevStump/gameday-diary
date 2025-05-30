@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -28,8 +27,8 @@ interface GameFiltersProps {
 const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersProps) => {
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
-  // Only show 2024 and 2025 seasons
-  const seasons = [2025, 2024];
+  // Show years from 2000 to 2025 for MLB data coverage
+  const seasons = Array.from({ length: 26 }, (_, i) => 2025 - i);
 
   // Team abbreviations for both leagues (sorted alphabetically)
   const nflTeams = [
