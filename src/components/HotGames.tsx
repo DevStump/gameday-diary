@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameDateTime from './game-card/GameDateTime';
@@ -111,8 +110,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     size="sm"
                     className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors text-xs py-1"
                   >
-                    <Plus className="h-3 w-3 mr-1" />
-                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                    <BookOpen className="h-3 w-3 mr-1" />
+                    {isAuthenticated ? 'Add' : 'Sign in to Add'}
                   </Button>
                 )}
               </CardContent>
@@ -183,8 +182,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     size="sm"
                     className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors text-xs py-1"
                   >
-                    <Plus className="h-3 w-3 mr-1" />
-                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                    <BookOpen className="h-3 w-3 mr-1" />
+                    {isAuthenticated ? 'Add' : 'Sign in to Add'}
                   </Button>
                 )}
               </CardContent>

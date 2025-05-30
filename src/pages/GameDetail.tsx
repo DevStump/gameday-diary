@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Calendar, MapPin, ArrowLeft, Plus, Trophy, Zap, ExternalLink } from 'lucide-react';
+import { Calendar, MapPin, ArrowLeft, BookOpen, Trophy, Zap, ExternalLink } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTeamLogo, formatTeamName } from '@/utils/teamLogos';
@@ -286,7 +286,7 @@ const GameDetail = () => {
                   className="bg-field-green hover:bg-field-dark"
                   size="lg"
                 >
-                  <Plus className="h-5 w-5 mr-2" />
+                  <BookOpen className="h-5 w-5 mr-2" />
                   {user ? 'Add to My Diary' : 'Sign in to Add to Diary'}
                 </Button>
                 
@@ -303,7 +303,7 @@ const GameDetail = () => {
                       rel="noopener noreferrer"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      View Boxscore
+                      Boxscore
                     </a>
                   </Button>
                 )}

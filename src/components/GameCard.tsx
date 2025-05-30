@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Plus, ExternalLink } from 'lucide-react';
+import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -187,8 +187,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               className="flex-1 bg-field-green transition-colors"
               size="sm"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+              <BookOpen className="h-4 w-4 mr-2" />
+              {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
             {/* View Boxscore Button - only show for signed-in users and not future games */}
@@ -206,7 +206,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
                   className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
                 >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  View Boxscore
+                  Boxscore
                 </Button>
               </a>
             )}
