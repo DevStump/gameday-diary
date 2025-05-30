@@ -7,31 +7,107 @@ export interface LogoByYear {
 }
 
 export const mlbLogosByYear: LogoByYear = {
-  'MIA': {
-    '2012-current': 'https://www.mlbstatic.com/team-logos/146.svg', // Miami Marlins
-    '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png' // Florida Marlins
+  'ARI': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
   },
-  'LAA': {
-    '2016-current': 'https://www.mlbstatic.com/team-logos/108.svg', // Los Angeles Angels
-    '2005-2015': 'https://www.mlbstatic.com/team-logos/108.svg', // Los Angeles Angels of Anaheim
-    '1997-2004': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png', // Anaheim Angels
-    '1965-1996': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png' // California Angels
+  'ATL': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
   },
-  'WSH': {
-    '2005-current': 'https://www.mlbstatic.com/team-logos/120.svg', // Washington Nationals
-    '1969-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png' // Montreal Expos
+  'BAL': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
   },
-  'TB': {
-    '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20196768.png', // Tampa Bay Rays
-    '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png', // Tampa Bay Devil Rays
-    '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png', // Tampa Bay Devil Rays
-    '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png' // Tampa Bay Devil Rays
+  'BOS': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'CHC': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'CIN': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
   },
   'CLE': {
-    '2014-current': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png', // Cleveland Guardians
-    '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png' // Cleveland Indians
-  }
+    '2014-current': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png',
+    '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png',
+  },
+  'COL': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'CWS': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'DET': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'HOU': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'KC': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'LAA': {
+    '2016-current': 'https://www.mlbstatic.com/team-logos/108.svg',
+    '2005-2015': 'https://www.mlbstatic.com/team-logos/108.svg',
+    '1997-2004': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png',
+    '1965-1996': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png',
+  },
+  'LAD': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'MIA': {
+    '2012-current': 'https://www.mlbstatic.com/team-logos/146.svg',
+    '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png',
+  },
+  'MIL': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'MIN': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'NYM': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'NYY': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'OAK': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'PHI': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'PIT': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'SD': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'SEA': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'SF': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'STL': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'TB': {
+    '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20196768.png',
+    '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png',
+    '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png',
+    '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png',
+  },
+  'TEX': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'TOR': {
+    '2000-current': 'https://content.sportslogos.net/logos/',
+  },
+  'WSH': {
+    '2005-current': 'https://www.mlbstatic.com/team-logos/120.svg',
+    '1969-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png',
+  },
 };
+
 
 export const nflLogosByYear: LogoByYear = {
   'LV': {
