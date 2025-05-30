@@ -157,8 +157,13 @@ export const useGames = (filters: GameFilters) => {
         if (filters.season) {
           nflQuery = nflQuery.eq('season', parseInt(filters.season));
         }
-        if (filters.playoff) {
-          nflQuery = nflQuery.eq('playoff', filters.playoff === 'true');
+        if (filters.playoff === 'true') {
+          nflQuery = nflQuery.eq('playoff', true);
+        } else if (filters.playoff === 'false') {
+          nflQuery = nflQuery.eq('playoff', false);
+        } else if (filters.playoff === 'exhibition') {
+          // For NFL, exhibition games are typically week 0 or negative weeks (preseason)
+          nflQuery = nflQuery.lte('week', 0);
         }
         if (filters.startDate) {
           nflQuery = nflQuery.gte('date', filters.startDate);
@@ -206,9 +211,15 @@ export const useGames = (filters: GameFilters) => {
           mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
         }
         
-        if (filters.playoff) {
+        if (filters.playoff === 'true') {
           // Filter by game_type for playoffs
           mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']); // Wild Card, Division, League Championship, World Series
+        } else if (filters.playoff === 'false') {
+          // Regular season games
+          mlbQuery = mlbQuery.eq('game_type', 'R');
+        } else if (filters.playoff === 'exhibition') {
+          // Exhibition games - Spring Training, Exhibition, etc.
+          mlbQuery = mlbQuery.in('game_type', ['S', 'E']); // Spring Training, Exhibition
         }
         if (filters.startDate) {
           mlbQuery = mlbQuery.gte('game_date', filters.startDate);

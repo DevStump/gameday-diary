@@ -198,6 +198,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
             <SelectItem value="all">All Games</SelectItem>
             <SelectItem value="true">Playoff Games</SelectItem>
             <SelectItem value="false">Regular Season</SelectItem>
+            <SelectItem value="exhibition">Exhibition</SelectItem>
           </SelectContent>
         </Select>
 
@@ -284,7 +285,11 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           )}
           {filters.playoff && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>{filters.playoff === 'true' ? 'Playoff Games' : 'Regular Season'}</span>
+              <span>
+                {filters.playoff === 'true' ? 'Playoff Games' : 
+                 filters.playoff === 'false' ? 'Regular Season' : 
+                 'Exhibition'}
+              </span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('playoff', '')}
