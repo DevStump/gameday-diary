@@ -106,7 +106,11 @@ const Games = () => {
         </div>
 
         {/* Hot Games Section */}
-        <HotGames games={hotGamesData} />
+        <HotGames 
+          games={hotGamesData} 
+          onAddToDiary={handleAddToDiary}
+          isAuthenticated={!!user}
+        />
 
         {/* Filters */}
         <GameFilters

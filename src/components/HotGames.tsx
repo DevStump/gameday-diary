@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 
 interface HotGamesProps {
@@ -16,9 +18,11 @@ interface HotGamesProps {
     boxscore_url?: string;
     is_future?: boolean;
   }>;
+  onAddToDiary?: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => void;
+  isAuthenticated?: boolean;
 }
 
-const HotGames = ({ games }: HotGamesProps) => {
+const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
   // Get top 3 games with highest diary entries (already consistent from useGames)
   const hotGames = games
     .filter(game => game.diaryEntries !== undefined)
@@ -74,7 +78,7 @@ const HotGames = ({ games }: HotGamesProps) => {
                   </div>
                 </div>
                 
-                <div className="text-center">
+                <div className="text-center mb-3">
                   <div className="text-xs text-gray-600">
                     {new Date(game.date).toLocaleDateString('en-US', { 
                       month: 'short', 
@@ -82,6 +86,28 @@ const HotGames = ({ games }: HotGamesProps) => {
                     })}
                   </div>
                 </div>
+
+                {/* Add to Diary Button */}
+                {onAddToDiary && (
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onAddToDiary(
+                        game.game_id,
+                        `${game.away_team} @ ${game.home_team}`,
+                        game.home_team,
+                        game.away_team,
+                        game.league
+                      );
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100 transition-colors"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           );

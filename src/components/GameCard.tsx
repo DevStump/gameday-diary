@@ -44,6 +44,20 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league);
 
+  // Generate boxscore URL based on league
+  const generateBoxscoreUrl = () => {
+    if (game.league === 'MLB') {
+      // Format: https://www.baseball-reference.com/boxes/TEAM/TEAMYYYY-MM-DD-#.shtml
+      // Use home team abbreviation and date
+      const date = game.date.replace(/-/g, '');
+      const homeTeamCode = homeTeamAbbr.toLowerCase();
+      return `https://www.baseball-reference.com/boxes/${homeTeamCode}/${homeTeamCode}${date.substring(0,4)}-${date.substring(4,6)}-${date.substring(6,8)}-0.shtml`;
+    } else {
+      // Use existing boxscore_url for NFL
+      return game.boxscore_url;
+    }
+  };
+
   const getStatusTag = () => {
     // Check game_type for MLB games
     if (game.game_type === 'E') {
@@ -161,7 +175,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             {/* View Boxscore Button - only show for signed-in users and not future games */}
             {isAuthenticated && !game.is_future && (
               <a 
-                href={game.boxscore_url} 
+                href={generateBoxscoreUrl()} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex-1"
