@@ -74,10 +74,16 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
   const getScore = () => {
     if (game.league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      return `${game.pts_def} - ${game.pts_off}`;
+      // Only return score if both values are not null/0 or if it's not a future game
+      if (!game.is_future && (game.pts_off !== 0 || game.pts_def !== 0)) {
+        return `${game.pts_def} - ${game.pts_off}`;
+      }
     }
     if (game.league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      return `${game.runs_allowed} - ${game.runs_scored}`;
+      // Only return score if both values are not null/0 or if it's not a future game
+      if (!game.is_future && (game.runs_scored !== 0 || game.runs_allowed !== 0)) {
+        return `${game.runs_allowed} - ${game.runs_scored}`;
+      }
     }
     return null;
   };
@@ -86,7 +92,12 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     if (!game.status) return null;
     
     const status = game.status.toLowerCase();
-    if (status.includes('spring training') || status.includes('exhibition') || status.includes('playoff')) {
+    if (status.includes('spring training') || 
+        status.includes('exhibition') || 
+        status.includes('playoff') ||
+        status.includes('spring') ||
+        status.includes('preseason') ||
+        game.game_type === 'S') { // S typically indicates Spring Training in MLB
       return (
         <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
           {game.status}
