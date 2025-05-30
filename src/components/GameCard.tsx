@@ -89,21 +89,32 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const getStatusTag = () => {
-    if (!game.status) return null;
-    
-    const status = game.status.toLowerCase();
-    if (status.includes('spring training') || 
-        status.includes('exhibition') || 
-        status.includes('playoff') ||
-        status.includes('spring') ||
-        status.includes('preseason') ||
-        game.game_type === 'S') { // S typically indicates Spring Training in MLB
+    // Check game_type for MLB games
+    if (game.game_type === 'E') {
       return (
         <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-          {game.status}
+          Exhibition
         </Badge>
       );
     }
+    
+    if (game.game_type === 'S') {
+      return (
+        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+          Spring Training
+        </Badge>
+      );
+    }
+
+    // Check for playoff games
+    if (game.playoff) {
+      return (
+        <Badge variant="outline" className="border-sports-gold text-sports-gold">
+          Playoff
+        </Badge>
+      );
+    }
+    
     return null;
   };
 
@@ -163,11 +174,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
                 {game.league}
               </Badge>
-              {game.playoff && (
-                <Badge variant="outline" className="border-sports-gold text-sports-gold">
-                  Playoff
-                </Badge>
-              )}
               {statusTag}
             </div>
             {game.venue && (
