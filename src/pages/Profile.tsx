@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { BarChart3, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
@@ -128,6 +129,14 @@ const Profile = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Runs/Points</p>
                   <p className="text-3xl font-bold text-sports-gold">{stats.totalRuns}</p>
+                  <div className="mt-2 text-xs text-gray-500 space-y-1">
+                    {stats.highestScoringGame && (
+                      <div>High: {stats.highestScoringGame.runs} ({stats.highestScoringGame.teams})</div>
+                    )}
+                    {stats.lowestScoringGame && (
+                      <div>Low: {stats.lowestScoringGame.runs} ({stats.lowestScoringGame.teams})</div>
+                    )}
+                  </div>
                 </div>
                 <TrendingUp className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
@@ -165,7 +174,7 @@ const Profile = () => {
                   <div className="text-lg text-gray-600">Win Percentage</div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="bg-green-50 p-4 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
                     <div className="text-sm text-green-700">Wins</div>
@@ -174,10 +183,6 @@ const Profile = () => {
                     <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
                     <div className="text-sm text-red-700">Losses</div>
                   </div>
-                </div>
-
-                <div className="text-sm text-gray-500">
-                  Record: {stats.winRecord.wins}-{stats.winRecord.losses}
                 </div>
               </div>
             </CardContent>
@@ -231,10 +236,7 @@ const Profile = () => {
             <CardContent>
               <div className="text-center">
                 <div className="text-2xl font-bold text-field-green mb-2">
-                  {stats.mostVisitedVenue}
-                </div>
-                <div className="text-lg text-gray-600">
-                  ({mostVisitedVenueCount} game{mostVisitedVenueCount !== 1 ? 's' : ''})
+                  {stats.mostVisitedVenue} ({mostVisitedVenueCount})
                 </div>
               </div>
             </CardContent>
@@ -250,6 +252,9 @@ const Profile = () => {
                 {stats.mostSupportedTeam && stats.mostSupportedTeam.team !== 'N/A' ? (
                   <>
                     <div className="flex justify-center items-center space-x-3 mb-2">
+                      <div className="text-2xl font-bold text-field-green">
+                        {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
+                      </div>
                       <img 
                         src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')} 
                         alt={stats.mostSupportedTeam.team}
@@ -259,11 +264,8 @@ const Profile = () => {
                           mixBlendMode: 'multiply'
                         }}
                       />
-                      <div className="text-2xl font-bold text-field-green">
-                        {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
-                      </div>
                       <div className="text-lg text-gray-600">
-                        ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
+                        ({mostSupportedTeamCount})
                       </div>
                     </div>
                   </>

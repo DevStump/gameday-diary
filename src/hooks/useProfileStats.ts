@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
@@ -37,6 +38,8 @@ export const useProfileStats = () => {
       let totalRuns = 0;
       let wins = 0;
       let losses = 0;
+      let highestScoringGame = { runs: 0, teams: '', date: '', venue: '' };
+      let lowestScoringGame = { runs: Infinity, teams: '', date: '', venue: '' };
 
       gameLogs.forEach(log => {
         const game = gameMap[String(log.game_id)];
@@ -82,8 +85,33 @@ export const useProfileStats = () => {
           }
         }
 
-        // Total runs
-        totalRuns += (game.home_score ?? game.runs_scored ?? 0) + (game.away_score ?? game.runs_allowed ?? 0);
+        // Total runs and highest/lowest scoring games
+        const gameRuns = (game.home_score ?? game.runs_scored ?? 0) + (game.away_score ?? game.runs_allowed ?? 0);
+        totalRuns += gameRuns;
+
+        // Track highest scoring game
+        if (gameRuns > highestScoringGame.runs) {
+          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
+          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
+          highestScoringGame = {
+            runs: gameRuns,
+            teams: `${awayAbbr} @ ${homeAbbr}`,
+            date: game.game_date,
+            venue: game.venue_name || ''
+          };
+        }
+
+        // Track lowest scoring game (only if game has been played)
+        if (gameRuns < lowestScoringGame.runs && gameRuns > 0) {
+          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
+          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
+          lowestScoringGame = {
+            runs: gameRuns,
+            teams: `${awayAbbr} @ ${homeAbbr}`,
+            date: game.game_date,
+            venue: game.venue_name || ''
+          };
+        }
 
         // Team breakdown
         const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
@@ -130,6 +158,8 @@ export const useProfileStats = () => {
         mostSupportedTeam: { team: mostSupportedTeamAbbr, count: mostSupportedTeamCount },
         gameTimelineData,
         totalRuns,
+        highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
+        lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
         venueBreakdown,
       };
     },
