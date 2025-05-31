@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -90,11 +91,14 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const shouldShowBoxscore = () => {
     if (game.is_future) return false;
     
-    // Check if game date is yesterday or prior
-    const today = new Date().toISOString().split('T')[0];
-    const gameDate = game.date;
+    // Only show boxscore for games that happened yesterday or earlier
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset to start of day
     
-    // If game date is before today, show boxscore
+    const gameDate = new Date(game.date);
+    gameDate.setHours(0, 0, 0, 0); // Reset to start of day
+    
+    // Only show if game date is before today (yesterday or earlier)
     return gameDate < today;
   };
 
