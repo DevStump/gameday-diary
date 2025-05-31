@@ -26,9 +26,10 @@ interface GameFiltersProps {
   onFilterChange: (key: string, value: string) => void;
   onClearFilters: () => void;
   showModeFilter?: boolean; // Whether to show the mode filter
+  games?: any[]; // Optional array of games to determine smart default date
 }
 
-const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false }: GameFiltersProps) => {
+const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false, games = [] }: GameFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
@@ -42,6 +43,46 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
     'MIN', 'NYM', 'NYY', 'OAK', 'PHI', 'PIT', 'SD', 'SF',
     'SEA', 'STL', 'TB', 'TEX', 'TOR', 'WSH'
   ].sort();
+
+  // Smart default date logic
+  const getSmartDefaultDate = (): Date => {
+    // If a date filter is already set, use that
+    if (filters.startDate) {
+      try {
+        const [year, month, day] = filters.startDate.split('-').map(Number);
+        return new Date(year, month - 1, day);
+      } catch {
+        // Fall through to other logic if parsing fails
+      }
+    }
+
+    // If a season filter is active, default to January of that year
+    if (filters.season) {
+      try {
+        const year = parseInt(filters.season);
+        return new Date(year, 0, 1); // January 1st of the season year
+      } catch {
+        // Fall through to other logic if parsing fails
+      }
+    }
+
+    // If games are available, use the first game's date
+    if (games.length > 0) {
+      const firstGame = games[0];
+      const gameDate = firstGame.date || firstGame.game_date;
+      if (gameDate) {
+        try {
+          const [year, month, day] = gameDate.split('-').map(Number);
+          return new Date(year, month - 1, day);
+        } catch {
+          // Fall through to current date if parsing fails
+        }
+      }
+    }
+
+    // Default to current date
+    return new Date();
+  };
 
   // Convert filters to selected date for the calendar
   const getSelectedDate = (): Date | undefined => {
@@ -124,11 +165,12 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   };
 
   const selectedDate = getSelectedDate();
+  const smartDefaultDate = getSmartDefaultDate();
 
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className={`grid gap-4 mb-4 ${showModeFilter ? 'grid-cols-5' : 'grid-cols-4'}`}>
+      <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
         {/* Teams Dropdown - MLB Only */}
         <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
@@ -200,6 +242,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
               mode="single"
               selected={selectedDate}
               onSelect={handleDateChange}
+              defaultMonth={smartDefaultDate}
               initialFocus
               className="p-3 pointer-events-auto"
             />

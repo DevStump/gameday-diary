@@ -192,6 +192,7 @@ const Games = () => {
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={handleClearFilters}
+          games={games}
         />
 
         {/* Loading State */}
