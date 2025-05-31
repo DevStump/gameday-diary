@@ -1,36 +1,97 @@
-
-import React, { useMemo } from 'react';
+import React from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3, Star } from 'lucide-react';
-import { useProfileStats } from '@/hooks/useProfileStats';
+import { Button } from '@/components/ui/button';
+import { BarChart3, TrendingUp, Calendar, Trophy, Users, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { getTeamLogo } from '@/utils/teamLogos';
+import { Link } from 'react-router-dom';
+import { useProfileStats } from '@/hooks/useProfileStats';
 
 const Dashboard = () => {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: stats, isLoading } = useProfileStats();
 
-  React.useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
+  // Empty state for signed out users
+  if (!user) {
+    return (
+      <Layout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-8">
+            <div className="flex justify-center items-center space-x-3 mb-4">
+              <BarChart3 className="h-10 w-10 text-field-green" />
+              <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
+            </div>
+            <div className="max-w-4xl mx-auto">
+              <p className="text-lg text-gray-600 mb-6">
+                Your personal sports analytics hub. Track your game-watching journey with detailed stats and insights.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                <div className="flex items-center justify-center space-x-2 mb-4">
+                  <Users className="h-6 w-6 text-blue-600" />
+                  <span className="text-blue-800 font-medium text-lg">Sign in to unlock your dashboard</span>
+                </div>
+                <p className="text-blue-700 mb-4">
+                  Start logging games to see detailed analytics about your sports viewing habits, favorite teams, and attendance patterns.
+                </p>
+                <Button asChild className="bg-field-green hover:bg-field-dark">
+                  <Link to="/auth">Get Started</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
 
-  const winPercentage = useMemo(() => {
-    if (!stats?.winRecord) return 0;
-    const { wins, losses } = stats.winRecord;
-    const totalGames = wins + losses;
-    return totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
-  }, [stats?.winRecord]);
+          {/* Preview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="opacity-60">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Games</CardTitle>
+                <Trophy className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">--</div>
+                <p className="text-xs text-muted-foreground">Games logged</p>
+              </CardContent>
+            </Card>
 
-  const circumference = 2 * Math.PI * 45;
-  const strokeDasharray = `${(winPercentage / 100) * circumference} ${circumference}`;
+            <Card className="opacity-60">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Games Attended</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">--</div>
+                <p className="text-xs text-muted-foreground">Live experiences</p>
+              </CardContent>
+            </Card>
 
-  if (authLoading || isLoading) {
+            <Card className="opacity-60">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">--</div>
+                <p className="text-xs text-muted-foreground">Out of 5 stars</p>
+              </CardContent>
+            </Card>
+
+            <Card className="opacity-60">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Streak</CardTitle>
+                <Zap className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">--</div>
+                <p className="text-xs text-muted-foreground">Days logging</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (isLoading) {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

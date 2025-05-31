@@ -16,8 +16,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
-    { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, requireAuth: true },
+    { name: 'Diary', href: '/diary', icon: Calendar },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
     { name: 'About', href: '/about', icon: Info },
   ];
 
@@ -52,7 +52,10 @@ const Layout = ({ children }: LayoutProps) => {
             {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
               {navigation.map((item) => {
-                if (item.requireAuth && !user) return null;
+                // Show all items for authenticated users, or only Games and About for unauthenticated
+                if (!user && (item.name === 'Diary' || item.name === 'Dashboard')) {
+                  return null;
+                }
                 
                 return (
                   <Link
@@ -83,32 +86,30 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      {/* Main Content with mobile bottom padding when authenticated (bottom nav present) */}
-      <main className={`flex-1 ${user ? 'pb-20 md:pb-0' : ''}`}>
+      {/* Main Content with mobile bottom padding (bottom nav always present) */}
+      <main className="flex-1 pb-20 md:pb-0">
         {children}
       </main>
 
-      {/* Mobile Navigation */}
-      {user && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-          <div className="flex justify-around">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`flex flex-col items-center py-2 px-3 text-xs ${
-                  isActive(item.href)
-                    ? 'text-field-green'
-                    : 'text-gray-600'
-                }`}
-              >
-                <item.icon className="h-6 w-6 mb-1" />
-                <span>{item.name}</span>
-              </Link>
-            ))}
-          </div>
+      {/* Mobile Navigation - Always show */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="flex justify-around">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={`flex flex-col items-center py-2 px-3 text-xs ${
+                isActive(item.href)
+                  ? 'text-field-green'
+                  : 'text-gray-600'
+              }`}
+            >
+              <item.icon className="h-6 w-6 mb-1" />
+              <span>{item.name}</span>
+            </Link>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
