@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useGameLogs } from '@/hooks/useGameLogs';
-import { useGames } from '@/hooks/useGames';
+import { useLoggedGames } from '@/hooks/useLoggedGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import EditGameLogModal from '@/components/EditGameLogModal';
@@ -36,117 +37,16 @@ const Timeline = () => {
     mode: '', // New filter for diary entries
   });
 
-  // Fetch MLB games - show all games (past and future) for diary
-  const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
-    search: filters.search,
-    league: 'MLB',
-    season: filters.season,
-    playoff: filters.playoff,
-    startDate: filters.startDate,
-    endDate: filters.endDate,
-    excludeFutureGames: false
+  // Fetch games with logs using the new hook
+  const { data: loggedGames = [], isLoading: loggedGamesLoading } = useLoggedGames({
+    mode: filters.mode,
   });
 
   console.log('Game logs in Timeline:', gameLogs);
-  console.log('MLB games in Timeline:', mlbGames);
+  console.log('Logged games from new hook:', loggedGames);
 
-  // Only show loading when we're actually fetching data, not when filtering
-  const isLoading = logsLoading || gamesLoading;
-
-  // Create enriched games with log data - focus on MLB
-  const enrichedLoggedGames = React.useMemo(() => {
-    if (!gameLogs || !mlbGames) return [];
-
-    console.log('Creating enriched games from', gameLogs.length, 'logs and', mlbGames.length, 'games');
-
-    return gameLogs.map(log => {
-      console.log('Looking for game with ID:', log.game_id);
-      
-      // Find the corresponding MLB game - convert both to string for comparison
-      const game = mlbGames.find(g => {
-        const gameId = g.game_id?.toString();
-        const logGameId = log.game_id?.toString();
-        console.log('Comparing:', gameId, 'with', logGameId);
-        return gameId === logGameId;
-      });
-      
-      if (!game) {
-        console.log('No game found for log:', log);
-        return null;
-      }
-
-      console.log('Found game:', game);
-
-      // Return enriched game object with log data
-      return {
-        ...game,
-        // Ensure proper field mapping for MLB games
-        game_id: game.game_id?.toString() || log.game_id,
-        date: game.game_date,
-        home_team: game.home_name,
-        away_team: game.away_name,
-        runs_scored: game.home_score,
-        runs_allowed: game.away_score,
-        venue: game.venue_name,
-        league: 'MLB' as const,
-        playoff: ['W', 'D', 'L'].includes(game.game_type),
-        // Add log metadata
-        logData: {
-          id: log.id,
-          mode: log.mode,
-          company: log.company,
-          rating: log.rating,
-          rooted_for: log.rooted_for,
-          notes: log.notes,
-          created_at: log.created_at,
-          updated_at: log.updated_at
-        }
-      };
-    }).filter(Boolean);
-  }, [gameLogs, mlbGames]);
-
-  console.log('Enriched logged games:', enrichedLoggedGames);
-
-  // Apply filters to enriched games
-  const filteredLoggedGames = React.useMemo(() => {
-    let filtered = enrichedLoggedGames;
-
-    // Apply mode filter
-    if (filters.mode) {
-      filtered = filtered.filter(game => game.logData.mode === filters.mode);
-    }
-
-    return filtered;
-  }, [enrichedLoggedGames, filters.mode]);
-
-  // Sort by game datetime descending (same as Games page), then by venue
-  const sortedLoggedGames = filteredLoggedGames.sort((a, b) => {
-    const dateA = a.date || a.game_date;
-    const dateB = b.date || b.game_date;
-    
-    // First sort by date
-    const dateComparison = dateB.localeCompare(dateA);
-    if (dateComparison !== 0) {
-      return dateComparison;
-    }
-    
-    // If dates are the same, sort by time
-    const timeA = a.game_datetime || a.game_time || '';
-    const timeB = b.game_datetime || b.game_time || '';
-    
-    // For datetime fields, compare directly
-    if (timeA && timeB) {
-      const timeComparison = timeB.localeCompare(timeA);
-      if (timeComparison !== 0) {
-        return timeComparison;
-      }
-    }
-    
-    // If date and time are the same, sort by venue (ascending)
-    const venueA = a.venue || a.venue_name || '';
-    const venueB = b.venue || b.venue_name || '';
-    return venueA.localeCompare(venueB);
-  });
+  // Only show loading when we're actually fetching data
+  const isLoading = logsLoading || loggedGamesLoading;
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -298,18 +198,18 @@ const Timeline = () => {
         )}
 
         {/* Games Count - only show if there are logged games */}
-        {sortedLoggedGames.length > 0 && (
+        {loggedGames.length > 0 && (
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              {sortedLoggedGames.length} Games in Your Diary
+              {loggedGames.length} Games in Your Diary
             </h2>
           </div>
         )}
 
         {/* Games Grid with Unified Cards */}
-        {sortedLoggedGames.length > 0 ? (
+        {loggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedLoggedGames.map((game, index) => {
+            {loggedGames.map((game, index) => {
               const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
               const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
               const statusTag = getStatusTag(game);
