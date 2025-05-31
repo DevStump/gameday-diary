@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -36,7 +37,7 @@ const Timeline = () => {
     mode: '', // New filter for diary entries
   });
 
-  // Fetch MLB games - show all games including future ones
+  // Fetch MLB games - show all games
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: filters.search,
     league: 'MLB',
@@ -306,9 +307,6 @@ const Timeline = () => {
               const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
               const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
               const statusTag = getStatusTag(game);
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
 
               return (
                 <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
@@ -376,36 +374,24 @@ const Timeline = () => {
                     <div className="border-t border-gray-200 mx-3"></div>
                     <CardFooter className="p-3 pt-2">
                       <div className="w-full">
-                        {/* Boxscore button - always show but greyed out if not available */}
+                        {/* Boxscore button - always show for all games */}
                         <div className="mb-3">
-                          {isBeforeToday ? (
-                            <a 
-                              href={generateBoxscoreUrl(game)} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="block"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
-                              >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Boxscore
-                              </Button>
-                            </a>
-                          ) : (
+                          <a 
+                            href={generateBoxscoreUrl(game)} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <Button
                               variant="outline"
                               size="sm"
-                              disabled
-                              className="w-full border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
+                              className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
                             >
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Boxscore
                             </Button>
-                          )}
+                          </a>
                         </div>
 
                         {/* Diary metadata */}

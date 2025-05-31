@@ -155,7 +155,6 @@ export const useGames = (filters: GameFilters) => {
         runs_allowed: game.away_score,
         playoff: ['W', 'D', 'L'].includes(game.game_type),
         venue: game.venue_name || 'Stadium',
-        is_future: !game.home_score && !game.away_score && game.status !== 'Final',
         diaryEntries: generateDiaryEntries(game.game_id.toString()),
       }));
 

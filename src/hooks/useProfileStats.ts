@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
@@ -19,7 +20,7 @@ export const useProfileStats = () => {
 
       const gameMap = Object.fromEntries(mlbGames.map(g => [String(g.game_id), g]));
 
-      // Use all game logs without date filtering
+      // Use all game logs
       const filteredGameLogs = gameLogs.filter(log => {
         const game = gameMap[String(log.game_id)];
         return !!game; // Only filter out logs without corresponding games
