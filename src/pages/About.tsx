@@ -30,7 +30,7 @@ const About = () => {
           <CardContent className="space-y-4">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
-                <span className="text-2xl">🏈</span>
+                <span className="text-2xl">⚾</span>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">MLB Data</h3>
