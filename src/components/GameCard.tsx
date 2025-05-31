@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -51,14 +52,16 @@ const getDateString = (date: Date): string => {
 
 const isPastGame = (gameDateString: string): boolean => {
   const todayStr = getDateString(new Date());
-  console.log(`💡 game.date: ${gameDateString} | today (UTC): ${todayStr} | isPast: ${gameDateString < todayStr}`);
-  return gameDateString < todayStr;
+  const isPast = gameDateString < todayStr;
+  console.log(`🔍 BOXSCORE DEBUG - Game: ${gameDateString} | Today: ${todayStr} | Is Past: ${isPast}`);
+  return isPast;
 };
 
 const isTodayGame = (gameDateString: string): boolean => {
   const todayStr = getDateString(new Date());
-  console.log(`Checking if ${gameDateString} is today ${todayStr}:`, gameDateString === todayStr);
-  return gameDateString === todayStr;
+  const isToday = gameDateString === todayStr;
+  console.log(`📅 TODAY CHECK - Game: ${gameDateString} | Today: ${todayStr} | Is Today: ${isToday}`);
+  return isToday;
 };
 
 const isFutureGame = (gameDateString: string): boolean => {
@@ -100,7 +103,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    return isPastGame(game.date);
+    // Only show boxscore for games that happened BEFORE today
+    // Hide for today's games and future games
+    const showBoxscore = isPastGame(game.date) && isAuthenticated;
+    console.log(`🎯 FINAL BOXSCORE DECISION - Game: ${game.game_id} (${game.date}) | Show: ${showBoxscore} | Auth: ${isAuthenticated}`);
+    return showBoxscore;
   };
 
   const getStatusTag = () => {
@@ -188,7 +195,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
-            {isAuthenticated && shouldShowBoxscore() && (
+            {shouldShowBoxscore() && (
               <a 
                 href={generateBoxscoreUrl()} 
                 target="_blank" 
