@@ -84,6 +84,16 @@ const Profile = () => {
     attended: { label: 'Attended', color: '#ca8a04' },
   };
 
+  // Get the count for most supported team
+  const mostSupportedTeamCount = stats.mostSupportedTeam !== 'N/A' 
+    ? Object.entries(stats.teamBreakdown).find(([team]) => team === stats.mostSupportedTeam)?.[1] || 0
+    : 0;
+
+  // Get the count for most visited venue  
+  const mostVisitedVenueCount = stats.mostVisitedVenue !== 'N/A'
+    ? stats.venueBreakdown.find(([venue]) => venue === stats.mostVisitedVenue)?.[1] || 0
+    : 0;
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
@@ -213,8 +223,53 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Team Breakdown */}
+          {/* Most Visited Venue */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+            <CardHeader>
+              <CardTitle>Most Visited Venue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-field-green mb-2">
+                  {stats.mostVisitedVenue}
+                </div>
+                <div className="text-lg text-gray-600">
+                  ({mostVisitedVenueCount} game{mostVisitedVenueCount !== 1 ? 's' : ''})
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Most Supported Team */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <CardHeader>
+              <CardTitle>Most Supported Team</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="flex justify-center items-center space-x-3 mb-2">
+                  <img 
+                    src={getTeamLogo(stats.mostSupportedTeam, 'MLB')} 
+                    alt={stats.mostSupportedTeam}
+                    className="h-12 w-12 object-contain flex-shrink-0"
+                    style={{
+                      filter: 'drop-shadow(0 0 0 transparent)',
+                      mixBlendMode: 'multiply'
+                    }}
+                  />
+                  <div className="text-2xl font-bold text-field-green">
+                    {getTeamAbbreviation(stats.mostSupportedTeam, 'MLB')}
+                  </div>
+                </div>
+                <div className="text-lg text-gray-600">
+                  ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Team Breakdown */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.8s' }}>
             <CardHeader>
               <CardTitle>Top Teams</CardTitle>
             </CardHeader>
