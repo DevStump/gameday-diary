@@ -172,11 +172,9 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
     <>
       <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
         {/* Teams Dropdown - MLB Only */}
-        <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
+        <Select value={filters.search || undefined} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
-            <span className="text-sm">
-              {getSelectedTeamDisplay(filters.search)}
-            </span>
+            <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
