@@ -290,7 +290,13 @@ export const useGames = (filters: GameFilters) => {
         }
       }
 
-      console.log('Total games before sorting:', allGames.length);
+      console.log('Total games before filtering:', allGames.length);
+      
+      // Filter out scheduled games (is_future: true) by default unless date filters are specified
+      if (!filters.startDate && !filters.endDate) {
+        allGames = allGames.filter(game => !game.is_future);
+        console.log('Games after filtering out scheduled games:', allGames.length);
+      }
       
       // Sort by date and time (newest first - descending), then by venue (ascending)
       const sortedGames = allGames.sort((a, b) => {
