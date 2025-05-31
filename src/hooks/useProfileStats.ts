@@ -51,7 +51,7 @@ export const useProfileStats = () => {
         5: ratedGames.filter(log => log.rating === 5).length,
       };
 
-      // Read venues directly from database logs
+      // Read venues directly from database logs (only attended games)
       const attendedVenueCounts: Record<string, number> = {};
       const rootedForCounts: Record<string, number> = {};
       const teamCounts: Record<string, number> = {};
@@ -63,21 +63,9 @@ export const useProfileStats = () => {
       let highestScoringGame = { runs: 0, teams: '', date: '', venue: '' };
       let lowestScoringGame = { runs: Infinity, teams: '', date: '', venue: '' };
 
-      // Sort all games by date for cumulative runs
-      const sortedGameLogs = filteredGameLogs
-        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
-        .filter(log => log.game)
-        .sort((a, b) => {
-          const dateA = new Date(a.game.game_date || a.game.game_datetime);
-          const dateB = new Date(b.game.game_date || b.game.game_datetime);
-          return dateA.getTime() - dateB.getTime();
-        });
-
-      let cumulativeRuns = 0;
-      const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string, cumulativeRuns: number }> = [];
-
-      sortedGameLogs.forEach(log => {
-        const game = log.game;
+      // Process filtered game logs
+      filteredGameLogs.forEach(log => {
+        const game = gameMap[String(log.game_id)];
         if (!game) return;
 
         const date = new Date(game.game_date || game.game_datetime);
@@ -120,21 +108,12 @@ export const useProfileStats = () => {
           }
         }
 
-        // Total runs and cumulative data
+        // Total runs
         const gameRuns = (game.home_score ?? game.runs_scored ?? 0) + (game.away_score ?? game.runs_allowed ?? 0);
         totalRuns += gameRuns;
-        cumulativeRuns += gameRuns;
 
         const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
         const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
-        
-        gameRunsData.push({
-          date: game.game_date,
-          runs: gameRuns,
-          teams: `${awayAbbr} @ ${homeAbbr}`,
-          venue: game.venue_name || '',
-          cumulativeRuns
-        });
 
         // Track highest scoring game
         if (gameRuns > highestScoringGame.runs) {
@@ -161,29 +140,33 @@ export const useProfileStats = () => {
         teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
       });
 
-      // Last 5 games for win/loss trend - only show actual rooted games
-      const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
-      const actualLast5Count = Math.min(5, rootedGameLogs.length);
-      
-      for (let i = 0; i < actualLast5Count; i++) {
-        const log = rootedGameLogs[i];
-        const game = log.game;
-        const homeScore = game.home_score ?? game.runs_scored ?? 0;
-        const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-        const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', log.game.game_date);
-        const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', log.game.game_date);
-        const rooted = ensureAbbreviation(log.rooted_for, 'MLB', log.game.game_date);
-        
-        let won = false;
-        if (homeScore > awayScore && rooted === homeTeam) won = true;
-        if (awayScore > homeScore && rooted === awayTeam) won = true;
-        
-        last5Games.push({
-          date: game.game_date,
-          won,
-          team: rooted
+      // Get last 5 rooted games (most recent first)
+      const rootedGameLogs = filteredGameLogs
+        .filter(log => log.rooted_for && log.rooted_for !== 'none')
+        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
+        .filter(log => log.game)
+        .sort((a, b) => {
+          const dateA = new Date(a.game.game_date || a.game.game_datetime);
+          const dateB = new Date(b.game.game_date || b.game.game_datetime);
+          return dateB.getTime() - dateA.getTime();
+        })
+        .slice(0, 5)
+        .map(log => {
+          const { game } = log;
+          const homeScore = game.home_score ?? game.runs_scored ?? 0;
+          const awayScore = game.away_score ?? game.runs_allowed ?? 0;
+          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', game.game_date || game.game_datetime);
+          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', game.game_date || game.game_datetime);
+          const rootedAbbr = ensureAbbreviation(log.rooted_for, 'MLB', game.game_date || game.game_datetime);
+
+          let won = false;
+          if (homeScore !== awayScore) {
+            const winner = homeScore > awayScore ? homeAbbr : awayAbbr;
+            won = rootedAbbr === winner;
+          }
+
+          return { won };
         });
-      }
 
       const mostSupportedTeamEntry = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0];
       const mostSupportedTeam = mostSupportedTeamEntry ? {
@@ -213,36 +196,6 @@ export const useProfileStats = () => {
         day: 'numeric' 
       });
 
-      // Get last 5 rooted games (most recent first)
-      const rootedGameLogs = gameLogs
-        .filter(log => log.rooted_for && log.rooted_for !== 'none')
-        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
-        .filter(log => log.game)
-        .sort((a, b) => {
-          const dateA = new Date(a.game.game_date || a.game.game_datetime);
-          const dateB = new Date(b.game.game_date || b.game.game_datetime);
-          return dateB.getTime() - dateA.getTime();
-        })
-        .slice(0, 5)
-        .map(log => {
-          const { game } = log;
-          const homeScore = game.home_score ?? game.runs_scored ?? 0;
-          const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', game.game_date || game.game_datetime);
-          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', game.game_date || game.game_datetime);
-          const rootedAbbr = ensureAbbreviation(log.rooted_for, 'MLB', game.game_date || game.game_datetime);
-      
-          let won = false;
-          if (homeScore !== awayScore) {
-            const winner = homeScore > awayScore ? homeAbbr : awayAbbr;
-            won = rootedAbbr === winner;
-          }
-      
-          return { won };
-        });
-
-
-      
       return {
         totalGames,
         gamesWatched,
@@ -260,7 +213,6 @@ export const useProfileStats = () => {
         mostSupportedTeam,
         totalRuns,
         avgRunsPerGame,
-        gameRunsData,
         last5Games: rootedGameLogs,
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
