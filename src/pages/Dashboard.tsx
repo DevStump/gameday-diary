@@ -142,22 +142,28 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
-                  <p className="text-lg font-bold text-gray-900 truncate">
-                    {stats.mostSupportedTeam ? `${getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')} (${stats.mostSupportedTeam.count})` : 'N/A'}
-                  
-                  {stats.mostSupportedTeam && (
-                    <img
-                      src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')}
-                      alt={stats.mostSupportedTeam.team}</p>
-                      className="h-6 w-6 mt-1"
-                    />
-                  )}
-
+                  <div className="flex items-center space-x-2 mt-1">
+                    {stats.mostSupportedTeam ? (
+                      <>
+                        <span className="text-lg font-bold text-gray-900 truncate">
+                          {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')} ({stats.mostSupportedTeam.count})
+                        </span>
+                        <img
+                          src={getTeamLogo(getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB'), 'MLB')}
+                          alt={stats.mostSupportedTeam.team}
+                          className="h-6 w-6"
+                        />
+                      </>
+                    ) : (
+                      <span className="text-lg font-bold text-gray-900">N/A</span>
+                    )}
+                  </div>
                 </div>
                 <Trophy className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
             </CardContent>
           </Card>
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
