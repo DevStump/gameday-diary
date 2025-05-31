@@ -25,9 +25,9 @@ const About = () => {
             <Info className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">About</h1>
           </div>
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-600">
-             Manage your account and learn how Gameday Diary works. You’ll also find info on where the game data and team logos come from.
+              Manage your account and learn more about how GamedayDiary was built. Discover the data sources, team logos, and technology that power your personal sports diary experience.
             </p>
           </div>
         </div>

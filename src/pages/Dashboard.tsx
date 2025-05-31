@@ -66,9 +66,9 @@ const Dashboard = () => {
             <BarChart3 className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <p className="text-lg text-gray-600 mb-2">
-              A personal stats hub powered by your game logs. Explore win/loss trends, top teams, favorite stadiums, and more.
+              Get a summary view of all the games in your diary with some fun and cool analysis. Track win/loss records, discover patterns, and explore your baseball viewing habits.
             </p>
             <p className="text-sm text-gray-500">
               {stats.totalGames} games added to diary
