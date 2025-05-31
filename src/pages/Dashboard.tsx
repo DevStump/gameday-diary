@@ -1,8 +1,7 @@
 
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity, Check, X, Info } from 'lucide-react';
+import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity, Check, X, Info, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -16,7 +15,14 @@ import { useAuth } from '@/contexts/AuthContext';
 const Dashboard = () => {
   const { data: stats, isLoading } = useProfileStats();
   const { user, signOut } = useAuth();
-  const [selectedLeague, setSelectedLeague] = useState<'ALL' | 'MLB' | 'NFL'>('ALL');
+  const [showInfoBanner, setShowInfoBanner] = useState(() => {
+    return localStorage.getItem('hideMLBOnlyBanner') !== 'true';
+  });
+
+  const dismissBanner = () => {
+    setShowInfoBanner(false);
+    localStorage.setItem('hideMLBOnlyBanner', 'true');
+  };
 
   if (isLoading) {
     return (
@@ -33,6 +39,21 @@ const Dashboard = () => {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
+          {/* MLB Only Info Banner */}
+          {showInfoBanner && (
+            <div className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <AlertCircle className="h-5 w-5 text-blue-600" />
+                <span className="text-sm font-medium text-blue-800">
+                  🧠 Gameday Diary currently supports MLB only. We're working on NFL next, with NBA to follow!
+                </span>
+              </div>
+              <Button variant="ghost" size="sm" onClick={dismissBanner} className="text-blue-600 hover:text-blue-800">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center space-x-3 mb-4">
@@ -94,6 +115,21 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
+        {/* MLB Only Info Banner */}
+        {showInfoBanner && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between animate-fade-in">
+            <div className="flex items-center space-x-3">
+              <AlertCircle className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-blue-800">
+                🧠 Gameday Diary currently supports MLB only. We're working on NFL next, with NBA to follow!
+              </span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={dismissBanner} className="text-blue-600 hover:text-blue-800">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
@@ -158,16 +194,16 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
                   <div className="flex items-center space-x-2 mt-1">
-                    {stats.mostSupportedTeam ? (
+                    {stats.mostSupportedTeam && stats.mostSupportedTeam.team !== 'N/A' ? (
                       <>
-                        <span className="text-lg font-bold text-gray-900 truncate">
-                          {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
-                        </span>
                         <img
                           src={getTeamLogo(getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB'), 'MLB')}
                           alt={stats.mostSupportedTeam.team}
-                          className="h-6 w-6"
+                          className="h-6 w-6 object-contain"
                         />
+                        <span className="text-lg font-bold text-gray-900">
+                          {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
+                        </span>
                         <span className="text-lg font-bold text-gray-900">
                           ({stats.mostSupportedTeam.count})
                         </span>
@@ -184,31 +220,117 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Enhanced Total Runs/Points */}
+          {/* Win/Loss Record - moved to left */}
           <Card className="animate-slide-up">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Activity className="h-5 w-5 text-field-green" />
-                  <span>Total Runs/Points</span>
-                </div>
-                <div className="flex space-x-1">
-                  {['ALL', 'MLB', 'NFL'].map((league) => (
-                    <button
-                      key={league}
-                      onClick={() => setSelectedLeague(league as typeof selectedLeague)}
-                      className={`px-2 py-1 text-xs rounded ${
-                        selectedLeague === league
-                          ? 'bg-field-green text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {league}
-                    </button>
-                  ))}
-                </div>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-field-green" />
+                <span>Win/Loss Record</span>
               </CardTitle>
-              <p className="text-sm text-gray-600">Combined score with game-by-game breakdown</p>
+              <p className="text-sm text-gray-600">Based on teams you rooted for</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Radial Progress Ring */}
+                <div className="text-center">
+                  <div className="relative inline-flex items-center justify-center">
+                    <svg className="w-32 h-32 transform -rotate-90">
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        className="text-gray-200"
+                      />
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 56}`}
+                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - winPercentage / 100)}`}
+                        className="text-field-green transition-all duration-1000 ease-out"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-field-green">
+                          {winPercentage.toFixed(0)}%
+                        </div>
+                        <div className="text-xs text-gray-500">Win Rate</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-green-50 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
+                    <div className="text-sm text-green-700">Wins</div>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
+                    <div className="text-sm text-red-700">Losses</div>
+                  </div>
+                </div>
+
+                {/* Last 5 Games Trend - only show rooted games */}
+                {stats.last5Games && stats.last5Games.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-600">Last 5 Rooted Games</div>
+                    <div className="flex justify-center space-x-1">
+                      {stats.last5Games.map((game, index) => (
+                        <div
+                          key={index}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
+                            game.won ? 'bg-green-500' : 'bg-red-500'
+                          }`}
+                        >
+                          {game.won ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Team Records */}
+                {(stats.teamWinRecord.mostWins || stats.teamWinRecord.mostLosses) && (
+                  <div className="space-y-2 pt-4 border-t border-gray-200">
+                    {stats.teamWinRecord.mostWins && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Most wins:</span>
+                        <span className="font-medium text-green-600">
+                          {getTeamAbbreviation(stats.teamWinRecord.mostWins.team, 'MLB')} ({stats.teamWinRecord.mostWins.count})
+                        </span>
+                      </div>
+                    )}
+                    {stats.teamWinRecord.mostLosses && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Most losses:</span>
+                        <span className="font-medium text-red-600">
+                          {getTeamAbbreviation(stats.teamWinRecord.mostLosses.team, 'MLB')} ({stats.teamWinRecord.mostLosses.count})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Runs - moved to right, updated title */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Activity className="h-5 w-5 text-field-green" />
+                <span>Total Runs</span>
+              </CardTitle>
+              <p className="text-sm text-gray-600">Combined score from attended and watched MLB games</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -277,109 +399,6 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Enhanced Win/Loss Record */}
-          <Card className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-field-green" />
-                <span>Win/Loss Record</span>
-              </CardTitle>
-              <p className="text-sm text-gray-600">Based on teams you rooted for</p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Radial Progress Ring */}
-                <div className="text-center">
-                  <div className="relative inline-flex items-center justify-center">
-                    <svg className="w-32 h-32 transform -rotate-90">
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="currentColor"
-                        strokeWidth="8"
-                        fill="none"
-                        className="text-gray-200"
-                      />
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="currentColor"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray={`${2 * Math.PI * 56}`}
-                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - winPercentage / 100)}`}
-                        className="text-field-green transition-all duration-1000 ease-out"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-field-green">
-                          {winPercentage.toFixed(0)}%
-                        </div>
-                        <div className="text-xs text-gray-500">Win Rate</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-green-50 p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
-                    <div className="text-sm text-green-700">Wins</div>
-                  </div>
-                  <div className="bg-red-50 p-3 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
-                    <div className="text-sm text-red-700">Losses</div>
-                  </div>
-                </div>
-
-                {/* Last 5 Games Trend */}
-                {stats.last5Games && stats.last5Games.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-gray-600">Last 5 Games</div>
-                    <div className="flex justify-center space-x-1">
-                      {stats.last5Games.map((game, index) => (
-                        <div
-                          key={index}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
-                            game.won ? 'bg-green-500' : 'bg-red-500'
-                          }`}
-                        >
-                          {game.won ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Team Records */}
-                {(stats.teamWinRecord.mostWins || stats.teamWinRecord.mostLosses) && (
-                  <div className="space-y-2 pt-4 border-t border-gray-200">
-                    {stats.teamWinRecord.mostWins && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Most wins:</span>
-                        <span className="font-medium text-green-600">
-                          {getTeamAbbreviation(stats.teamWinRecord.mostWins.team, 'MLB')} ({stats.teamWinRecord.mostWins.count})
-                        </span>
-                      </div>
-                    )}
-                    {stats.teamWinRecord.mostLosses && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Most losses:</span>
-                        <span className="font-medium text-red-600">
-                          {getTeamAbbreviation(stats.teamWinRecord.mostLosses.team, 'MLB')} ({stats.teamWinRecord.mostLosses.count})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -423,12 +442,24 @@ const Dashboard = () => {
                       <div className="text-xs text-green-600">{(100 - attendancePercentage).toFixed(1)}%</div>
                     </div>
                   </div>
+                  
+                  {/* Recent Activity Summary */}
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-500">
+                      {stats.gamesAttended === stats.totalGames 
+                        ? "You've attended all your games — nice!"
+                        : stats.gamesWatched === stats.totalGames
+                        ? "All games watched from home"
+                        : `Mix of ${stats.gamesAttended} attended, ${stats.gamesWatched} watched`
+                      }
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Team Breakdown */}
+          {/* Top Teams */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -440,9 +471,7 @@ const Dashboard = () => {
             <CardContent>
               <div className="space-y-4">
                 {stats.teamBreakdown.slice(0, 5).map(([team, count], index) => {
-                  // Determine league based on team format
-                  const league = team.length <= 3 && team === team.toLowerCase() ? 'NFL' : 'MLB';
-                  const leagueType = league as 'NFL' | 'MLB';
+                  const leagueType = 'MLB';
                   
                   return (
                     <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -451,7 +480,7 @@ const Dashboard = () => {
                         <img
                           src={getTeamLogo(getTeamAbbreviation(team, leagueType), leagueType)}
                           alt={team}
-                          className="h-6 w-6"
+                          className="h-6 w-6 object-contain"
                         />
                         <span className="font-medium">{getTeamAbbreviation(team, leagueType)}</span>
                       </div>
@@ -475,7 +504,7 @@ const Dashboard = () => {
                 <BarChart3 className="h-5 w-5 text-field-green" />
                 <span>Games by Date</span>
               </CardTitle>
-              <p className="text-sm text-gray-600">Games you've logged organized by when they were played</p>
+              <p className="text-sm text-gray-600">Games you've logged organized by when they were played (rolling 12 months)</p>
             </CardHeader>
             <CardContent>
               <ChartContainer config={{ games: { label: 'Games', color: '#16a34a' } }} className="h-[200px]">

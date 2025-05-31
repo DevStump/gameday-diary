@@ -49,15 +49,15 @@ export const useProfileStats = () => {
       const teamWins: Record<string, number> = {};
       const teamLosses: Record<string, number> = {};
       const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string }> = [];
-      const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
       let totalRuns = 0;
       let wins = 0;
       let losses = 0;
       let highestScoringGame = { runs: 0, teams: '', date: '', venue: '' };
       let lowestScoringGame = { runs: Infinity, teams: '', date: '', venue: '' };
 
-      // Sort filtered logs by date for last 5 calculation
-      const sortedLogs = filteredGameLogs
+      // Sort filtered logs by date for last 5 calculation - only games with rooted teams
+      const rootedGameLogs = filteredGameLogs
+        .filter(log => log.rooted_for && log.rooted_for !== 'none')
         .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
         .filter(log => log.game)
         .sort((a, b) => {
@@ -65,6 +65,8 @@ export const useProfileStats = () => {
           const dateB = new Date(b.game.game_date || b.game.game_datetime);
           return dateB.getTime() - dateA.getTime();
         });
+
+      const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
 
       filteredGameLogs.forEach(log => {
         const game = gameMap[String(log.game_id)];
@@ -153,26 +155,24 @@ export const useProfileStats = () => {
         timeline[month] = (timeline[month] || 0) + 1;
       });
 
-      // Last 5 games for win/loss trend
-      sortedLogs.slice(0, 5).forEach(log => {
-        if (log.rooted_for && log.rooted_for !== 'none') {
-          const game = log.game;
-          const homeScore = game.home_score ?? game.runs_scored ?? 0;
-          const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-          const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', log.game.game_date);
-          const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', log.game.game_date);
-          const rooted = ensureAbbreviation(log.rooted_for, 'MLB', log.game.game_date);
-          
-          let won = false;
-          if (homeScore > awayScore && rooted === homeTeam) won = true;
-          if (awayScore > homeScore && rooted === awayTeam) won = true;
-          
-          last5Games.push({
-            date: game.game_date,
-            won,
-            team: rooted
-          });
-        }
+      // Last 5 games for win/loss trend - only games where user rooted for a team
+      rootedGameLogs.slice(0, 5).forEach(log => {
+        const game = log.game;
+        const homeScore = game.home_score ?? game.runs_scored ?? 0;
+        const awayScore = game.away_score ?? game.runs_allowed ?? 0;
+        const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', log.game.game_date);
+        const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', log.game.game_date);
+        const rooted = ensureAbbreviation(log.rooted_for, 'MLB', log.game.game_date);
+        
+        let won = false;
+        if (homeScore > awayScore && rooted === homeTeam) won = true;
+        if (awayScore > homeScore && rooted === awayTeam) won = true;
+        
+        last5Games.push({
+          date: game.game_date,
+          won,
+          team: rooted
+        });
       });
 
       const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
