@@ -100,8 +100,8 @@ export const useProfileStats = () => {
           // Win/loss calc
           const homeScore = game.home_score ?? 0;
           const awayScore = game.away_score ?? 0;
-          const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
-          const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
+          const homeTeam = ensureAbbreviation(game.home_name, 'MLB', dateString);
+          const awayTeam = ensureAbbreviation(game.away_name, 'MLB', dateString);
 
           let winner: string | undefined;
           let loser: string | undefined;
@@ -127,8 +127,8 @@ export const useProfileStats = () => {
         const gameRuns = (game.home_score ?? 0) + (game.away_score ?? 0);
         totalRuns += gameRuns;
 
-        const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
-        const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
+        const homeAbbr = ensureAbbreviation(game.home_name, 'MLB', dateString);
+        const awayAbbr = ensureAbbreviation(game.away_name, 'MLB', dateString);
 
         // Track highest scoring game
         if (gameRuns > highestScoringGame.runs) {
@@ -170,8 +170,8 @@ export const useProfileStats = () => {
           const { game } = log;
           const homeScore = game.home_score ?? 0;
           const awayScore = game.away_score ?? 0;
-          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', game.game_date || game.game_datetime);
-          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', game.game_date || game.game_datetime);
+          const homeAbbr = ensureAbbreviation(game.home_name, 'MLB', game.game_date || game.game_datetime);
+          const awayAbbr = ensureAbbreviation(game.away_name, 'MLB', game.game_date || game.game_datetime);
           const rootedAbbr = ensureAbbreviation(log.rooted_for, 'MLB', game.game_date || game.game_datetime);
 
           let won = false;
