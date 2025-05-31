@@ -36,14 +36,16 @@ const DeleteGameLogModal = ({ isOpen, onClose, gameLog, game, league }: DeleteGa
 
       toast({
         title: 'Success',
-        description: 'Game log deleted successfully!',
+        description: 'Game removed from diary!',
       });
 
+      // Close modal immediately to provide instant feedback
       onClose();
     } catch (error) {
+      console.error('Error deleting game log:', error);
       toast({
         title: 'Error',
-        description: 'Failed to delete game log.',
+        description: error instanceof Error ? error.message : 'Failed to delete game log.',
         variant: 'destructive',
       });
     } finally {
@@ -57,9 +59,9 @@ const DeleteGameLogModal = ({ isOpen, onClose, gameLog, game, league }: DeleteGa
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Game Log</AlertDialogTitle>
+          <AlertDialogTitle>Remove from Diary</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete your log for <strong>{gameTitle}</strong>? 
+            Are you sure you want to remove <strong>{gameTitle}</strong> from your diary? 
             This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -70,7 +72,7 @@ const DeleteGameLogModal = ({ isOpen, onClose, gameLog, game, league }: DeleteGa
             disabled={loading}
             className="bg-red-600 hover:bg-red-700"
           >
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? 'Removing...' : 'Remove'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

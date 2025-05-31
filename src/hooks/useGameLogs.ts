@@ -165,9 +165,45 @@ export const useDeleteGameLog = () => {
         .eq('user_id', user.id); // Double-check user ownership
 
       if (error) throw error;
+      return gameLogId; // Return the deleted ID for optimistic updates
     },
-    onSuccess: () => {
+    onMutate: async (gameLogId) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['game-logs'] });
+      await queryClient.cancelQueries({ queryKey: ['logged-games'] });
+
+      // Snapshot the previous values
+      const previousGameLogs = queryClient.getQueryData(['game-logs', user?.id]);
+      const previousLoggedGames = queryClient.getQueryData(['logged-games', user?.id]);
+
+      // Optimistically update to remove the deleted game log
+      queryClient.setQueryData(['game-logs', user?.id], (old: any[]) => {
+        return old ? old.filter(log => log.id !== gameLogId) : [];
+      });
+
+      // Update all logged-games queries to remove the deleted entry
+      queryClient.getQueryCache().findAll(['logged-games']).forEach(query => {
+        queryClient.setQueryData(query.queryKey, (old: any[]) => {
+          return old ? old.filter(game => game.logData?.id !== gameLogId) : [];
+        });
+      });
+
+      // Return a context object with the snapshotted values
+      return { previousGameLogs, previousLoggedGames };
+    },
+    onError: (err, gameLogId, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousGameLogs) {
+        queryClient.setQueryData(['game-logs', user?.id], context.previousGameLogs);
+      }
+      if (context?.previousLoggedGames) {
+        queryClient.setQueryData(['logged-games', user?.id], context.previousLoggedGames);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure we have the latest data
       queryClient.invalidateQueries({ queryKey: ['game-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['logged-games'] });
     },
   });
 };
