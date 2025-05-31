@@ -1,6 +1,7 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
-import { User, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
+import { BarChart3, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -18,7 +19,7 @@ const Profile = () => {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading your summary...</div>
+          <div className="text-center">Loading your dashboard...</div>
         </div>
       </Layout>
     );
@@ -32,8 +33,8 @@ const Profile = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center space-x-3 mb-4">
-              <User className="h-10 w-10 text-field-green" />
-              <h1 className="text-4xl font-bold text-gray-900">Summary</h1>
+              <BarChart3 className="h-10 w-10 text-field-green" />
+              <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
             </div>
             <p className="text-lg text-gray-600">
               Track your most-watched teams, top venues, ratings, and game totals — all in one place.
@@ -42,7 +43,7 @@ const Profile = () => {
 
           {/* Empty State */}
           <div className="text-center py-12">
-            <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <BarChart3 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
             <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
             <Link to="/">
@@ -85,13 +86,13 @@ const Profile = () => {
   };
 
   // Get the count for most supported team
-  const mostSupportedTeamCount = stats.mostSupportedTeam !== 'N/A' 
-    ? Object.entries(stats.teamBreakdown).find(([team]) => team === stats.mostSupportedTeam)?.[1] || 0
+  const mostSupportedTeamCount = stats.mostSupportedTeam && stats.mostSupportedTeam.team !== 'N/A' 
+    ? stats.mostSupportedTeam.count || 0
     : 0;
 
   // Get the count for most visited venue  
-  const mostVisitedVenueCount = stats.mostVisitedVenue !== 'N/A'
-    ? stats.venueBreakdown.find(([venue]) => venue === stats.mostVisitedVenue)?.[1] || 0
+  const mostVisitedVenueCount = stats.mostVisitedVenue !== 'N/A' && stats.venueBreakdown.length > 0
+    ? stats.venueBreakdown[0][1] || 0
     : 0;
 
   return (
@@ -100,8 +101,8 @@ const Profile = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
-            <User className="h-10 w-10 text-field-green" />
-            <h1 className="text-4xl font-bold text-gray-900">Summary</h1>
+            <BarChart3 className="h-10 w-10 text-field-green" />
+            <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
           <p className="text-lg text-gray-600">
             Track your most-watched teams, top venues, ratings, and game totals — all in one place.
@@ -247,23 +248,29 @@ const Profile = () => {
             </CardHeader>
             <CardContent>
               <div className="text-center">
-                <div className="flex justify-center items-center space-x-3 mb-2">
-                  <img 
-                    src={getTeamLogo(stats.mostSupportedTeam, 'MLB')} 
-                    alt={stats.mostSupportedTeam}
-                    className="h-12 w-12 object-contain flex-shrink-0"
-                    style={{
-                      filter: 'drop-shadow(0 0 0 transparent)',
-                      mixBlendMode: 'multiply'
-                    }}
-                  />
-                  <div className="text-2xl font-bold text-field-green">
-                    {getTeamAbbreviation(stats.mostSupportedTeam, 'MLB')}
-                  </div>
-                </div>
-                <div className="text-lg text-gray-600">
-                  ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
-                </div>
+                {stats.mostSupportedTeam && stats.mostSupportedTeam.team !== 'N/A' ? (
+                  <>
+                    <div className="flex justify-center items-center space-x-3 mb-2">
+                      <img 
+                        src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')} 
+                        alt={stats.mostSupportedTeam.team}
+                        className="h-12 w-12 object-contain flex-shrink-0"
+                        style={{
+                          filter: 'drop-shadow(0 0 0 transparent)',
+                          mixBlendMode: 'multiply'
+                        }}
+                      />
+                      <div className="text-2xl font-bold text-field-green">
+                        {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
+                      </div>
+                    </div>
+                    <div className="text-lg text-gray-600">
+                      ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-2xl font-bold text-field-green">N/A</div>
+                )}
               </div>
             </CardContent>
           </Card>
