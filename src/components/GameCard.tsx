@@ -37,9 +37,10 @@ interface GameCardProps {
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
   hideDiaryButton?: boolean;
+  isAlreadyLogged?: boolean;
 }
 
-const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false }: GameCardProps) => {
+const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false, isAlreadyLogged = false }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
 
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
@@ -102,7 +103,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           </div>
         )}
 
-        <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[80px]">
+        <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[60px]">
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
@@ -118,7 +119,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           />
         </div>
 
-        <div className="text-center min-h-[45px] flex flex-col justify-start">
+        <div className="text-center min-h-[30px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           <GamePitchers 
             awayProbablePitcher={game.away_probable_pitcher}
@@ -137,17 +138,29 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           <CardFooter className="p-3 pt-2">
             <div className="w-full">
               <div className="flex gap-x-2">
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onAddToDiary(game.game_id);
-                  }}
-                  className="flex-1 bg-field-green transition-colors"
-                  size="sm"
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  {isAuthenticated ? 'Add' : 'Sign in to Add'}
-                </Button>
+                {isAlreadyLogged ? (
+                  <Button
+                    disabled
+                    variant="outline"
+                    className="flex-1 border-gray-300 text-gray-500 cursor-default"
+                    size="sm"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Added
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onAddToDiary(game.game_id);
+                    }}
+                    className="flex-1 bg-field-green transition-colors"
+                    size="sm"
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    {isAuthenticated ? 'Add' : 'Sign in to Add'}
+                  </Button>
+                )}
 
                 {isAuthenticated && isBeforeToday && (
                   <a 

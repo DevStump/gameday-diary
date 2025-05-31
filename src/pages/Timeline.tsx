@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
@@ -206,17 +207,10 @@ const Timeline = () => {
         {sortedLoggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedLoggedGames.map((game, index) => (
-              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="relative h-full">
-                <div className="relative h-full flex flex-col">
-                  <GameCard
-                    game={game}
-                    onAddToDiary={handleAddToDiary}
-                    isAuthenticated={!!user}
-                    hideDiaryButton={true}
-                  />
-                  
+              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
+                <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col relative">
                   {/* Edit/Delete overlay in top right */}
-                  <div className="absolute top-2 right-2 flex space-x-1">
+                  <div className="absolute top-2 right-2 flex space-x-1 z-10">
                     <Button
                       size="sm"
                       variant="ghost"
@@ -234,63 +228,75 @@ const Timeline = () => {
                       <Trash2 className="h-4 w-4 text-red-600" />
                     </Button>
                   </div>
-                </div>
-                
-                {/* Diary Metadata Overlay with reduced spacing */}
-                <div className="mt-1 p-2 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-2 gap-1.5 text-sm">
-                    <div>
-                      <span className="font-medium text-gray-700">Mode:</span>
-                      <span className="ml-2 capitalize text-gray-900">
-                        {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
-                      </span>
-                    </div>
-                    
-                    <div>
-                      <span className="font-medium text-gray-700">Rating:</span>
-                      <span className="ml-2 text-gray-900">
-                        {game.logData.rating ? 
-                          `⭐ ${game.logData.rating}/5` : 
-                          <span className="text-gray-500">Not rated</span>
-                        }
-                      </span>
-                    </div>
-                    
-                    <div>
-                      <span className="font-medium text-gray-700">Rooted for:</span>
-                      <div className="ml-2 text-gray-900 inline-flex">
-                        {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
+                  
+                  <CardContent className="p-3 flex-1 flex flex-col">
+                    {/* GameCard content without footer */}
+                    <GameCard
+                      game={game}
+                      onAddToDiary={handleAddToDiary}
+                      isAuthenticated={!!user}
+                      hideDiaryButton={true}
+                    />
+                  </CardContent>
+                  
+                  <CardFooter className="p-3 pt-0 border-t border-gray-200">
+                    {/* Diary Metadata integrated into the card */}
+                    <div className="w-full">
+                      <div className="grid grid-cols-2 gap-1.5 text-sm mb-2">
+                        <div>
+                          <span className="font-medium text-gray-700">Mode:</span>
+                          <span className="ml-2 capitalize text-gray-900">
+                            {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
+                          </span>
+                        </div>
+                        
+                        <div>
+                          <span className="font-medium text-gray-700">Rating:</span>
+                          <span className="ml-2 text-gray-900">
+                            {game.logData.rating ? 
+                              `⭐ ${game.logData.rating}/5` : 
+                              <span className="text-gray-500">Not rated</span>
+                            }
+                          </span>
+                        </div>
+                        
+                        <div>
+                          <span className="font-medium text-gray-700">Rooted for:</span>
+                          <div className="ml-2 text-gray-900 inline-flex">
+                            {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <span className="font-medium text-gray-700">Company:</span>
+                          <span className="ml-2 text-gray-900">
+                            {game.logData.company || 
+                              <span className="text-gray-500">No company</span>
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {game.logData.notes && (
+                        <div className="mb-2 pt-1.5 border-t border-gray-200">
+                          <span className="font-medium text-gray-700">Notes:</span>
+                          <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
+                        </div>
+                      )}
+                      
+                      <div className="pt-1.5 border-t border-gray-200 text-xs text-gray-500">
+                        Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit'
+                        })}
                       </div>
                     </div>
-                    
-                    <div>
-                      <span className="font-medium text-gray-700">Company:</span>
-                      <span className="ml-2 text-gray-900">
-                        {game.logData.company || 
-                          <span className="text-gray-500">No company</span>
-                        }
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {game.logData.notes && (
-                    <div className="mt-1.5 pt-1.5 border-t border-gray-200">
-                      <span className="font-medium text-gray-700">Notes:</span>
-                      <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
-                    </div>
-                  )}
-                  
-                  <div className="mt-1.5 pt-1.5 border-t border-gray-200 text-xs text-gray-500">
-                    Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit'
-                    })}
-                  </div>
-                </div>
+                  </CardFooter>
+                </Card>
               </div>
             ))}
           </div>

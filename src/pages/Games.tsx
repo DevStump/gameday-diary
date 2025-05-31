@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -6,6 +7,7 @@ import GameLogModal from '@/components/GameLogModal';
 import HotGames from '@/components/HotGames';
 import { Loader2, Trophy } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
+import { useGameLogs } from '@/hooks/useGameLogs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -39,6 +41,10 @@ const Games = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: games = [], isLoading: loading } = useGames(filters);
+  const { data: gameLogs = [] } = useGameLogs();
+
+  // Create a set of logged game IDs for quick lookup
+  const loggedGameIds = new Set(gameLogs.map(log => log.game_id?.toString()));
 
   // Calculate pagination
   const totalPages = Math.ceil(games.length / gamesPerPage);
@@ -183,6 +189,7 @@ const Games = () => {
                           game.league
                         )}
                         isAuthenticated={!!user}
+                        isAlreadyLogged={loggedGameIds.has(game.game_id?.toString())}
                       />
                     </div>
                   ))}
