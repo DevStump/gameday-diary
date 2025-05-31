@@ -10,7 +10,6 @@ interface GameFilters {
   playoff: string;
   startDate: string;
   endDate: string;
-  allowAllDates?: boolean; // New flag for diary to show all games
 }
 
 // Helper function to get all possible team abbreviation variants
@@ -93,7 +92,7 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
-      // Get yesterday's date for filtering future games (only used when no date range is specified and allowAllDates is false)
+      // Get yesterday's date for filtering future games
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayString = yesterday.toISOString().split('T')[0];
@@ -106,13 +105,10 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else if (!filters.allowAllDates) {
+      } else {
         // Filter out future games (default behavior for Games page)
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
-      } else {
-        // Show all dates (for diary page)
-        console.log('Showing all games for diary (no date filter)');
       }
       
       if (searchTeam) {
