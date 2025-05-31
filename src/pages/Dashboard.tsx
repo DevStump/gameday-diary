@@ -95,7 +95,7 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
           <p className="text-lg text-gray-600">
-            Your comprehensive game analytics and insights
+            Your comprehensive game analytics and insights.
           </p>
         </div>
 
