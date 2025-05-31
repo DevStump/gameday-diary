@@ -137,8 +137,8 @@ const Timeline = () => {
     return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
   };
 
-  // Create a mock game object for the modals since we don't have full game data
-  const createMockGame = (log: any) => ({
+  // Create a mock game object for GameCard and modals
+  const createGameFromLog = (log: any) => ({
     game_id: log.game_id,
     date: new Date(log.created_at).toISOString().split('T')[0],
     home_team: log.rooted_for || 'Home Team',
@@ -218,89 +218,82 @@ const Timeline = () => {
                     {monthYear}
                   </h2>
                   
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {logs
                       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                       .map((log) => (
-                        <Card key={log.id} className="hover:shadow-md transition-shadow">
-                          <CardContent className="p-6">
-                            <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                              {/* Game Card */}
-                              <div className="lg:w-80 flex-shrink-0">
-                                <GameCard
-                                  game={createMockGame(log)}
-                                  onAddToDiary={() => {}}
-                                  isAuthenticated={true}
-                                  hideDiaryButton={true}
-                                />
+                        <div key={log.id} className="relative">
+                          <GameCard
+                            game={createGameFromLog(log)}
+                            onAddToDiary={() => {}}
+                            isAuthenticated={true}
+                            hideDiaryButton={true}
+                          />
+                          
+                          {/* Overlay with log details */}
+                          <div className="absolute inset-0 bg-white bg-opacity-95 rounded-lg p-4 flex flex-col justify-between">
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <Badge className={getModeColor(log.mode)}>
+                                  {getModeIcon(log.mode)}
+                                  <span className="ml-1 capitalize">{log.mode}</span>
+                                </Badge>
+                                
+                                {log.rating && (
+                                  <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
+                                    <Star className="h-3 w-3 mr-1 fill-current" />
+                                    {log.rating}/5
+                                  </Badge>
+                                )}
+                                
+                                {log.rooted_for && (
+                                  <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
+                                    Rooted for: {log.rooted_for}
+                                  </Badge>
+                                )}
+                                
+                                {log.company && (
+                                  <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
+                                    With: {log.company}
+                                  </Badge>
+                                )}
                               </div>
 
-                              {/* Log Details */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-2 mb-3">
-                                  <Badge className={getModeColor(log.mode)}>
-                                    {getModeIcon(log.mode)}
-                                    <span className="ml-1 capitalize">{log.mode}</span>
-                                  </Badge>
-                                  
-                                  {log.rating && (
-                                    <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-                                      <Star className="h-3 w-3 mr-1 fill-current" />
-                                      {log.rating}/5
-                                    </Badge>
-                                  )}
-                                  
-                                  {log.rooted_for && (
-                                    <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
-                                      Rooted for: {log.rooted_for}
-                                    </Badge>
-                                  )}
-                                  
-                                  {log.company && (
-                                    <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
-                                      With: {log.company}
-                                    </Badge>
-                                  )}
+                              {log.notes && (
+                                <div className="mb-4">
+                                  <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+                                    {log.notes}
+                                  </p>
                                 </div>
+                              )}
 
-                                {log.notes && (
-                                  <div className="mb-4">
-                                    <p className="text-gray-700 text-sm leading-relaxed">
-                                      {log.notes}
-                                    </p>
-                                  </div>
-                                )}
-
-                                <div className="flex items-center justify-between">
-                                  <div className="text-xs text-gray-500">
-                                    Added {new Date(log.created_at).toLocaleDateString()}
-                                  </div>
-                                  
-                                  <div className="flex gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleEdit(log)}
-                                      className="text-xs"
-                                    >
-                                      <Edit className="h-3 w-3 mr-1" />
-                                      Edit
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleDelete(log)}
-                                      className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="h-3 w-3 mr-1" />
-                                      Delete
-                                    </Button>
-                                  </div>
-                                </div>
+                              <div className="text-xs text-gray-500 mb-4">
+                                Added {new Date(log.created_at).toLocaleDateString()}
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
+                            
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(log)}
+                                className="text-xs flex-1"
+                              >
+                                <Edit className="h-3 w-3 mr-1" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDelete(log)}
+                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex-1"
+                              >
+                                <Trash2 className="h-3 w-3 mr-1" />
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       ))}
                   </div>
                 </div>
@@ -314,7 +307,7 @@ const Timeline = () => {
               isOpen={editModalOpen}
               onClose={() => setEditModalOpen(false)}
               gameLog={selectedGameLog}
-              game={createMockGame(selectedGameLog)}
+              game={createGameFromLog(selectedGameLog)}
               league="MLB"
             />
 
@@ -322,7 +315,7 @@ const Timeline = () => {
               isOpen={deleteModalOpen}
               onClose={() => setDeleteModalOpen(false)}
               gameLog={selectedGameLog}
-              game={createMockGame(selectedGameLog)}
+              game={createGameFromLog(selectedGameLog)}
               league="MLB"
             />
           </>
