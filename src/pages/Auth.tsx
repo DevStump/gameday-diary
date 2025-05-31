@@ -10,10 +10,11 @@ import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, resetPassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,24 +36,43 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = isSignUp 
-        ? await signUp(email, password)
-        : await signIn(email, password);
+      if (isForgotPassword) {
+        const { error } = await resetPassword(email);
+        
+        if (error) {
+          toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Check your email',
+            description: 'We sent you a password reset link.',
+          });
+          setIsForgotPassword(false);
+          setEmail('');
+        }
+      } else {
+        const { error } = isSignUp 
+          ? await signUp(email, password)
+          : await signIn(email, password);
 
-      if (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-      } else if (isSignUp) {
-        toast({
-          title: 'Success',
-          description: 'Account created successfully! You are now signed in.',
-        });
-        // Switch to sign in mode after successful signup
-        setIsSignUp(false);
-        setPassword(''); // Clear password for security
+        if (error) {
+          toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+          });
+        } else if (isSignUp) {
+          toast({
+            title: 'Success',
+            description: 'Account created successfully! You are now signed in.',
+          });
+          // Switch to sign in mode after successful signup
+          setIsSignUp(false);
+          setPassword(''); // Clear password for security
+        }
       }
     } catch (error) {
       toast({
@@ -65,6 +85,17 @@ const Auth = () => {
     }
   };
 
+  const getTitle = () => {
+    if (isForgotPassword) return 'Reset Password';
+    return isSignUp ? 'Create Account' : 'Welcome Back';
+  };
+
+  const getButtonText = () => {
+    if (loading) return 'Loading...';
+    if (isForgotPassword) return 'Send Reset Link';
+    return isSignUp ? 'Sign Up' : 'Sign In';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
@@ -73,7 +104,7 @@ const Auth = () => {
             <Trophy className="h-12 w-12 text-field-green" />
           </div>
           <CardTitle className="text-2xl font-bold">
-            {isSignUp ? 'Create Account' : 'Welcome Back'}
+            {getTitle()}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -91,35 +122,60 @@ const Auth = () => {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+            {!isForgotPassword && (
+              <div className="space-y-2">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
             <Button
               type="submit"
               className="w-full bg-field-green hover:bg-field-dark"
               disabled={loading}
             >
-              {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+              {getButtonText()}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-field-green hover:underline"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </button>
+          <div className="mt-4 text-center space-y-2">
+            {!isForgotPassword && !isSignUp && (
+              <button
+                type="button"
+                onClick={() => setIsForgotPassword(true)}
+                className="text-sm text-field-green hover:underline block w-full"
+              >
+                Forgot your password?
+              </button>
+            )}
+            {!isForgotPassword && (
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-field-green hover:underline"
+              >
+                {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              </button>
+            )}
+            {isForgotPassword && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setEmail('');
+                }}
+                className="text-sm text-field-green hover:underline"
+              >
+                Back to sign in
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>
