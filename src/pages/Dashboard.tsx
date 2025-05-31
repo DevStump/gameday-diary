@@ -201,7 +201,7 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">Most wins:</span>
                         <span className="font-medium text-green-600">
-                          {formatTeamName(stats.teamWinRecord.mostWins.team, 'MLB')} ({stats.teamWinRecord.mostWins.count})
+                          {stats.teamWinRecord.mostWins.team} ({stats.teamWinRecord.mostWins.count})
                         </span>
                       </div>
                     )}
@@ -209,7 +209,7 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">Most losses:</span>
                         <span className="font-medium text-red-600">
-                          {formatTeamName(stats.teamWinRecord.mostLosses.team, 'MLB')} ({stats.teamWinRecord.mostLosses.count})
+                          {stats.teamWinRecord.mostLosses.team, 'MLB'} ({stats.teamWinRecord.mostLosses.count})
                         </span>
                       </div>
                     )}
@@ -302,7 +302,7 @@ const Dashboard = () => {
                   
                   return (
                     <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">{formatTeamName(team, leagueType)}</span>
+                      <span className="font-medium">{team, leagueType}</span>
                       <div className="text-right">
                         <div className="text-lg font-bold text-field-green">{count}</div>
                       </div>
