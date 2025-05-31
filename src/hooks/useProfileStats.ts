@@ -3,7 +3,7 @@ import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
 
-const ensureAbbreviation = (team: string, league: 'MLB' | 'NFL', date: Date): string => {
+const ensureAbbreviation = (team: string, league: 'MLB' | 'NFL', date: string): string => {
   if (team.length === 3 && team === team.toUpperCase()) return team;
   return getTeamAbbreviation(team, league, date);
 };
