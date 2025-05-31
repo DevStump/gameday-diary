@@ -84,7 +84,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const statusTag = getStatusTag();
-  const isBeforeToday = new Date(game.date) < new Date(new Date().toDateString());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
 
   return (
     <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
