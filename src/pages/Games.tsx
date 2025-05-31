@@ -191,13 +191,6 @@ const Games = () => {
         {/* Games Grid */}
         {!loading && (
           <>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {displayedGames.length} Games Displayed 
-                {games.length > gamesPerPage && ` (Page ${currentPage} of ${totalPages})`}
-                {games.length > 50 && ` - ${games.length} total found`}
-              </h2>
-            </div>
 
             {displayedGames.length > 0 ? (
               <>
