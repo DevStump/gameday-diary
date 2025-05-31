@@ -1,324 +1,287 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Edit, Trash2, Star, User, Eye } from 'lucide-react';
-import { useGameLogs } from '@/hooks/useGameLogs';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
+import GameLogModal from '@/components/GameLogModal';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
+import { Loader2, Calendar, Filter, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLoggedGames } from '@/hooks/useLoggedGames';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Timeline = () => {
-  const { data: gameLogs, isLoading } = useGameLogs();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedGameLog, setSelectedGameLog] = useState<any>(null);
-  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const location = useLocation();
 
-  // Show loading while auth is being determined
-  if (authLoading) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
-        </div>
-      </Layout>
-    );
-  }
+  const [filters, setFilters] = useState({
+    mode: 'all',
+    startDate: '',
+    endDate: '',
+    league: '',
+    season: '',
+    playoff: '',
+    search: '',
+  });
 
-  // Show sign-in prompt when not authenticated
+  const [selectedGame, setSelectedGame] = useState<{ 
+    id: string; 
+    title: string; 
+    homeTeam: string; 
+    awayTeam: string; 
+    league: string;
+    venue?: string;
+  } | null>(null);
+
+  const [editingLog, setEditingLog] = useState<any | null>(null);
+  const [deletingLog, setDeletingLog] = useState<any | null>(null);
+
+  const { data: loggedGames = [], isLoading } = useLoggedGames({
+    mode: filters.mode === 'all' ? '' : filters.mode,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    league: filters.league,
+    season: filters.season,
+    playoff: filters.playoff,
+    search: filters.search,
+  });
+
   if (!user) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Sign in to view your game diary</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Track your baseball experiences and create your personal game timeline.
-              </p>
-              <div className="mt-6">
-                <Button 
-                  onClick={() => navigate('/auth')}
-                  className="bg-field-green hover:bg-field-dark"
-                >
-                  Sign In
-                </Button>
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Game Diary</h1>
+            <p className="text-gray-600">Please sign in to view your game diary.</p>
+            <Button 
+              onClick={() => navigate('/auth')} 
+              className="mt-4 bg-field-green hover:bg-field-dark"
+            >
+              Sign In
+            </Button>
           </div>
         </div>
       </Layout>
     );
   }
 
-  // Show loading when user is authenticated but data is still loading
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Show empty state when authenticated but no games logged
-  if (!gameLogs || gameLogs.length === 0) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-gray-50 py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No games logged</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Get started by adding a game to your diary.
-              </p>
-              <div className="mt-6">
-                <Button 
-                  onClick={() => navigate('/')}
-                  className="bg-field-green hover:bg-field-dark"
-                >
-                  Browse Games
-                </Button>
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-field-green" />
+            <span className="ml-2 text-gray-600">Loading your game diary...</span>
           </div>
         </div>
       </Layout>
     );
   }
 
-  // Get unique years for filtering
-  const years = Array.from(new Set(
-    gameLogs.map(log => new Date(log.created_at).getFullYear())
-  )).sort((a, b) => b - a);
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
 
-  // Filter logs by selected year
-  const filteredLogs = selectedYear === 'all' 
-    ? gameLogs 
-    : gameLogs.filter(log => new Date(log.created_at).getFullYear() === parseInt(selectedYear));
+  const handleClearFilters = () => {
+    setFilters({
+      mode: 'all',
+      startDate: '',
+      endDate: '',
+      league: '',
+      season: '',
+      playoff: '',
+      search: '',
+    });
+  };
 
-  // Group logs by month
-  const groupedLogs = filteredLogs.reduce((groups, log) => {
-    const date = new Date(log.created_at);
-    const monthYear = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-    
-    if (!groups[monthYear]) {
-      groups[monthYear] = [];
+  const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string, venue?: string) => {
+    if (!user) {
+      localStorage.setItem('redirectUrl', location.pathname + location.search);
+      navigate('/auth');
+      return;
     }
-    groups[monthYear].push(log);
-    return groups;
-  }, {} as Record<string, typeof filteredLogs>);
-
-  const handleEdit = (log: any) => {
-    setSelectedGameLog(log);
-    setEditModalOpen(true);
+    
+    setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league, venue });
   };
 
-  const handleDelete = (log: any) => {
-    setSelectedGameLog(log);
-    setDeleteModalOpen(true);
-  };
-
-  const getModeIcon = (mode: string) => {
-    return mode === 'attended' ? <User className="h-4 w-4" /> : <Eye className="h-4 w-4" />;
-  };
-
-  const getModeColor = (mode: string) => {
-    return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
-  };
-
-  // Create a mock game object for GameCard and modals
-  const createGameFromLog = (log: any) => ({
-    game_id: log.game_id,
-    date: new Date(log.created_at).toISOString().split('T')[0],
-    home_team: log.rooted_for || 'Home Team',
-    away_team: 'Away Team',
-    league: 'MLB' as const,
-    venue: 'Stadium'
-  });
+  const hasActiveFilters = Object.entries(filters).some(([key, value]) => 
+    key !== 'mode' && value !== ''
+  ) || filters.mode !== 'all';
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
-            
-            {/* Year Filter */}
-            <div className="mb-6">
-              <label htmlFor="year-filter" className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Year
-              </label>
-              <select
-                id="year-filter"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="mt-1 block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-field-green focus:border-field-green sm:text-sm rounded-md"
-              >
-                <option value="all">All Years</option>
-                {years.map(year => (
-                  <option key={year} value={year.toString()}>{year}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Games</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{filteredLogs.length}</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Games Attended</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {filteredLogs.filter(log => log.mode === 'attended').length}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {filteredLogs.filter(log => log.rating).length > 0
-                      ? (filteredLogs.reduce((sum, log) => sum + (log.rating || 0), 0) / 
-                         filteredLogs.filter(log => log.rating).length).toFixed(1)
-                      : 'N/A'}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-3 mb-4">
+            <Calendar className="h-8 w-8 text-field-green" />
+            <h1 className="text-3xl font-bold text-gray-900">Game Diary</h1>
           </div>
-
-          <div className="space-y-8">
-            {Object.entries(groupedLogs)
-              .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-              .map(([monthYear, logs]) => (
-                <div key={monthYear}>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                    {monthYear}
-                  </h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {logs
-                      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                      .map((log) => (
-                        <div key={log.id} className="relative">
-                          <GameCard
-                            game={createGameFromLog(log)}
-                            onAddToDiary={() => {}}
-                            isAuthenticated={true}
-                            hideDiaryButton={true}
-                          />
-                          
-                          {/* Overlay with log details */}
-                          <div className="absolute inset-0 bg-white bg-opacity-95 rounded-lg p-4 flex flex-col justify-between">
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2 mb-3">
-                                <Badge className={getModeColor(log.mode)}>
-                                  {getModeIcon(log.mode)}
-                                  <span className="ml-1 capitalize">{log.mode}</span>
-                                </Badge>
-                                
-                                {log.rating && (
-                                  <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-                                    <Star className="h-3 w-3 mr-1 fill-current" />
-                                    {log.rating}/5
-                                  </Badge>
-                                )}
-                                
-                                {log.rooted_for && (
-                                  <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
-                                    Rooted for: {log.rooted_for}
-                                  </Badge>
-                                )}
-                                
-                                {log.company && (
-                                  <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
-                                    With: {log.company}
-                                  </Badge>
-                                )}
-                              </div>
-
-                              {log.notes && (
-                                <div className="mb-4">
-                                  <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
-                                    {log.notes}
-                                  </p>
-                                </div>
-                              )}
-
-                              <div className="text-xs text-gray-500 mb-4">
-                                Added {new Date(log.created_at).toLocaleDateString()}
-                              </div>
-                            </div>
-                            
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEdit(log)}
-                                className="text-xs flex-1"
-                              >
-                                <Edit className="h-3 w-3 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDelete(log)}
-                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex-1"
-                              >
-                                <Trash2 className="h-3 w-3 mr-1" />
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              ))}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <p className="text-gray-600">
+              Your personal collection of games you've watched and attended
+            </p>
+            <Badge variant="secondary" className="self-start sm:self-center">
+              {loggedGames.length} {loggedGames.length === 1 ? 'game' : 'games'}
+            </Badge>
           </div>
         </div>
 
-        {selectedGameLog && (
-          <>
-            <EditGameLogModal
-              isOpen={editModalOpen}
-              onClose={() => setEditModalOpen(false)}
-              gameLog={selectedGameLog}
-              game={createGameFromLog(selectedGameLog)}
-              league="MLB"
-            />
+        {/* Filters */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-600" />
+                <span className="font-medium text-gray-900">Filters</span>
+              </div>
+              {hasActiveFilters && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleClearFilters}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+                <Select value={filters.mode} onValueChange={(value) => handleFilterChange('mode', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All modes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All modes</SelectItem>
+                    <SelectItem value="attended">Attended only</SelectItem>
+                    <SelectItem value="watched">Watched only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <DeleteGameLogModal
-              isOpen={deleteModalOpen}
-              onClose={() => setDeleteModalOpen(false)}
-              gameLog={selectedGameLog}
-              game={createGameFromLog(selectedGameLog)}
-              league="MLB"
-            />
-          </>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">League</label>
+                <Select value={filters.league} onValueChange={(value) => handleFilterChange('league', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All leagues" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All leagues</SelectItem>
+                    <SelectItem value="MLB">MLB</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Season</label>
+                <Select value={filters.season} onValueChange={(value) => handleFilterChange('season', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All seasons" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All seasons</SelectItem>
+                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Game Logs Grid */}
+        {loggedGames.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loggedGames.map((game, index) => (
+              <div key={game.logData?.id || game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
+                <GameCard
+                  game={{
+                    game_id: game.game_id || '',
+                    date: game.date || new Date().toISOString().split('T')[0],
+                    home_team: game.home_team || '',
+                    away_team: game.away_team || '',
+                    league: game.league || 'MLB',
+                    venue: game.venue || game.venue_name || undefined,
+                  }}
+                  onAddToDiary={handleAddToDiary}
+                  isAuthenticated={!!user}
+                  hideDiaryButton={true}
+                  onEdit={() => setEditingLog({ log: game.logData, game })}
+                  onDelete={() => setDeletingLog({ log: game.logData, game })}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {hasActiveFilters ? 'No games match your filters' : 'No games in your diary yet'}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {hasActiveFilters ? 
+                'Try adjusting your filters to see more games.' : 
+                'Start by adding some games you\'ve watched or attended.'
+              }
+            </p>
+            {!hasActiveFilters && (
+              <Button 
+                onClick={() => navigate('/')} 
+                className="bg-field-green hover:bg-field-dark"
+              >
+                Browse Games
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Game Log Modal */}
+        {selectedGame && (
+          <GameLogModal
+            isOpen={!!selectedGame}
+            onClose={() => setSelectedGame(null)}
+            gameId={selectedGame.id}
+            gameTitle={selectedGame.title}
+            homeTeam={selectedGame.homeTeam}
+            awayTeam={selectedGame.awayTeam}
+            league={selectedGame.league}
+            venue={selectedGame.venue}
+          />
+        )}
+
+        {/* Edit Game Log Modal */}
+        {editingLog && (
+          <EditGameLogModal
+            isOpen={!!editingLog}
+            onClose={() => setEditingLog(null)}
+            gameLog={editingLog.log}
+            game={editingLog.game}
+            league="MLB"
+          />
+        )}
+
+        {/* Delete Game Log Modal */}
+        {deletingLog && (
+          <DeleteGameLogModal
+            isOpen={!!deletingLog}
+            onClose={() => setDeletingLog(null)}
+            gameLog={deletingLog.log}
+            game={deletingLog.game}
+            league="MLB"
+          />
         )}
       </div>
     </Layout>

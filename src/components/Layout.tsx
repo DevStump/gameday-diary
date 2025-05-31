@@ -16,8 +16,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
-    { name: 'Diary', href: '/diary', icon: Calendar },
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+    { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, requireAuth: true },
     { name: 'About', href: '/about', icon: Info },
   ];
 
@@ -49,22 +49,29 @@ const Layout = ({ children }: LayoutProps) => {
               <span className="text-xl font-bold text-gray-900">GamedayDiary</span>
             </Link>
 
-            {/* Navigation */}
+            {/* Navigation - Desktop: show all tabs regardless of auth status */}
             <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? 'text-field-green bg-green-50'
-                      : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+              {navigation.map((item) => {
+                // On desktop, show all tabs but disable auth-required ones when not logged in
+                const isDisabled = item.requireAuth && !user;
+                
+                return (
+                  <Link
+                    key={item.name}
+                    to={isDisabled ? '/auth' : item.href}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? 'text-field-green bg-green-50'
+                        : isDisabled
+                        ? 'text-gray-400 hover:text-gray-500 hover:bg-gray-50'
+                        : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Auth Button - Only show sign in when not authenticated */}
@@ -84,7 +91,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Only show when authenticated */}
       {user && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
           <div className="flex justify-around">
