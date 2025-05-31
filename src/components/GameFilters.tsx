@@ -35,14 +35,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   // Show years from 2000 to 2025 for MLB data coverage
   const seasons = Array.from({ length: 26 }, (_, i) => 2025 - i);
 
-  // Team abbreviations for both leagues (sorted alphabetically)
-  const nflTeams = [
-    'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE',
-    'DAL', 'DEN', 'DET', 'GB', 'HOU', 'IND', 'JAX', 'KC',
-    'LV', 'LAC', 'LAR', 'MIA', 'MIN', 'NE', 'NO', 'NYG',
-    'NYJ', 'PHI', 'PIT', 'SF', 'SEA', 'TB', 'TEN', 'WAS'
-  ].sort();
-
+  // Only MLB teams (sorted alphabetically)
   const mlbTeams = [
     'ARI', 'ATL', 'BAL', 'BOS', 'CHC', 'CWS', 'CIN', 'CLE',
     'COL', 'DET', 'HOU', 'KC', 'LAA', 'LAD', 'MIA', 'MIL',
@@ -94,20 +87,17 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
       return 'All Teams';
     }
 
-    // Handle new format: "ATL:NFL" or "ATL:MLB"
+    // Handle new format: "ATL:MLB"
     if (selectedTeam.includes(':')) {
       const [teamAbbr, league] = selectedTeam.split(':');
-      const teamName = formatTeamName(teamAbbr, league as 'NFL' | 'MLB');
+      const teamName = formatTeamName(teamAbbr, league as 'MLB');
       return `${teamAbbr} - ${teamName}`;
     }
 
     // Legacy format handling (fallback)
-    const nflName = formatTeamName(selectedTeam, 'NFL');
     const mlbName = formatTeamName(selectedTeam, 'MLB');
     
-    if (nflName !== 'Unknown Team') {
-      return `${selectedTeam} - ${nflName}`;
-    } else if (mlbName !== 'Unknown Team') {
+    if (mlbName !== 'Unknown Team') {
       return `${selectedTeam} - ${mlbName}`;
     }
 
@@ -118,7 +108,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   const getTeamBadgeText = (selectedTeam: string): string => {
     if (selectedTeam.includes(':')) {
       const [teamAbbr, league] = selectedTeam.split(':');
-      const teamName = formatTeamName(teamAbbr, league as 'NFL' | 'MLB');
+      const teamName = formatTeamName(teamAbbr, league as 'MLB');
       return `${teamAbbr} - ${teamName}`;
     }
     return selectedTeam;
@@ -138,20 +128,8 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className={`grid gap-4 mb-4 ${showModeFilter ? 'grid-cols-6' : 'grid-cols-5'}`}>
-        {/* League */}
-        <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Leagues" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Leagues</SelectItem>
-            <SelectItem value="NFL">NFL</SelectItem>
-            <SelectItem value="MLB">MLB</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Teams Dropdown - Sectioned by Sport */}
+      <div className={`grid gap-4 mb-4 ${showModeFilter ? 'grid-cols-5' : 'grid-cols-4'}`}>
+        {/* Teams Dropdown - MLB Only */}
         <Select value={filters.search} onValueChange={(value) => onFilterChange('search', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <span className="text-sm">
@@ -160,29 +138,14 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
-            {(!filters.league || filters.league === 'NFL') && (
-              <>
-                <SelectGroup>
-                  <SelectLabel>NFL Teams</SelectLabel>
-                  {nflTeams.map((team) => (
-                    <SelectItem key={`nfl-${team}`} value={`${team}:NFL`}>
-                      {team} - {formatTeamName(team, 'NFL')}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-                {(!filters.league || filters.league === 'MLB') && <Separator className="my-2" />}
-              </>
-            )}
-            {(!filters.league || filters.league === 'MLB') && (
-              <SelectGroup>
-                <SelectLabel>MLB Teams</SelectLabel>
-                {mlbTeams.map((team) => (
-                  <SelectItem key={`mlb-${team}`} value={`${team}:MLB`}>
-                    {team} - {formatTeamName(team, 'MLB')}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            )}
+            <SelectGroup>
+              <SelectLabel>MLB Teams</SelectLabel>
+              {mlbTeams.map((team) => (
+                <SelectItem key={`mlb-${team}`} value={`${team}:MLB`}>
+                  {team} - {formatTeamName(team, 'MLB')}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
 
@@ -267,15 +230,6 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('search', '')}
-              />
-            </Badge>
-          )}
-          {filters.league && (
-            <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>League: {filters.league}</span>
-              <X
-                className="h-3 w-3 cursor-pointer hover:text-red-600"
-                onClick={() => onFilterChange('league', '')}
               />
             </Badge>
           )}
