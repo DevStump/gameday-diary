@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -33,7 +32,8 @@ const Games = () => {
     title: string; 
     homeTeam: string; 
     awayTeam: string; 
-    league: string; 
+    league: string;
+    venue?: string;
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showInfoBanner, setShowInfoBanner] = useState(true);
@@ -94,8 +94,8 @@ const Games = () => {
     }
   };
 
-  const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
-    console.log('handleAddToDiary called with:', { gameId, gameTitle, homeTeam, awayTeam, league });
+  const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string, venue?: string) => {
+    console.log('handleAddToDiary called with:', { gameId, gameTitle, homeTeam, awayTeam, league, venue });
     
     if (!user) {
       // Store current URL with filters for redirect after authentication
@@ -117,7 +117,7 @@ const Games = () => {
       return;
     }
     
-    setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
+    setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league, venue });
   };
 
   // Get games from past 3 days for hot games section (excluding future games)
@@ -260,6 +260,7 @@ const Games = () => {
             homeTeam={selectedGame.homeTeam}
             awayTeam={selectedGame.awayTeam}
             league={selectedGame.league}
+            venue={selectedGame.venue}
           />
         )}
       </div>

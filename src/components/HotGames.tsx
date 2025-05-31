@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +27,7 @@ interface HotGamesProps {
     runs_scored?: number;
     runs_allowed?: number;
   }>;
-  onAddToDiary?: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => void;
+  onAddToDiary?: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string, venue?: string) => void;
   isAuthenticated?: boolean;
 }
 
@@ -123,7 +124,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     `${game.away_team} @ ${game.home_team}`,
                     game.home_team,
                     game.away_team,
-                    game.league
+                    game.league,
+                    game.venue
                   );
                 }
               }}
@@ -144,7 +146,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               ) : (
                 <>
                   <BookOpen className="h-3 w-3 mr-1" />
-                  {isAuthenticated ? 'Add' : 'Sign in to Add'}
+                  {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
                 </>
               )}
             </Button>
