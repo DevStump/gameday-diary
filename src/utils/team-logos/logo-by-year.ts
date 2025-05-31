@@ -1,4 +1,3 @@
-
 // Year-based logo mapping for teams that changed logos over time
 export interface LogoByYear {
   [teamCode: string]: {
@@ -158,6 +157,16 @@ export const mlbLogosByYear: LogoByYear = {
     '2005-2015': 'https://content.sportslogos.net/logos/53/922/full/wsghhaxkh5qq0hdkbt1b5se41.png',
     '2002-2004': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png',
     '1997-2001': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
+  },
+  'ANA': {
+    '2016-current': 'https://content.sportslogos.net/logos/53/6521/full/4389_los_angeles_angels-primary-2016.png',
+    '2005-2015': 'https://content.sportslogos.net/logos/53/922/full/wsghhaxkh5qq0hdkbt1b5se41.png',
+    '2002-2004': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png',
+    '2000-2001': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png',
+    '1997-1999': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
+  },
+  'CAL': {
+    '1965-1996': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
   },
   'LAD': {
     '2012-current': 'https://content.sportslogos.net/logos/54/63/full/los_angeles_dodgers_logo_primary_20127886.png',
