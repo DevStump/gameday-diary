@@ -302,11 +302,19 @@ const Dashboard = () => {
                   
                   return (
                     <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">{getTeamAbbreviation(team, leagueType)}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">{getTeamAbbreviation(team, leagueType)}</span>
+                        <img
+                          src={getTeamLogo(getTeamAbbreviation(team, leagueType), leagueType)}
+                          alt={team}
+                          className="h-6 w-6 mt-1"
+                        />
+                      </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-field-green">{count}</div>
                       </div>
                     </div>
+
                   );
                 })}
               </div>
