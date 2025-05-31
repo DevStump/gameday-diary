@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,38 +41,8 @@ interface GameCardProps {
   isAuthenticated: boolean;
 }
 
-// ---------- 📅 Date Helper Functions ----------
-const getDateString = (date: Date): string => {
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`; // "YYYY-MM-DD"
-};
-
-const isPastGame = (gameDateString: string): boolean => {
-  const todayStr = getDateString(new Date());
-  const isPast = gameDateString < todayStr;
-  console.log(`🔍 BOXSCORE DEBUG - Game: ${gameDateString} | Today: ${todayStr} | Is Past: ${isPast}`);
-  return isPast;
-};
-
-const isTodayGame = (gameDateString: string): boolean => {
-  const todayStr = getDateString(new Date());
-  const isToday = gameDateString === todayStr;
-  console.log(`📅 TODAY CHECK - Game: ${gameDateString} | Today: ${todayStr} | Is Today: ${isToday}`);
-  return isToday;
-};
-
-const isFutureGame = (gameDateString: string): boolean => {
-  const todayStr = getDateString(new Date());
-  return gameDateString > todayStr;
-};
-// ----------------------------------------------
-
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
-  const futureGame = isFutureGame(game.date);
-  const todayGame = isTodayGame(game.date);
 
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
@@ -102,14 +71,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }
   };
 
-  const shouldShowBoxscore = () => {
-    // Only show boxscore for games that happened BEFORE today
-    // Hide for today's games and future games
-    const showBoxscore = isPastGame(game.date) && isAuthenticated;
-    console.log(`🎯 FINAL BOXSCORE DECISION - Game: ${game.game_id} (${game.date}) | Show: ${showBoxscore} | Auth: ${isAuthenticated}`);
-    return showBoxscore;
-  };
-
   const getStatusTag = () => {
     if (game.game_type === 'E') {
       return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Exhibition</Badge>;
@@ -126,7 +87,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const statusTag = getStatusTag();
 
   return (
-    <Card className={`transition-shadow duration-200 animate-fade-in h-full flex flex-col ${futureGame ? 'bg-gray-50' : ''}`}>
+    <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
       <CardContent className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-3 min-h-[32px]">
           <div className="flex items-center space-x-2 flex-wrap">
@@ -149,7 +110,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
             league={game.league}
-            isFuture={futureGame}
             gameDate={game.date}
           />
           <GameScore 
@@ -158,15 +118,12 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             ptsDef={game.pts_def}
             runsScored={game.runs_scored}
             runsAllowed={game.runs_allowed}
-            isFuture={futureGame}
-            isToday={isTodayGame(game.date)}
           />
         </div>
 
         <div className="text-center min-h-[50px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           <GamePitchers 
-            isFuture={futureGame}
             awayProbablePitcher={game.away_probable_pitcher}
             homeProbablePitcher={game.home_probable_pitcher}
             awayTeam={awayTeamAbbr}
@@ -195,24 +152,22 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
-            {shouldShowBoxscore() && (
-              <a 
-                href={generateBoxscoreUrl()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex-1"
-                onClick={(e) => e.stopPropagation()}
+            <a 
+              href={generateBoxscoreUrl()} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
               >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Boxscore
-                </Button>
-              </a>
-            )}
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Boxscore
+              </Button>
+            </a>
           </div>
         </div>
       </CardFooter>
