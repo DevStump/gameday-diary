@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,12 +73,6 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-xs px-2 py-0.5">
                 {game.league}
               </Badge>
-              {isLogged && (
-                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300 text-xs px-2 py-0.5">
-                  <Check className="h-3 w-3 mr-1" />
-                  Added
-                </Badge>
-              )}
             </div>
           </div>
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { User, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
-import { formatTeamName } from '@/utils/teamLogos';
+import { formatTeamName, getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -225,10 +224,22 @@ const Profile = () => {
                   // Determine league based on team format
                   const league = team.length <= 3 && team === team.toLowerCase() ? 'NFL' : 'MLB';
                   const leagueType = league as 'NFL' | 'MLB';
+                  const teamAbbr = getTeamAbbreviation(team, leagueType);
                   
                   return (
                     <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">{formatTeamName(team, leagueType)}</span>
+                      <div className="flex items-center space-x-3">
+                        <img 
+                          src={getTeamLogo(team, leagueType)} 
+                          alt={team}
+                          className="h-8 w-8 object-contain flex-shrink-0"
+                          style={{
+                            filter: 'drop-shadow(0 0 0 transparent)',
+                            mixBlendMode: 'multiply'
+                          }}
+                        />
+                        <span className="font-medium">{teamAbbr}</span>
+                      </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-field-green">{count}</div>
                       </div>
