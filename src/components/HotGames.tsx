@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,9 +34,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
   const [showAll, setShowAll] = useState(false);
   
   // Only fetch game logs if user is authenticated
-  const { data: gameLogs } = useGameLogs({
-    enabled: !!isAuthenticated
-  });
+  const { data: gameLogs } = useGameLogs();
 
   // Create set of logged game IDs for quick lookup (only if authenticated)
   const loggedGameIds = isAuthenticated 
