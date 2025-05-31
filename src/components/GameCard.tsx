@@ -87,6 +87,24 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
     }
   };
 
+  // Check if boxscore should be shown
+  const shouldShowBoxscore = () => {
+    if (game.is_future) return false;
+    
+    // For MLB games, check if pitcher data is available (indicates boxscore is ready)
+    if (game.league === 'MLB') {
+      const hasWinningPitcher = game.winning_pitcher && game.winning_pitcher.trim() !== '';
+      const hasLosingPitcher = game.losing_pitcher && game.losing_pitcher.trim() !== '';
+      const hasSavePitcher = game.save_pitcher && game.save_pitcher.trim() !== '';
+      
+      // If all pitcher fields are empty, don't show boxscore link
+      return hasWinningPitcher || hasLosingPitcher || hasSavePitcher;
+    }
+    
+    // For NFL games, always show if not future and has boxscore URL
+    return !!game.boxscore_url;
+  };
+
   const getStatusTag = () => {
     // Check game_type for MLB games
     if (game.game_type === 'E') {
@@ -202,8 +220,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
-            {/* View Boxscore Button - only show for signed-in users and not future games */}
-            {isAuthenticated && !game.is_future && (
+            {/* View Boxscore Button - only show for signed-in users and when boxscore is ready */}
+            {isAuthenticated && shouldShowBoxscore() && (
               <a 
                 href={generateBoxscoreUrl()} 
                 target="_blank" 
