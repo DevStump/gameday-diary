@@ -94,7 +94,6 @@ const getTeamVariants = (teamAbbr: string, league: string): string[] => {
 
 // Function to generate consistent random diary entries based on game_id
 const generateDiaryEntries = (gameId: string): number => {
-  // Use game_id to seed randomization for consistency
   const seed = gameId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const random = (seed * 9301 + 49297) % 233280 / 233280;
   return Math.floor(random * (10000 - 9 + 1)) + 9;
@@ -105,6 +104,9 @@ export const useGames = (filters: GameFilters) => {
     queryKey: ['games', filters],
     queryFn: async () => {
       console.log('Fetching games with filters:', filters);
+      
+      // Check if we have a complete date range (both start and end dates)
+      const hasCompleteDateRange = filters.startDate && filters.endDate;
       
       // Don't execute query if only one date is provided
       const hasOnlyStartDate = filters.startDate && !filters.endDate;
@@ -133,21 +135,24 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
-      // Get yesterday's date for filtering future games (includes today but excludes tomorrow)
+      // Get yesterday's date for filtering future games (only used when no date range is specified)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayString = yesterday.toISOString().split('T')[0];
-      
-      // Only apply date range filtering if both startDate and endDate are provided
-      const shouldApplyDateRange = filters.startDate && filters.endDate;
       
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false }).order('game_time', { ascending: false });
         
-        // Filter out future games unless specific date filters are provided
-        if (!shouldApplyDateRange) {
+        // Apply date filtering
+        if (hasCompleteDateRange) {
+          // Use the specified date range
+          nflQuery = nflQuery.gte('date', filters.startDate).lte('date', filters.endDate);
+          console.log('Applying NFL date range filter:', filters.startDate, 'to', filters.endDate);
+        } else {
+          // Filter out future games (default behavior)
           nflQuery = nflQuery.lte('date', yesterdayString);
+          console.log('Applying NFL default date filter (up to yesterday):', yesterdayString);
         }
         
         if (searchTeam) {
@@ -180,9 +185,6 @@ export const useGames = (filters: GameFilters) => {
           // For NFL, exhibition games are typically week 0 or negative weeks (preseason)
           nflQuery = nflQuery.lte('week', 0);
         }
-        if (shouldApplyDateRange) {
-          nflQuery = nflQuery.gte('date', filters.startDate).lte('date', filters.endDate);
-        }
         
         promises.push(nflQuery);
       }
@@ -191,9 +193,15 @@ export const useGames = (filters: GameFilters) => {
       if (!filters.league || filters.league === 'MLB') {
         let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
         
-        // Filter out future games unless specific date filters are provided
-        if (!shouldApplyDateRange) {
+        // Apply date filtering
+        if (hasCompleteDateRange) {
+          // Use the specified date range
+          mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
+          console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
+        } else {
+          // Filter out future games (default behavior)
           mlbQuery = mlbQuery.lte('game_date', yesterdayString);
+          console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
         }
         
         if (searchTeam) {
@@ -232,9 +240,6 @@ export const useGames = (filters: GameFilters) => {
         } else if (filters.playoff === 'exhibition') {
           // Exhibition games - Spring Training, Exhibition, etc.
           mlbQuery = mlbQuery.in('game_type', ['S', 'E']); // Spring Training, Exhibition
-        }
-        if (shouldApplyDateRange) {
-          mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         }
         
         promises.push(mlbQuery);
