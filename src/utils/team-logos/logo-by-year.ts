@@ -67,7 +67,8 @@ export const mlbLogosByYear: LogoByYear = {
     '1997-2001': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
   },
   'LAD': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2012-current': 'https://content.sportslogos.net/logos/54/63/full/los_angeles_dodgers_logo_primary_20127886.png',
+    '1979-2011': 'https://content.sportslogos.net/logos/54/63/full/los_angeles_dodgers_logo_primary_19792530.png'
   },
   'MIA': {
     '2019-current': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20194007.png',
