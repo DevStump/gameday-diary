@@ -64,6 +64,9 @@ export const useGames = (filters: GameFilters) => {
   return useQuery({
     queryKey: ['games', filters],
     queryFn: async () => {
+      // Apply default value for excludeFutureGames
+      const excludeFutureGames = filters.excludeFutureGames ?? false;
+      
       console.log('Fetching games with filters:', filters);
       
       // Check if we have a complete date range (both start and end dates)
@@ -105,7 +108,7 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else if (filters.excludeFutureGames === true) {
+      } else if (excludeFutureGames === true) {
         // Only filter out future games if excludeFutureGames is explicitly true
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
