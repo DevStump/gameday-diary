@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -404,11 +403,11 @@ const Timeline = () => {
                             
                             <div className="text-center">
                               <span className="font-medium block">Company:</span>
-                              <span className="truncate">
+                              <div className="truncate px-1" title={game.logData.company || 'Solo'}>
                                 {game.logData.company || 
                                   <span className="text-gray-400">Solo</span>
                                 }
-                              </span>
+                              </div>
                             </div>
                           </div>
                           
