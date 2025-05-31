@@ -1,6 +1,5 @@
 
 // Main utility for team logos and names by league
-import { mlbLogos } from './team-logos/mlb-logos';
 import { nflLogos, getNFLCanonicalAbbreviation } from './team-logos/nfl-logos';
 import { mlbNames } from './team-logos/mlb-names';
 import { nflNames } from './team-logos/nfl-names';
@@ -13,25 +12,58 @@ export const getTeamLogo = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?:
   // Get historical team code based on game date
   const historicalTeamCode = getHistoricalTeamCode(teamCode, league || 'MLB', gameDate);
   
-  // If we have a game date, try to get year-specific logo first
-  if (gameDate && league) {
-    const year = new Date(gameDate).getFullYear();
-    const yearBasedLogo = getLogoByYear(historicalTeamCode, year, league);
-    if (yearBasedLogo) {
-      return yearBasedLogo;
-    }
-  }
-  
+  // For MLB, always try year-based logos first
   if (league === 'MLB') {
-    return mlbLogos[historicalTeamCode?.toUpperCase()] || mlbLogos[historicalTeamCode] || '/placeholder.svg';
+    if (gameDate) {
+      const year = new Date(gameDate).getFullYear();
+      const yearBasedLogo = getLogoByYear(historicalTeamCode, year, 'MLB');
+      if (yearBasedLogo) {
+        return yearBasedLogo;
+      }
+    }
+    
+    // If no game date provided, try to get current logo (assume current year)
+    const currentYear = new Date().getFullYear();
+    const currentLogo = getLogoByYear(historicalTeamCode, currentYear, 'MLB');
+    if (currentLogo) {
+      return currentLogo;
+    }
+    
+    return '/placeholder.svg';
   }
   
+  // For NFL, use existing logic with year-based fallback
   if (league === 'NFL') {
+    if (gameDate) {
+      const year = new Date(gameDate).getFullYear();
+      const yearBasedLogo = getLogoByYear(historicalTeamCode, year, 'NFL');
+      if (yearBasedLogo) {
+        return yearBasedLogo;
+      }
+    }
+    
     return nflLogos[historicalTeamCode?.toUpperCase()] || nflLogos[historicalTeamCode] || '/placeholder.svg';
   }
   
-  const logoMap = league === 'NFL' ? nflLogos : mlbLogos;
-  return logoMap[historicalTeamCode?.toUpperCase()] || logoMap[historicalTeamCode] || '/placeholder.svg';
+  // Default case - try MLB first, then NFL
+  if (gameDate) {
+    const year = new Date(gameDate).getFullYear();
+    
+    // Try MLB first
+    const mlbLogo = getLogoByYear(historicalTeamCode, year, 'MLB');
+    if (mlbLogo) {
+      return mlbLogo;
+    }
+    
+    // Try NFL
+    const nflLogo = getLogoByYear(historicalTeamCode, year, 'NFL');
+    if (nflLogo) {
+      return nflLogo;
+    }
+  }
+  
+  // Final fallback to NFL logos for non-league-specific calls
+  return nflLogos[historicalTeamCode?.toUpperCase()] || nflLogos[historicalTeamCode] || '/placeholder.svg';
 };
 
 export const getTeamAbbreviation = (teamCode: string, league?: 'MLB' | 'NFL', gameDate?: string): string => {
