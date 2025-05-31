@@ -18,9 +18,10 @@ interface GameLogModalProps {
   homeTeam: string;
   awayTeam: string;
   league: string;
+  venue?: string;
 }
 
-const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, league }: GameLogModalProps) => {
+const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, league, venue }: GameLogModalProps) => {
   const [mode, setMode] = useState<'attended' | 'watched'>('attended');
   const [company, setCompany] = useState('');
   const [rating, setRating] = useState(0);
@@ -86,12 +87,15 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
   const homeTeamAbbr = getTeamAbbreviation(homeTeam, leagueType);
   const awayTeamAbbr = getTeamAbbreviation(awayTeam, leagueType);
 
+  // Create game title with venue if provided
+  const displayTitle = venue ? `${awayTeamAbbr} @ ${homeTeamAbbr} - ${venue}` : `${awayTeamAbbr} @ ${homeTeamAbbr}`;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add to Game Diary</DialogTitle>
-          <p className="text-sm text-gray-600">{gameTitle}</p>
+          <DialogTitle>Add Game to Diary</DialogTitle>
+          <p className="text-sm text-gray-600">{displayTitle}</p>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
