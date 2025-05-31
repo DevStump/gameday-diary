@@ -27,7 +27,13 @@ export const useProfileStats = () => {
     queryFn: () => {
       if (!gameLogs || !nflGames || !mlbGames) return null;
 
+      console.log('Computing profile stats...');
+      console.log('Game logs count:', gameLogs.length);
+      console.log('NFL games count:', nflGames?.length);
+      console.log('MLB games count:', mlbGames?.length);
+
       const allGames = [...(nflGames || []), ...(mlbGames || [])];
+      console.log('Total games available:', allGames.length);
       
       // Basic counts
       const totalGames = gameLogs.length;
@@ -40,7 +46,7 @@ export const useProfileStats = () => {
         ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 100) / 100
         : 0;
 
-      // Most Visited Venue - count venue frequency across all logs
+      // Most Visited Venue - count venue frequency from actual games
       const venueCounts: Record<string, number> = {};
       gameLogs.forEach(log => {
         const game = allGames.find(g => g.game_id === log.game_id);
@@ -50,6 +56,7 @@ export const useProfileStats = () => {
         }
       });
 
+      console.log('Venue counts:', venueCounts);
       const mostVisitedVenue = Object.entries(venueCounts)
         .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
 
@@ -64,7 +71,7 @@ export const useProfileStats = () => {
       const mostSupportedTeam = Object.entries(rootedForCounts)
         .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
 
-      // Win/Loss Record based on winning_team/losing_team comparison
+      // Win/Loss Record based on rooted_for vs winning_team/losing_team from actual games
       let wins = 0;
       let losses = 0;
       const teamWins: Record<string, number> = {};
@@ -77,13 +84,13 @@ export const useProfileStats = () => {
         const game = allGames.find(g => g.game_id === log.game_id);
         if (!game) return;
 
-        // Determine winning/losing team based on scores
+        // For NFL games, determine winner from pts_off vs pts_def
+        // For MLB games, determine winner from home_score vs away_score
         let winningTeam, losingTeam;
         
         const isNflGame = nflGames?.some(nflGame => nflGame.game_id === game.game_id);
         
         if (isNflGame) {
-          // NFL: pts_off is home team score, pts_def is away team score
           if (game.pts_off !== undefined && game.pts_def !== undefined) {
             if (game.pts_off > game.pts_def) {
               winningTeam = game.home_team;
@@ -94,7 +101,7 @@ export const useProfileStats = () => {
             }
           }
         } else {
-          // MLB: home_score/runs_scored is home team, away_score/runs_allowed is away team
+          // MLB game
           const homeScore = game.home_score || game.runs_scored;
           const awayScore = game.away_score || game.runs_allowed;
           
@@ -118,6 +125,10 @@ export const useProfileStats = () => {
         }
       });
 
+      console.log('Win/Loss record:', { wins, losses });
+      console.log('Team wins:', teamWins);
+      console.log('Team losses:', teamLosses);
+
       const mostWinsEntry = Object.entries(teamWins).sort(([,a], [,b]) => b - a)[0];
       const mostLossesEntry = Object.entries(teamLosses).sort(([,a], [,b]) => b - a)[0];
 
@@ -126,18 +137,30 @@ export const useProfileStats = () => {
         mostLosses: mostLossesEntry ? { team: mostLossesEntry[0], count: mostLossesEntry[1] } : null,
       };
 
-      // Total Runs/Points from all logged games
+      // Total Runs/Points from logged games
       const totalRuns = gameLogs.reduce((sum, log) => {
         const game = allGames.find(g => g.game_id === log.game_id);
         if (game) {
-          const homeScore = game.home_score || game.runs_scored || game.pts_off || 0;
-          const awayScore = game.away_score || game.runs_allowed || game.pts_def || 0;
-          return sum + homeScore + awayScore;
+          const isNflGame = nflGames?.some(nflGame => nflGame.game_id === game.game_id);
+          
+          if (isNflGame) {
+            // NFL: pts_off + pts_def
+            const homeScore = game.pts_off || 0;
+            const awayScore = game.pts_def || 0;
+            return sum + homeScore + awayScore;
+          } else {
+            // MLB: home_score + away_score
+            const homeScore = game.home_score || game.runs_scored || 0;
+            const awayScore = game.away_score || game.runs_allowed || 0;
+            return sum + homeScore + awayScore;
+          }
         }
         return sum;
       }, 0);
 
-      // Top Teams - count games involving each team
+      console.log('Total runs/points:', totalRuns);
+
+      // Top Teams - count games involving each team from logged games
       const teamCounts: Record<string, number> = {};
       gameLogs.forEach(log => {
         const game = allGames.find(g => g.game_id === log.game_id);
@@ -154,11 +177,12 @@ export const useProfileStats = () => {
         }
       });
 
+      console.log('Team counts:', teamCounts);
       const teamBreakdown = Object.entries(teamCounts)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 5);
 
-      // Games by Date Timeline - use actual game dates
+      // Games by Date Timeline - use actual game dates from logged games
       const timeline: Record<string, number> = {};
       
       gameLogs.forEach(log => {
@@ -189,6 +213,13 @@ export const useProfileStats = () => {
       const venueBreakdown = Object.entries(venueCounts)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 5);
+
+      console.log('Final stats computed:', {
+        totalGames,
+        mostVisitedVenue,
+        totalRuns,
+        teamBreakdown: teamBreakdown.slice(0, 3)
+      });
 
       return {
         totalGames,
