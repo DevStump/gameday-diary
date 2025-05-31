@@ -41,7 +41,7 @@ interface GameCardProps {
   isAuthenticated: boolean;
 }
 
-// Utility to check if a game date is in the future (after today)
+// ---------- 📅 Date Helper Functions ----------
 const isFutureGame = (gameDateString: string): boolean => {
   const gameDate = new Date(gameDateString);
   const today = new Date();
@@ -49,6 +49,23 @@ const isFutureGame = (gameDateString: string): boolean => {
   today.setHours(0, 0, 0, 0);
   return gameDate > today;
 };
+
+const isTodayGame = (gameDateString: string): boolean => {
+  const gameDate = new Date(gameDateString);
+  const today = new Date();
+  gameDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return gameDate.getTime() === today.getTime();
+};
+
+const isPastGame = (gameDateString: string): boolean => {
+  const gameDate = new Date(gameDateString);
+  const today = new Date();
+  gameDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return gameDate < today;
+};
+// ----------------------------------------------
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
@@ -82,7 +99,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    return !isFutureGame(game.date);
+    return isPastGame(game.date); // ✅ Show only for games before today
   };
 
   const getStatusTag = () => {
