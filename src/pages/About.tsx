@@ -52,7 +52,7 @@ const About = () => {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Mail className="h-5 w-5" />
+              <span>✉️</span>
               <span>Got Feedback?</span>
             </CardTitle>
           </CardHeader>
