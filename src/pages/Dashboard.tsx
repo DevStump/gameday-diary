@@ -85,63 +85,73 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-center">
-                <div className="relative w-24 h-24">
-                  <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="#e5e7eb"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      stroke="#10b981"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={strokeDasharray}
-                      strokeLinecap="round"
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-bold text-gray-900">{winPercentage}%</span>
-                  </div>
+              {stats.totalGames === 0 ? (
+                <div className="text-center py-6">
+                  <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-xs text-gray-500">Add games to see win/loss record</p>
                 </div>
-              </div>
-              <div className="text-center space-y-2">
-                <div className="flex justify-center space-x-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
-                    <div className="text-xs text-gray-600">Wins</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
-                    <div className="text-xs text-gray-600">Losses</div>
-                  </div>
-                </div>
-                {stats.last5Games.length > 0 && (
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="text-xs text-gray-600 mb-1">Last {stats.last5Games.length} games</div>
-                    <div className="flex justify-center space-x-1">
-                      {stats.last5Games.map((game, index) => (
-                        <div
-                          key={index}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                            game.won ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}
-                        >
-                          {game.won ? '✓' : '✗'}
-                        </div>
-                      ))}
+              ) : (
+                <>
+                  <div className="flex justify-center">
+                    <div className="relative w-24 h-24">
+                      <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="45"
+                          stroke="#e5e7eb"
+                          strokeWidth="8"
+                          fill="none"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="45"
+                          stroke="#10b981"
+                          strokeWidth="8"
+                          fill="none"
+                          strokeDasharray={strokeDasharray}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-bold text-gray-900">{winPercentage}%</span>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
+                  <div className="text-center space-y-2">
+                    <div className="flex justify-center space-x-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
+                        <div className="text-xs text-gray-600">Wins</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
+                        <div className="text-xs text-gray-600">Losses</div>
+                      </div>
+                    </div>
+                    {stats.last5Games.length > 0 && (
+                      <div className="pt-2 border-t border-gray-100">
+                        <div className="text-xs text-gray-600 mb-1">Last {stats.last5Games.length} games</div>
+                        <div className="flex justify-center space-x-1">
+                          {stats.last5Games.map((game, index) => (
+                            <div
+                              key={index}
+                              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                                game.won ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                              }`}
+                            >
+                              {game.won ? '✓' : '✗'}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -154,26 +164,36 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
-                <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
-                <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
-              </div>
+              {stats.totalGames === 0 ? (
+                <div className="text-center py-6">
+                  <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-xs text-gray-500">Add games to see total runs</p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
+                    <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
+                    <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
+                  </div>
 
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                {stats.highestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
+                  <div className="space-y-2 pt-2 border-t border-gray-100">
+                    {stats.highestScoringGame && (
+                      <div className="text-xs text-gray-600">
+                        <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
+                        <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
+                      </div>
+                    )}
+                    {stats.lowestScoringGame && (
+                      <div className="text-xs text-gray-600">
+                        <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
+                        <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
+                      </div>
+                    )}
                   </div>
-                )}
-                {stats.lowestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
-                  </div>
-                )}
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -262,27 +282,35 @@ const Dashboard = () => {
               <CardTitle className="text-lg font-semibold text-gray-900">Top Teams</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {stats.teamBreakdown.map(([team, count], index) => (
-                  <div key={team} className="flex justify-between items-center">
-                    <div className="flex items-center space-x-3">
-                      <img 
-                        src={getTeamLogo(team, 'MLB', '2024')}
-                        alt={`${team} logo`}
-                        className="h-6 w-6 object-contain"
-                        style={{ maxWidth: '24px', height: '24px', objectFit: 'contain' }}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      <span className="text-sm font-medium text-gray-900">{team}</span>
+              {stats.teamBreakdown.length > 0 ? (
+                <div className="space-y-3">
+                  {stats.teamBreakdown.map(([team, count], index) => (
+                    <div key={team} className="flex justify-between items-center">
+                      <div className="flex items-center space-x-3">
+                        <img 
+                          src={getTeamLogo(team, 'MLB', '2024')}
+                          alt={`${team} logo`}
+                          className="h-6 w-6 object-contain"
+                          style={{ maxWidth: '24px', height: '24px', objectFit: 'contain' }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        <span className="text-sm font-medium text-gray-900">{team}</span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {count}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {count}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-xs text-gray-500">Add games to see top teams</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -293,26 +321,33 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-center space-y-3">
-                <div>
-                  <div className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</div>
-                  <div className="text-sm text-gray-600">Average rating</div>
-                </div>
-                {stats.ratedGamesCount > 0 && (
-                  <div className="pt-3 border-t border-gray-100 space-y-2">
-                    <div className="text-xs text-gray-600 mb-2">Rating breakdown</div>
-                    <div className="grid grid-cols-5 gap-1 text-xs">
-                      {[1, 2, 3, 4, 5].map((rating) => {
-                        const count = stats.ratingBreakdown[rating as keyof typeof stats.ratingBreakdown];
-                        const percentage = stats.ratedGamesCount > 0 ? Math.round((count / stats.ratedGamesCount) * 100) : 0;
-                        return (
-                          <div key={rating} className="text-center">
-                            <div className="font-medium">{rating}★</div>
-                            <div className="text-gray-900 font-semibold">{count}</div>
-                            <div className="text-gray-500">({percentage}%)</div>
-                          </div>
-                        );
-                      })}
+                {stats.ratedGamesCount > 0 ? (
+                  <>
+                    <div>
+                      <div className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</div>
+                      <div className="text-sm text-gray-600">Average rating</div>
                     </div>
+                    <div className="pt-3 border-t border-gray-100 space-y-2">
+                      <div className="text-xs text-gray-600 mb-2">Rating breakdown</div>
+                      <div className="grid grid-cols-5 gap-1 text-xs">
+                        {[1, 2, 3, 4, 5].map((rating) => {
+                          const count = stats.ratingBreakdown[rating as keyof typeof stats.ratingBreakdown];
+                          const percentage = stats.ratedGamesCount > 0 ? Math.round((count / stats.ratedGamesCount) * 100) : 0;
+                          return (
+                            <div key={rating} className="text-center">
+                              <div className="font-medium">{rating}★</div>
+                              <div className="text-gray-900 font-semibold">{count}</div>
+                              <div className="text-gray-500">({percentage}%)</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="py-6">
+                    <div className="text-lg text-gray-600 mb-2">No average rating yet</div>
+                    <div className="text-sm text-gray-500">Rate a game to see your average rating</div>
                   </div>
                 )}
               </div>

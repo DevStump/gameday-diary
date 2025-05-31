@@ -51,8 +51,19 @@ export const useProfileStats = () => {
         5: ratedGames.filter(log => log.rating === 5).length,
       };
 
-      // Read venues directly from database logs (only attended games)
+      // Top venues - only count attended games (regardless of rooted team)
       const attendedVenueCounts: Record<string, number> = {};
+      filteredGameLogs.forEach(log => {
+        const game = gameMap[String(log.game_id)];
+        if (!game) return;
+        
+        // Count all attended games for venues
+        if (game.venue_name && log.mode === 'attended') {
+          attendedVenueCounts[game.venue_name] = (attendedVenueCounts[game.venue_name] || 0) + 1;
+        }
+      });
+
+      // Process games with rooted team data for win/loss and team stats
       const rootedForCounts: Record<string, number> = {};
       const teamCounts: Record<string, number> = {};
       const teamWins: Record<string, number> = {};
@@ -70,11 +81,6 @@ export const useProfileStats = () => {
 
         const date = new Date(game.game_date || game.game_datetime);
         const dateString = date.toISOString();
-
-        // Only count attended venues
-        if (game.venue_name && log.mode === 'attended') {
-          attendedVenueCounts[game.venue_name] = (attendedVenueCounts[game.venue_name] || 0) + 1;
-        }
 
         // Rooted for counts (normalize to abbreviation)
         const rootedRaw = log.rooted_for;
@@ -135,12 +141,12 @@ export const useProfileStats = () => {
           };
         }
 
-        // Team breakdown
+        // Team breakdown - count all games
         teamCounts[homeAbbr] = (teamCounts[homeAbbr] || 0) + 1;
         teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
       });
 
-      // Get last 5 rooted games (most recent first)
+      // Get last 5 rooted games (most recent first) - only count games with rooted_for
       const rootedGameLogs = filteredGameLogs
         .filter(log => log.rooted_for && log.rooted_for !== 'none')
         .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
