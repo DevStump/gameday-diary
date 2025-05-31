@@ -119,8 +119,8 @@ export const useLoggedGames = (filters: {
         }
         
         // If dates are the same, sort by time
-        const timeA = a.game_datetime || a.game_time || '';
-        const timeB = b.game_datetime || b.game_time || '';
+        const timeA = a.game_datetime || '';
+        const timeB = b.game_datetime || '';
         
         // For datetime fields, compare directly
         if (timeA && timeB) {

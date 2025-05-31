@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -267,8 +266,6 @@ const Timeline = () => {
                         />
                         <GameScore 
                           league={game.league}
-                          ptsOff={game.pts_off}
-                          ptsDef={game.pts_def}
                           runsScored={game.runs_scored}
                           runsAllowed={game.runs_allowed}
                         />
