@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -78,17 +77,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
       return <Badge variant="outline" className="border-sports-gold text-sports-gold">Playoff</Badge>;
     }
     return null;
-  };
-
-  // Check if game is from yesterday or later (for boxscore tooltip)
-  const shouldShowBoxscoreTooltip = () => {
-    const gameDate = new Date(game.date);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0); // Start of yesterday
-    gameDate.setHours(0, 0, 0, 0); // Start of game date
-    
-    return gameDate >= yesterday;
   };
 
   // Check if boxscore should be available (3 AM EST the day after game)
@@ -187,48 +175,29 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                   )}
 
                   {isAuthenticated && isBeforeToday && shouldShowBoxscore() && (
-                    shouldShowBoxscoreTooltip() ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <a 
-                            href={generateBoxscoreUrl()} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex-1"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
-                            >
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              Boxscore
-                            </Button>
-                          </a>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Boxscores are typically available the morning after a game</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <a 
-                        href={generateBoxscoreUrl()} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a 
+                          href={generateBoxscoreUrl()} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex-1"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Boxscore
-                        </Button>
-                      </a>
-                    )
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                          >
+                            <ExternalLink className="h-4 w-4 mr-2" />
+                            Boxscore
+                          </Button>
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Boxscores are typically available the morning after a game</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               </div>
