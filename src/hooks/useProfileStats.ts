@@ -140,14 +140,16 @@ export const useProfileStats = () => {
       });
 
       // Get last 5 rooted games (most recent first) - only count games with rooted_for
+      // Sort by the actual game datetime, not the logged date
       const rootedGameLogs = filteredGameLogs
         .filter(log => log.rooted_for && log.rooted_for !== 'none')
         .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
         .filter(log => log.game)
         .sort((a, b) => {
-          const dateA = new Date(a.game.game_date || a.game.game_datetime);
-          const dateB = new Date(b.game.game_date || b.game.game_datetime);
-          return dateB.getTime() - dateA.getTime();
+          // Sort by the actual game datetime for proper chronological order
+          const gameTimeA = new Date(a.game.game_datetime || a.game.game_date).getTime();
+          const gameTimeB = new Date(b.game.game_datetime || b.game.game_date).getTime();
+          return gameTimeB - gameTimeA; // Most recent game first
         })
         .slice(0, 5)
         .map(log => {
