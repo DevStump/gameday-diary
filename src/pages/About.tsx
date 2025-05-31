@@ -2,9 +2,20 @@
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Info, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const About = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -15,6 +26,34 @@ const About = () => {
             <h1 className="text-4xl font-bold text-gray-900">About</h1>
           </div>
         </div>
+
+        {/* User Info - Only show if logged in */}
+        {user && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span>Account</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Signed in as:</p>
+                  <p className="font-medium text-gray-900">{user.email}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* App Info */}
         <Card className="mb-6">

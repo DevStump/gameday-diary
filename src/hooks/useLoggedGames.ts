@@ -143,16 +143,16 @@ export const useLoggedGames = (filters: {
             const [teamAbbr, league] = filters.search.split(':');
             if (league !== game.league) return false;
             
-            // Check if either home or away team matches
-            const homeTeamMatches = game.home_team?.toLowerCase().includes(teamAbbr.toLowerCase());
-            const awayTeamMatches = game.away_team?.toLowerCase().includes(teamAbbr.toLowerCase());
+            // Check if either home or away team matches - use correct field names
+            const homeTeamMatches = game.home_name?.toLowerCase().includes(teamAbbr.toLowerCase());
+            const awayTeamMatches = game.away_name?.toLowerCase().includes(teamAbbr.toLowerCase());
             return homeTeamMatches || awayTeamMatches;
           }
           
-          // Legacy format - check team names
+          // Legacy format - check team names - use correct field names
           const searchLower = filters.search.toLowerCase();
-          const homeTeamMatches = game.home_team?.toLowerCase().includes(searchLower);
-          const awayTeamMatches = game.away_team?.toLowerCase().includes(searchLower);
+          const homeTeamMatches = game.home_name?.toLowerCase().includes(searchLower);
+          const awayTeamMatches = game.away_name?.toLowerCase().includes(searchLower);
           return homeTeamMatches || awayTeamMatches;
         });
       }
