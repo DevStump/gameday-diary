@@ -55,9 +55,6 @@ export const useProfileStats = () => {
           venueCounts[venue] = (venueCounts[venue] || 0) + 1;
         }
       });
-      
-      const mostVisitedVenue = Object.entries(venueCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-
 
       console.log('Venue counts:', venueCounts);
       const mostVisitedVenue = Object.entries(venueCounts)
