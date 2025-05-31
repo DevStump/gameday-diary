@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Star } from 'lucide-react';
 import { useAddGameLog } from '@/hooks/useGameLogs';
 import { useToast } from '@/hooks/use-toast';
-import { formatTeamName } from '@/utils/teamLogos';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
 
 interface GameLogModalProps {
   isOpen: boolean;
@@ -68,8 +68,10 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
     }
   };
 
-  // Ensure league is properly typed for formatTeamName
+  // Ensure league is properly typed and get team abbreviations
   const leagueType = league.toUpperCase() as 'NFL' | 'MLB';
+  const homeTeamAbbr = getTeamAbbreviation(homeTeam, leagueType);
+  const awayTeamAbbr = getTeamAbbreviation(awayTeam, leagueType);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -101,8 +103,8 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No preference</SelectItem>
-                <SelectItem value={awayTeam}>{formatTeamName(awayTeam, leagueType)}</SelectItem>
-                <SelectItem value={homeTeam}>{formatTeamName(homeTeam, leagueType)}</SelectItem>
+                <SelectItem value={awayTeam}>{awayTeamAbbr}</SelectItem>
+                <SelectItem value={homeTeam}>{homeTeamAbbr}</SelectItem>
               </SelectContent>
             </Select>
           </div>
