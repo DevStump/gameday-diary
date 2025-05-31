@@ -19,41 +19,16 @@ const Timeline = () => {
   const [selectedLogId, setSelectedLogId] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<string>('all');
 
-  // Don't redirect if not authenticated - show empty state instead
-  const isAuthenticated = !!user;
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
 
-  if (isLoading && isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
-      </div>
-    );
-  }
-
-  // Show empty state for unauthenticated users
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
-          </div>
-          <div className="text-center">
-            <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Sign in to view your game diary</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Track the games you've attended or watched and keep a personal diary of your experiences.
-            </p>
-            <div className="mt-6">
-              <Button 
-                onClick={() => navigate('/auth')}
-                className="bg-field-green hover:bg-field-dark"
-              >
-                Sign In
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
@@ -120,6 +95,18 @@ const Timeline = () => {
 
   const getModeColor = (mode: string) => {
     return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
+  };
+
+  // Function to determine the league based on the rooted_for team
+  const getLeague = (teamName: string): 'MLB' | 'NFL' => {
+    // Basic logic to determine league (can be expanded)
+    return teamName === 'Yankees' ? 'MLB' : 'NFL';
+  };
+
+  // Function to get the venue (can be expanded)
+  const getVenue = (teamName: string): string => {
+    // Basic logic to determine venue (can be expanded)
+    return teamName === 'Yankees' ? 'Yankee Stadium' : 'Stadium';
   };
 
   return (
@@ -292,29 +279,13 @@ const Timeline = () => {
       <EditGameLogModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
-        gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
-        game={{
-          game_id: '',
-          date: '',
-          home_team: '',
-          away_team: '',
-          league: 'MLB'
-        }}
-        league="MLB"
+        gameLogId={selectedLogId}
       />
 
       <DeleteGameLogModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
-        game={{
-          game_id: '',
-          date: '',
-          home_team: '',
-          away_team: '',
-          league: 'MLB'
-        }}
-        league="MLB"
+        gameLogId={selectedLogId}
       />
     </div>
   );

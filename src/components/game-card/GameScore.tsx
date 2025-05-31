@@ -31,13 +31,13 @@ const GameScore = ({ league, ptsOff, ptsDef, runsScored, runsAllowed, isFuture, 
   const score = getScore();
 
   return (
-    <div className="h-[20px] flex items-center justify-center">
+    <div className="h-[24px] flex items-center justify-center">
       {score ? (
-        <div className="text-lg font-bold text-field-green leading-none">
+        <div className="text-xl font-bold text-field-green">
           {score}
         </div>
       ) : (
-        <Badge variant="outline" className="border-gray-300 text-gray-500 text-xs">
+        <Badge variant="outline" className="border-gray-300 text-gray-500">
           <Clock className="h-3 w-3 mr-1" />
           Scheduled
         </Badge>

@@ -28,9 +28,9 @@ const GameDateTime = ({ date, gameDateTime }: GameDateTimeProps) => {
 
   return (
     <div className="text-center text-sm text-gray-600">
-      <div className="leading-tight">{formatGameDate(date)}</div>
+      <div>{formatGameDate(date)}</div>
       {gameDateTime && (
-        <div className="text-xs text-gray-500 leading-tight">
+        <div className="text-xs text-gray-500">
           {formatGameTime(gameDateTime)}
         </div>
       )}

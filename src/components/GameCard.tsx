@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -121,11 +120,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   return (
     <TooltipProvider>
-      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col min-h-[240px]">
-        <CardContent className="p-4 flex-1 flex flex-col">
-          <div className="flex justify-between items-start mb-2 min-h-[20px]">
+      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
+        <CardContent className="p-3 flex-1 flex flex-col">
+          <div className="flex justify-between items-start mb-2 min-h-[24px]">
             <div className="flex items-center space-x-2 flex-wrap">
-              <Badge variant="secondary" className="bg-field-green text-white text-xs px-2 py-0.5">
+              <Badge variant="secondary" className="bg-field-green text-white">
                 {game.league}
               </Badge>
               {statusTag}
@@ -133,31 +132,29 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           </div>
 
           {game.venue && (
-            <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
-              <MapPin className="h-3 w-3 mr-1" />
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
+              <MapPin className="h-4 w-4 mr-1" />
               <span className="text-center">{game.venue}</span>
             </div>
           )}
 
-          <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[50px]">
+          <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[60px]">
             <GameTeamDisplay 
               homeTeam={homeTeamAbbr}
               awayTeam={awayTeamAbbr}
               league={game.league}
               gameDate={game.date}
             />
-            <div className="mb-1">
-              <GameScore 
-                league={game.league}
-                ptsOff={game.pts_off}
-                ptsDef={game.pts_def}
-                runsScored={game.runs_scored}
-                runsAllowed={game.runs_allowed}
-              />
-            </div>
+            <GameScore 
+              league={game.league}
+              ptsOff={game.pts_off}
+              ptsDef={game.pts_def}
+              runsScored={game.runs_scored}
+              runsAllowed={game.runs_allowed}
+            />
           </div>
 
-          <div className="text-center min-h-[35px] flex flex-col justify-start mb-2">
+          <div className="text-center min-h-[30px] flex flex-col justify-start">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
             <GamePitchers 
               awayProbablePitcher={game.away_probable_pitcher}
@@ -173,26 +170,26 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           <>
             <div className="border-t border-gray-200 mx-3"></div>
 
-            <CardFooter className="p-4 pt-2">
+            <CardFooter className="p-3 pt-2">
               <div className="w-full">
                 <div className="flex gap-x-2">
                   {isAlreadyLogged ? (
                     <Button
                       disabled
                       variant="outline"
-                      className="flex-1 border-gray-300 text-gray-500 cursor-default h-8 px-3 text-xs font-medium"
+                      className="flex-1 border-gray-300 text-gray-500 cursor-default"
                       size="sm"
                     >
-                      <BookOpen className="h-3 w-3 mr-1" />
+                      <BookOpen className="h-4 w-4 mr-2" />
                       Added
                     </Button>
                   ) : (
                     <Button
                       onClick={handleAddClick}
-                      className="flex-1 bg-field-green transition-colors h-8 px-3 text-xs font-medium"
+                      className="flex-1 bg-field-green transition-colors"
                       size="sm"
                     >
-                      <BookOpen className="h-3 w-3 mr-1" />
+                      <BookOpen className="h-4 w-4 mr-2" />
                       {isAuthenticated ? 'Add' : 'Sign in to Add'}
                     </Button>
                   )}
@@ -210,9 +207,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors h-8 px-3 text-xs font-medium"
+                            className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
                           >
-                            <ExternalLink className="h-3 w-3 mr-1" />
+                            <ExternalLink className="h-4 w-4 mr-2" />
                             Boxscore
                           </Button>
                         </a>
