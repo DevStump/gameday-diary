@@ -101,60 +101,60 @@ const teamVariations: Record<string, string> = {
 
 export const mlbLogosByYear: LogoByYear = {
   'ARI': {
-    '2024-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/ari.png',
+    '2024-current': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_20248536.png',
     '2012-2023': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_20123733.png',
     '2007-2011': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_20075619.png',
     '1998-2006': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_19981620.png'
   },
   'ATL': {
-    '2022-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/atl.png',
+    '2022-current': 'https://content.sportslogos.net/logos/54/51/full/atlanta_braves_logo_primary_20221869.png',
     '2018-2021': 'https://content.sportslogos.net/logos/54/51/full/7150_atlanta_braves-primary-2018.png',
-    '1987-2017': 'https://content.sportslogos.net/logos/54/51/full/atlanta_braves_logo_primary_20221869.png',
+    '1987-2017': 'https://content.sportslogos.net/logos/54/51/full/atlanta_braves_logo_primary_19872870.png',
   },
   'BAL': {
-    '2019-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/bal.png',
+    '2019-current': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_20196724.png',
     '2009-2018': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_20097723.png',
     '1999-2008': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_19999188.png'
   },
   'BOS': {
-    '2009-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/bos.png',
+    '2009-current': 'https://content.sportslogos.net/logos/53/53/full/boston_red_sox_logo_primary_20095125.png',
     '1976-2008': 'https://content.sportslogos.net/logos/53/53/full/boston_red_sox_logo_primary_19768800.png'
   },
   'CHC': {
-    '1979-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/chc.png'
+    '1979-current': 'https://content.sportslogos.net/logos/54/54/full/chicago_cubs_logo_primary_19795126.png'
   },
   'CWS': {
-    '1991-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/cws.png'
+    '1991-current': 'https://content.sportslogos.net/logos/53/55/full/chicago_white_sox_logo_primary_19915127.png'
   },
   'CIN': {
-    '2013-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/cin.png',
+    '2013-current': 'https://content.sportslogos.net/logos/54/56/full/cincinnati_reds_logo_primary_20135128.png',
     '1999-2012': 'https://content.sportslogos.net/logos/54/56/full/cincinnati_reds_logo_primary_19997337.png',
   },
   'CLE': {
-    '2022-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/cle.png',
+    '2022-current': 'https://content.sportslogos.net/logos/53/57/full/cleveland_guardians_logo_primary_20225129.png',
     '2014-2021': 'https://content.sportslogos.net/logos/53/57/full/5347_cleveland_indians-primary-2014.png',
     '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png'
   },
   'COL': {
-    '2017-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/col.png',
+    '2017-current': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_20175130.png',
     '1993-2016': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_19932879.png'
   },
   'DET': {
-    '2016-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/det.png',
+    '2016-current': 'https://content.sportslogos.net/logos/53/59/full/detroit_tigers_logo_primary_20165131.png',
     '2006-2015': 'https://content.sportslogos.net/logos/53/59/full/detroit_tigers_logo_primary_20062241.png',
     '1994-2005': 'https://content.sportslogos.net/logos/53/59/full/detroit_tigers_logo_primary_19941509.png'
   },
   'HOU': {
-    '2013-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/hou.png',
+    '2013-current': 'https://content.sportslogos.net/logos/54/61/full/houston_astros_logo_primary_20135132.png',
     '2000-2012': 'https://content.sportslogos.net/logos/54/61/full/houston_astros_logo_primary_20001925.png'
   },
   'KC': {
-    '2019-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/kc.png',
+    '2019-current': 'https://content.sportslogos.net/logos/53/62/full/kansas_city_royals_logo_primary_20195133.png',
     '2002-2018': 'https://content.sportslogos.net/logos/53/62/full/kansas_city_royals_logo_primary_20028542.png',
     '1993-2001': 'https://content.sportslogos.net/logos/53/62/full/kansas_city_royals_logo_primary_19932555.png'
   },
   'LAA': {
-    '2016-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/laa.png',
+    '2016-current': 'https://content.sportslogos.net/logos/53/922/full/los_angeles_angels_logo_primary_20165134.png',
     '2005-2015': 'https://content.sportslogos.net/logos/53/922/full/wsghhaxkh5qq0hdkbt1b5se41.png',
     '2002-2004': 'https://content.sportslogos.net/logos/53/49/full/anaheim_angels_logo_primary_19973619.png',
     '1997-2001': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
@@ -164,11 +164,11 @@ export const mlbLogosByYear: LogoByYear = {
     '1997-2001': 'https://content.sportslogos.net/logos/53/6521/full/california_angels_logo_primary_19653620.png'
   },
   'LAD': {
-    '2012-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/lad.png',
+    '2012-current': 'https://content.sportslogos.net/logos/54/63/full/los_angeles_dodgers_logo_primary_20125135.png',
     '1979-2011': 'https://content.sportslogos.net/logos/54/63/full/los_angeles_dodgers_logo_primary_19792530.png'
   },
   'MIA': {
-    '2019-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/mia.png',
+    '2019-current': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20195136.png',
     '2017-2018': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20179087.png',
     '2012-2016': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20128805.png'
   },
@@ -176,35 +176,35 @@ export const mlbLogosByYear: LogoByYear = {
     '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png'
   },
   'MIL': {
-    '2020-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/mil.png',
+    '2020-current': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20205137.png',
     '2018-2019': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20187469.png',
     '2000-2017': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20004922.png'
   },
   'MIN': {
-    '2023-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/min.png',
+    '2023-current': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_20235138.png',
     '2010-2022': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_20102311.png',
     '1994-2009': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_1994_sportslogosnet-3849.png'
   },
   'NYM': {
-    '1999-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/nym.png'
+    '1999-current': 'https://content.sportslogos.net/logos/54/67/full/new_york_mets_logo_primary_19995139.png'
   },
   'NYY': {
-    '1968-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png'
+    '1968-current': 'https://content.sportslogos.net/logos/53/68/full/new_york_yankees_logo_primary_19685140.png'
   },
   'OAK': {
     '2025-current': 'https://content.sportslogos.net/logos/53/6921/full/athletics__logo_primary_2025_sportslogosnet-5001.png',
-    '1993-2024': 'https://a.espncdn.com/i/teamlogos/mlb/500/oak.png'
+    '1993-2024': 'https://content.sportslogos.net/logos/53/69/full/oakland_athletics_logo_primary_19935141.png'
   },
   'PHI': {
-    '2019-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/phi.png',
+    '2019-current': 'https://content.sportslogos.net/logos/54/70/full/philadelphia_phillies_logo_primary_20195142.png',
     '1992-2018': 'https://content.sportslogos.net/logos/54/70/full/philadelphia_phillies_logo_primary_19922235.png'
   },
   'PIT': {
-    '2014-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/pit.png',
+    '2014-current': 'https://content.sportslogos.net/logos/54/71/full/pittsburgh_pirates_logo_primary_20145143.png',
     '1997-2013': 'https://content.sportslogos.net/logos/54/71/full/uorovupw0jagctt6iu1huivi9.png'
   },
   'SD': {
-    '2020-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/sd.png',
+    '2020-current': 'https://content.sportslogos.net/logos/54/73/full/san_diego_padres_logo_primary_20205144.png',
     '2015-2019': 'https://content.sportslogos.net/logos/54/73/full/4344_san_diego_padres-primary-2015.png',
     '2012-2014': 'https://content.sportslogos.net/logos/54/73/full/ebjtzdtqw33dahm7k8zojhe45.png',
     '2011-2011': 'https://content.sportslogos.net/logos/54/73/full/xsq9eeflri96j9uo52fg1vk6o.png',
@@ -212,34 +212,34 @@ export const mlbLogosByYear: LogoByYear = {
     '1992-2003': 'https://content.sportslogos.net/logos/54/73/full/mb1r3sruahwcke10gaxlg8pxr.png'
   },
   'SEA': {
-    '1993-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/sea.png'
+    '1993-current': 'https://content.sportslogos.net/logos/53/75/full/seattle_mariners_logo_primary_19935145.png'
   },
   'SF': {
-    '2000-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/sf.png'
+    '2000-current': 'https://content.sportslogos.net/logos/54/74/full/san_francisco_giants_logo_primary_20005146.png'
   },
   'STL': {
-    '1999-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/stl.png'
+    '1999-current': 'https://content.sportslogos.net/logos/54/72/full/st_louis_cardinals_logo_primary_19995147.png'
   },
   'TB': {
-    '2019-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/tb.png',
+    '2019-current': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20195148.png',
     '2008-2018': 'https://content.sportslogos.net/logos/53/2535/full/tampa_bay_rays_logo_primary_20085870.png',
     '2001-2007': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_20011851.png',
     '1998-2000': 'https://content.sportslogos.net/logos/53/76/full/tampa_bay_devil_rays_logo_primary_19982847.png'
   },
   'TEX': {
-    '2024-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/tex.png',
+    '2024-current': 'https://content.sportslogos.net/logos/53/77/full/texas_rangers_logo_primary_20245149.png',
     '2003-2023': 'https://content.sportslogos.net/logos/53/77/full/ajfeh4oqeealq37er15r3673h.png',
     '1994-2002': 'https://content.sportslogos.net/logos/53/77/full/iujd65xfkrfaovlu1hzd17kst.png'
   },
   'TOR': {
-    '2020-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/tor.png',
+    '2020-current': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20205150.png',
     '2012-2019': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20129486.png',
     '2004-2011': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20041790.png',
     '2003-2003': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_20032287.png',
     '1997-2002': 'https://content.sportslogos.net/logos/53/78/full/toronto_blue_jays_logo_primary_19975318.png',
   },
   'WSH': {
-    '2011-current': 'https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png',
+    '2011-current': 'https://content.sportslogos.net/logos/54/578/full/washington_nationals_logo_primary_20115151.png',
     '2005-2010': 'https://content.sportslogos.net/logos/54/578/full/x1hlmovt2m0mgs7ghwzgu6lht.png'
   },
   'MON': {
