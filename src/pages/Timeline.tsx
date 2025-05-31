@@ -13,13 +13,10 @@ const Timeline = () => {
   const { user } = useAuth();
   const { data: gameLogs, isLoading: logsLoading } = useGameLogs();
 
-  // Get all games that have been logged by the user
-  const loggedGameIds = gameLogs?.map(log => log.game_id) || [];
-
-  // Fetch all games to filter the logged ones
-  const { data: allGames = [], isLoading: gamesLoading } = useGames({
+  // Fetch MLB games only since we're focusing on MLB data
+  const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: '',
-    league: '',
+    league: 'MLB',
     season: '',
     playoff: '',
     startDate: '',
@@ -28,18 +25,44 @@ const Timeline = () => {
 
   const isLoading = logsLoading || gamesLoading;
 
-  // Create enriched games with log data
+  // Create enriched games with log data - focus on MLB
   const enrichedLoggedGames = React.useMemo(() => {
-    if (!gameLogs || !allGames) return [];
+    if (!gameLogs || !mlbGames) return [];
+
+    console.log('Game logs:', gameLogs);
+    console.log('MLB games:', mlbGames);
 
     return gameLogs.map(log => {
-      // Find the corresponding game
-      const game = allGames.find(g => g.game_id === log.game_id);
-      if (!game) return null;
+      console.log('Looking for game with ID:', log.game_id);
+      
+      // Find the corresponding MLB game - convert both to string for comparison
+      const game = mlbGames.find(g => {
+        const gameId = g.game_id?.toString();
+        const logGameId = log.game_id?.toString();
+        console.log('Comparing:', gameId, 'with', logGameId);
+        return gameId === logGameId;
+      });
+      
+      if (!game) {
+        console.log('No game found for log:', log);
+        return null;
+      }
+
+      console.log('Found game:', game);
 
       // Return enriched game object with log data
       return {
         ...game,
+        // Ensure proper field mapping for MLB games
+        game_id: game.game_id?.toString() || log.game_id,
+        date: game.game_date,
+        home_team: game.home_name,
+        away_team: game.away_name,
+        runs_scored: game.home_score,
+        runs_allowed: game.away_score,
+        venue: game.venue_name,
+        league: 'MLB' as const,
+        playoff: ['W', 'D', 'L'].includes(game.game_type),
         // Add log metadata
         logData: {
           id: log.id,
@@ -53,7 +76,7 @@ const Timeline = () => {
         }
       };
     }).filter(Boolean);
-  }, [gameLogs, allGames]);
+  }, [gameLogs, mlbGames]);
 
   // Sort by most recently logged (based on game log creation date)
   const sortedLoggedGames = enrichedLoggedGames.sort((a, b) => {
