@@ -142,8 +142,17 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
-                  <p className="text-lg font-bold text-gray-900 truncate">{mostSupportedTeam?.team} ({mostSupportedTeam?.count})</p>
-                  <img src={getTeamLogo(mostSupportedTeam?.team, 'MLB')} />
+                  <p className="text-lg font-bold text-gray-900 truncate">
+                    {stats.mostSupportedTeam ? `${stats.mostSupportedTeam.team} (${stats.mostSupportedTeam.count})` : 'N/A'}
+                  </p>
+                  {stats.mostSupportedTeam && (
+                    <img
+                      src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')}
+                      alt={stats.mostSupportedTeam.team}
+                      className="h-6 w-6 mt-1"
+                    />
+                  )}
+
                 </div>
                 <Trophy className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
