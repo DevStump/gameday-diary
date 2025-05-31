@@ -194,7 +194,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Top 3 Venues (Attended) */}
+          {/* Top 5 Venues (Attended) */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">

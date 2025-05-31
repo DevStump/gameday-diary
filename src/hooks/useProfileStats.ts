@@ -179,7 +179,7 @@ export const useProfileStats = () => {
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
 
-      const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 3);
+      const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
       const highestRatedGame = Math.max(...ratedGames.map(log => log.rating), 0);
 
       // Calculate average runs per game
