@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Layout from '@/components/Layout';
-import { User, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
+import { User, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -117,10 +117,10 @@ const Profile = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Playoff Games</p>
-                  <p className="text-3xl font-bold text-sports-gold">{stats.playoffGames}</p>
+                  <p className="text-sm font-medium text-gray-600">Total Runs/Points</p>
+                  <p className="text-3xl font-bold text-sports-gold">{stats.totalRuns}</p>
                 </div>
-                <Target className="h-8 w-8 text-sports-gold opacity-80" />
+                <TrendingUp className="h-8 w-8 text-sports-gold opacity-80" />
               </div>
             </CardContent>
           </Card>
@@ -214,31 +214,8 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* League Breakdown */}
-          <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <CardHeader>
-              <CardTitle>League Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">NFL Games</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-field-green">{stats.nflGames}</div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">MLB Games</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-field-green">{stats.mlbGames}</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Team Breakdown */}
-          <Card className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+          <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
               <CardTitle>Top Teams</CardTitle>
             </CardHeader>
