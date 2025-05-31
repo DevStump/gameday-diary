@@ -155,7 +155,7 @@ const Timeline = () => {
     );
   };
 
-  const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string) => {
+  const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string, homeScore: number, awayScore: number) => {
     if (!rootedFor || rootedFor === 'none') {
       return (
         <div className="flex items-center justify-center gap-1 min-w-[60px]">
@@ -172,6 +172,13 @@ const Timeline = () => {
     const isHomeTeam = rootedFor.toLowerCase() === homeTeam.toLowerCase();
     const teamAbbr = isHomeTeam ? homeTeamAbbr : awayTeamAbbr;
     
+    // Determine if their team won or lost (only for completed games)
+    let winLossIndicator = '';
+    if (homeScore !== null && awayScore !== null && homeScore !== awayScore) {
+      const didWin = (isHomeTeam && homeScore > awayScore) || (!isHomeTeam && awayScore > homeScore);
+      winLossIndicator = didWin ? ' (W)' : ' (L)';
+    }
+    
     return (
       <div className="flex items-center justify-center gap-1 min-w-[60px]">
         <img 
@@ -179,7 +186,7 @@ const Timeline = () => {
           alt={teamAbbr}
           className="h-4 w-4 object-contain"
         />
-        <span>{teamAbbr}</span>
+        <span className="text-xs">{teamAbbr}{winLossIndicator}</span>
       </div>
     );
   };
@@ -397,7 +404,7 @@ const Timeline = () => {
                             <div className="text-center">
                               <span className="font-medium block">Rooted for:</span>
                               <div className="flex justify-center">
-                                {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
+                                {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team, game.runs_scored, game.runs_allowed)}
                               </div>
                             </div>
                             

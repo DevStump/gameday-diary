@@ -47,10 +47,10 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
       await updateGameLog.mutateAsync({
         id: gameLog.id,
         mode,
-        company: company || undefined,
+        company: company, // Allow empty strings
         rating: rating || undefined,
         rooted_for: rootedFor === 'none' ? null : rootedFor,
-        notes: notes || undefined,
+        notes: notes, // Allow empty strings
       });
 
       toast({
