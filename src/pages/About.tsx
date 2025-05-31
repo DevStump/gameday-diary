@@ -48,18 +48,6 @@ const About = () => {
                 </a>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Logo Attribution */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>🎨</span>
-              <span>Team Logos</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
                 <span className="text-2xl">🏆</span>
@@ -79,6 +67,19 @@ const About = () => {
                   <ExternalLink className="h-4 w-4 ml-1" />
                 </a>
               </div>
+          </CardContent>
+        </Card>
+
+        {/* Logo Attribution */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <span>🎨</span>
+              <span>Team Logos</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            
             </div>
           </CardContent>
         </Card>
