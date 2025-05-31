@@ -67,6 +67,8 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
   };
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
+    console.log('Date range changed:', range);
+    
     if (range?.from && range?.to) {
       // Format as YYYY-MM-DD
       const formatDate = (date: Date) => {
@@ -76,10 +78,15 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         return `${year}-${month}-${day}`;
       };
       
-      onFilterChange('startDate', formatDate(range.from));
-      onFilterChange('endDate', formatDate(range.to));
+      const startDate = formatDate(range.from);
+      const endDate = formatDate(range.to);
+      
+      console.log('Setting date range:', startDate, 'to', endDate);
+      onFilterChange('startDate', startDate);
+      onFilterChange('endDate', endDate);
     } else {
       // Clear both dates if range is incomplete
+      console.log('Clearing date range');
       onFilterChange('startDate', '');
       onFilterChange('endDate', '');
     }
@@ -238,7 +245,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               onSelect={handleDateRangeChange}
               numberOfMonths={2}
               initialFocus
-              className="pointer-events-auto"
+              className="p-3 pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
