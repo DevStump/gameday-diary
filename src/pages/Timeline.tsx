@@ -19,16 +19,41 @@ const Timeline = () => {
   const [selectedLogId, setSelectedLogId] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<string>('all');
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-    }
-  }, [user, navigate]);
+  // Don't redirect if not authenticated - show empty state instead
+  const isAuthenticated = !!user;
 
-  if (isLoading) {
+  if (isLoading && isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
+      </div>
+    );
+  }
+
+  // Show empty state for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
+          </div>
+          <div className="text-center">
+            <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Sign in to view your game diary</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Track the games you've attended or watched and keep a personal diary of your experiences.
+            </p>
+            <div className="mt-6">
+              <Button 
+                onClick={() => navigate('/auth')}
+                className="bg-field-green hover:bg-field-dark"
+              >
+                Sign In
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

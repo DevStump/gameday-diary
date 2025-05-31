@@ -121,7 +121,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   return (
     <TooltipProvider>
-      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col min-h-[280px]">
+      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col min-h-[240px]">
         <CardContent className="p-4 flex-1 flex flex-col">
           <div className="flex justify-between items-start mb-2 min-h-[20px]">
             <div className="flex items-center space-x-2 flex-wrap">
@@ -139,23 +139,25 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
             </div>
           )}
 
-          <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[50px]">
+          <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[50px]">
             <GameTeamDisplay 
               homeTeam={homeTeamAbbr}
               awayTeam={awayTeamAbbr}
               league={game.league}
               gameDate={game.date}
             />
-            <GameScore 
-              league={game.league}
-              ptsOff={game.pts_off}
-              ptsDef={game.pts_def}
-              runsScored={game.runs_scored}
-              runsAllowed={game.runs_allowed}
-            />
+            <div className="mb-1">
+              <GameScore 
+                league={game.league}
+                ptsOff={game.pts_off}
+                ptsDef={game.pts_def}
+                runsScored={game.runs_scored}
+                runsAllowed={game.runs_allowed}
+              />
+            </div>
           </div>
 
-          <div className="text-center min-h-[40px] flex flex-col justify-start mb-2">
+          <div className="text-center min-h-[35px] flex flex-col justify-start mb-2">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
             <GamePitchers 
               awayProbablePitcher={game.away_probable_pitcher}

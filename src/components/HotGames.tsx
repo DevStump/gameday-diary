@@ -60,7 +60,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
     return (
       <Card 
         key={game.game_id} 
-        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 min-h-[280px] flex flex-col ${
+        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 min-h-[240px] flex flex-col ${
           isLogged ? 'opacity-60' : ''
         }`}
       >
@@ -86,7 +86,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
           )}
 
           {/* Teams and logos */}
-          <div className="text-center mb-2 flex-1 flex flex-col justify-center">
+          <div className="text-center mb-1 flex-1 flex flex-col justify-center">
             <GameTeamDisplay 
               homeTeam={homeTeamAbbr}
               awayTeam={awayTeamAbbr}
@@ -94,23 +94,25 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               isFuture={game.is_future}
               gameDate={game.date}
             />
-            <GameScore 
-              league={game.league}
-              ptsOff={game.pts_off}
-              ptsDef={game.pts_def}
-              runsScored={game.runs_scored}
-              runsAllowed={game.runs_allowed}
-              isFuture={game.is_future}
-            />
+            <div className="mb-1">
+              <GameScore 
+                league={game.league}
+                ptsOff={game.pts_off}
+                ptsDef={game.pts_def}
+                runsScored={game.runs_scored}
+                runsAllowed={game.runs_allowed}
+                isFuture={game.is_future}
+              />
+            </div>
           </div>
 
           {/* Date */}
-          <div className="text-center mb-2 min-h-[24px] flex flex-col justify-start">
+          <div className="text-center mb-2 min-h-[20px] flex flex-col justify-start">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           </div>
 
           {/* Add to Diary Button - positioned at bottom */}
-          <div className="mt-auto pt-2">
+          <div className="mt-auto">
             {onAddToDiary && (
               <Button
                 onClick={(e) => {
