@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,27 +12,70 @@ const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [searchParams] = useSearchParams();
+  const [sessionReady, setSessionReady] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we have the necessary auth tokens from the URL
-    const accessToken = searchParams.get('access_token');
-    const refreshToken = searchParams.get('refresh_token');
-    
-    if (!accessToken || !refreshToken) {
-      toast({
-        title: 'Invalid Reset Link',
-        description: 'This password reset link is invalid or has expired.',
-        variant: 'destructive',
-      });
-      navigate('/auth');
-    }
-  }, [searchParams, navigate, toast]);
+    const handleTokensFromHash = async () => {
+      // Parse tokens from URL hash
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      
+      if (!accessToken || !refreshToken) {
+        toast({
+          title: 'Invalid Reset Link',
+          description: 'This password reset link is invalid or has expired.',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
+      }
+
+      try {
+        // Set the session using the tokens from the URL
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          toast({
+            title: 'Invalid Reset Link',
+            description: 'This password reset link is invalid or has expired.',
+            variant: 'destructive',
+          });
+          navigate('/auth');
+        } else {
+          setSessionReady(true);
+          // Clean up the URL by removing the hash
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'An error occurred while processing the reset link.',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+      }
+    };
+
+    handleTokensFromHash();
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!sessionReady) {
+      toast({
+        title: 'Error',
+        description: 'Session not ready. Please try clicking the reset link again.',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     if (password !== confirmPassword) {
       toast({
@@ -82,6 +125,21 @@ const ResetPassword = () => {
       setLoading(false);
     }
   };
+
+  if (!sessionReady) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <Trophy className="h-12 w-12 text-field-green mx-auto mb-4" />
+              <p>Processing reset link...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
