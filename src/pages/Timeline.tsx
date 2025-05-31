@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLoggedGames } from '@/hooks/useLoggedGames';
-import { Calendar, MapPin, Trophy, Clock, Star, Trash2, Edit } from 'lucide-react';
+import { Calendar, MapPin, Trophy, Clock, Star, Trash2, Edit, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { getTeamLogo } from '@/utils/teamLogos';
 import EditGameLogModal from '@/components/EditGameLogModal';
@@ -60,6 +60,14 @@ const Timeline = () => {
     setDeleteModalOpen(true);
   };
 
+  const generateBoxscoreUrl = (game: any) => {
+    const year = new Date(game.date).getFullYear();
+    const homeTeamAbbr = game.home_team;
+    const date = game.date.replace(/-/g, '');
+    const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
+    return `https://www.baseball-reference.com/boxes/${homeTeamAbbr}/${homeTeamAbbr}${date}${gameNumber}.shtml`;
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -79,22 +87,15 @@ const Timeline = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-2">
-            <Calendar className="h-8 w-8 text-field-green" />
-            <h1 className="text-3xl font-bold text-gray-900">Your Game Diary</h1>
-          </div>
-          <p className="text-gray-600">
-            {loggedGames?.length ? 
-              `You've logged ${loggedGames.length} game${loggedGames.length !== 1 ? 's' : ''}` : 
-              'Start logging games to build your timeline'
-            }
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {loggedGames?.length ? `${loggedGames.length} Games in Your Diary` : 'Your Game Diary'}
+          </h1>
         </div>
 
-        {/* Timeline */}
+        {/* Games Grid */}
         {!loggedGames?.length ? (
           <div className="text-center py-12">
             <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -107,43 +108,15 @@ const Timeline = () => {
             </Button>
           </div>
         ) : (
-          <div className="space-y-6">
-            {loggedGames.map((game, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loggedGames.map((game) => (
               <Card key={game.logData.id} className="relative">
-                <CardHeader>
+                <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-3">
-                        <img 
-                          src={getTeamLogo(game.away_team, 'MLB')} 
-                          alt={game.away_team}
-                          className="w-8 h-8"
-                        />
-                        <div className="text-center">
-                          <div className="text-lg font-semibold">{game.away_score}</div>
-                          <div className="text-sm text-gray-600">{game.away_team}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-gray-400 font-semibold">@</div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold">{game.home_score}</div>
-                          <div className="text-sm text-gray-600">{game.home_team}</div>
-                        </div>
-                        <img 
-                          src={getTeamLogo(game.home_team, 'MLB')} 
-                          alt={game.home_team}
-                          className="w-8 h-8"
-                        />
-                      </div>
-                    </div>
-                    
+                    <Badge variant="secondary" className="bg-field-green text-white">
+                      MLB
+                    </Badge>
                     <div className="flex items-center space-x-2">
-                      <Badge variant={game.logData.mode === 'attended' ? 'default' : 'secondary'}>
-                        {game.logData.mode === 'attended' ? 'Attended' : 'Watched'}
-                      </Badge>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -162,55 +135,134 @@ const Timeline = () => {
                       </Button>
                     </div>
                   </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <Calendar className="h-4 w-4" />
-                      <span>{format(new Date(game.date), 'EEEE, MMMM d, yyyy')}</span>
+
+                  {/* Venue */}
+                  <div className="flex items-center justify-center text-sm text-gray-600 mb-4">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span>{game.venue}</span>
+                  </div>
+
+                  {/* Teams */}
+                  <div className="flex items-center justify-center gap-x-2 mb-4">
+                    <div className="flex items-center gap-x-2">
+                      <img 
+                        src={getTeamLogo(game.away_team, 'MLB')} 
+                        alt={game.away_team}
+                        className="w-8 h-8"
+                      />
+                      <span className="text-sm font-medium">{game.away_team}</span>
                     </div>
-                    
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <MapPin className="h-4 w-4" />
-                      <span>{game.venue}</span>
+                    <span className="text-gray-500 font-medium">@</span>
+                    <div className="flex items-center gap-x-2">
+                      <span className="text-sm font-medium">{game.home_team}</span>
+                      <img 
+                        src={getTeamLogo(game.home_team, 'MLB')} 
+                        alt={game.home_team}
+                        className="w-8 h-8"
+                      />
                     </div>
-                    
-                    {game.logData.rating && (
-                      <div className="flex items-center space-x-1 text-sm">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span>{game.logData.rating}/5</span>
-                      </div>
-                    )}
-                    
-                    {game.logData.rooted_for && (
-                      <div className="flex items-center space-x-2 text-sm">
-                        <Trophy className="h-4 w-4 text-field-green" />
-                        <span>Rooted for {game.logData.rooted_for}</span>
+                  </div>
+
+                  {/* Score */}
+                  <div className="text-center mb-4">
+                    <div className="text-2xl font-bold text-field-green">
+                      {game.away_score} - {game.home_score}
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <div className="text-center text-sm text-gray-600 mb-4">
+                    <div>{format(new Date(game.date), 'MMM d, yyyy')}</div>
+                    {game.game_datetime && (
+                      <div className="text-xs text-gray-500">
+                        {format(new Date(game.game_datetime), 'h:mm a')}
                       </div>
                     )}
                   </div>
-                  
-                  {game.logData.company && (
-                    <div className="mb-2">
-                      <span className="text-sm font-medium text-gray-700">With: </span>
-                      <span className="text-sm text-gray-600">{game.logData.company}</span>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  {/* Boxscore Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mb-4 border-field-green text-field-green bg-transparent hover:bg-field-light"
+                    asChild
+                  >
+                    <a 
+                      href={generateBoxscoreUrl(game)} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Boxscore
+                    </a>
+                  </Button>
+
+                  {/* Game Details */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Mode:</span>
+                      <div className="flex items-center space-x-1">
+                        <Trophy className="h-4 w-4 text-orange-500" />
+                        <span className="text-sm font-medium capitalize">{game.logData.mode}</span>
+                      </div>
                     </div>
-                  )}
-                  
+
+                    {game.logData.rating && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Rating:</span>
+                        <div className="flex items-center space-x-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-4 w-4 ${
+                                star <= game.logData.rating
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {game.logData.rooted_for && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Rooted for:</span>
+                        <div className="flex items-center space-x-1">
+                          <img 
+                            src={getTeamLogo(game.logData.rooted_for, 'MLB')} 
+                            alt={game.logData.rooted_for}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm font-medium">{game.logData.rooted_for} (W)</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {game.logData.company && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Company:</span>
+                        <span className="text-sm">{game.logData.company}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Notes */}
                   {game.logData.notes && (
-                    <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="mt-4">
                       <div className="text-sm font-medium text-gray-700 mb-1">Notes:</div>
-                      <div className="text-sm text-gray-600">{game.logData.notes}</div>
+                      <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                        {game.logData.notes}
+                      </div>
                     </div>
                   )}
-                  
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>Logged {format(new Date(game.logData.created_at), 'MMM d, yyyy')}</span>
-                      {game.logData.updated_at !== game.logData.created_at && (
-                        <span>Updated {format(new Date(game.logData.updated_at), 'MMM d, yyyy')}</span>
-                      )}
+
+                  {/* Added timestamp */}
+                  <div className="mt-4 pt-3 border-t border-gray-100">
+                    <div className="text-xs text-gray-500 text-center">
+                      Added: {format(new Date(game.logData.created_at), 'MMM d, yyyy')}
                     </div>
                   </div>
                 </CardContent>
