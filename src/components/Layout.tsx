@@ -49,21 +49,18 @@ const Layout = ({ children }: LayoutProps) => {
               <span className="text-xl font-bold text-gray-900">GamedayDiary</span>
             </Link>
 
-            {/* Navigation - Desktop: show all tabs regardless of auth status */}
+            {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
               {navigation.map((item) => {
-                // On desktop, show all tabs but disable auth-required ones when not logged in
-                const isDisabled = item.requireAuth && !user;
+                if (item.requireAuth && !user) return null;
                 
                 return (
                   <Link
                     key={item.name}
-                    to={isDisabled ? '/auth' : item.href}
+                    to={item.href}
                     className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive(item.href)
                         ? 'text-field-green bg-green-50'
-                        : isDisabled
-                        ? 'text-gray-400 hover:text-gray-500 hover:bg-gray-50'
                         : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
                     }`}
                   >
@@ -91,7 +88,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {/* Mobile Navigation - Only show when authenticated */}
+      {/* Mobile Navigation */}
       {user && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
           <div className="flex justify-around">
