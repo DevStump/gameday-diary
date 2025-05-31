@@ -114,9 +114,33 @@ const Timeline = () => {
     return filtered;
   }, [enrichedLoggedGames, filters.mode]);
 
-  // Sort by most recently logged (based on game log creation date)
+  // Sort by game datetime descending (same as Games page), then by venue
   const sortedLoggedGames = filteredLoggedGames.sort((a, b) => {
-    return new Date(b.logData.created_at).getTime() - new Date(a.logData.created_at).getTime();
+    const dateA = a.date || a.game_date;
+    const dateB = b.date || b.game_date;
+    
+    // First sort by date
+    const dateComparison = dateB.localeCompare(dateA);
+    if (dateComparison !== 0) {
+      return dateComparison;
+    }
+    
+    // If dates are the same, sort by time
+    const timeA = a.game_datetime || a.game_time || '';
+    const timeB = b.game_datetime || b.game_time || '';
+    
+    // For datetime fields, compare directly
+    if (timeA && timeB) {
+      const timeComparison = timeB.localeCompare(timeA);
+      if (timeComparison !== 0) {
+        return timeComparison;
+      }
+    }
+    
+    // If date and time are the same, sort by venue (ascending)
+    const venueA = a.venue || a.venue_name || '';
+    const venueB = b.venue || b.venue_name || '';
+    return venueA.localeCompare(venueB);
   });
 
   const handleFilterChange = (key: string, value: string) => {
