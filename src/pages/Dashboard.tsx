@@ -1,11 +1,13 @@
 
-import React from 'react';
+
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity } from 'lucide-react';
+import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity, Check, X, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, LineChart, Line } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { formatTeamName, getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 import { Link } from 'react-router-dom';
@@ -14,6 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const Dashboard = () => {
   const { data: stats, isLoading } = useProfileStats();
   const { user, signOut } = useAuth();
+  const [selectedLeague, setSelectedLeague] = useState<'ALL' | 'MLB' | 'NFL'>('ALL');
 
   if (isLoading) {
     return (
@@ -74,15 +77,13 @@ const Dashboard = () => {
     ? (stats.winRecord.wins / (stats.winRecord.wins + stats.winRecord.losses)) * 100 
     : 0;
 
-  // Data for Watched vs Attended pie chart
-  const attendanceData = [
-    { name: 'Watched', value: stats.gamesWatched, color: '#16a34a' },
-    { name: 'Attended', value: stats.gamesAttended, color: '#ca8a04' },
-  ];
+  // Data for Watched vs Attended
+  const attendancePercentage = stats.totalGames > 0 ? (stats.gamesAttended / stats.totalGames) * 100 : 0;
 
   const chartConfig = {
     watched: { label: 'Watched', color: '#16a34a' },
     attended: { label: 'Attended', color: '#ca8a04' },
+    runs: { label: 'Runs', color: '#2563eb' },
   };
 
   // Get the count for most visited venue
@@ -99,9 +100,13 @@ const Dashboard = () => {
             <BarChart3 className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
-          <p className="text-lg text-gray-600">
-            Your comprehensive game analytics and insights.
+          <p className="text-lg text-gray-600 mb-2">
+            Your comprehensive game analytics and insights
           </p>
+          <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+            <Info className="h-4 w-4" />
+            <span>Data from {stats.timeWindow.start} to {stats.timeWindow.end}</span>
+          </div>
         </div>
 
         {/* Overview Metrics - Top Row */}
@@ -179,8 +184,102 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Win/Loss Record Featured Graphic */}
+          {/* Enhanced Total Runs/Points */}
           <Card className="animate-slide-up">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5 text-field-green" />
+                  <span>Total Runs/Points</span>
+                </div>
+                <div className="flex space-x-1">
+                  {['ALL', 'MLB', 'NFL'].map((league) => (
+                    <button
+                      key={league}
+                      onClick={() => setSelectedLeague(league as typeof selectedLeague)}
+                      className={`px-2 py-1 text-xs rounded ${
+                        selectedLeague === league
+                          ? 'bg-field-green text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {league}
+                    </button>
+                  ))}
+                </div>
+              </CardTitle>
+              <p className="text-sm text-gray-600">Combined score with game-by-game breakdown</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="text-6xl font-bold text-blue-600 mb-2 animate-scale-in">
+                    {stats.totalRuns.toLocaleString()}
+                  </div>
+                  <div className="text-lg text-gray-600 mb-2">Total Scored</div>
+                  <div className="text-sm text-blue-500 font-medium">
+                    {stats.avgRunsPerGame} avg per game
+                  </div>
+                </div>
+
+                {/* Sparkline Chart */}
+                {stats.gameRunsData && stats.gameRunsData.length > 0 && (
+                  <div className="h-24">
+                    <ChartContainer config={chartConfig} className="h-full w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={stats.gameRunsData}>
+                          <Line 
+                            type="monotone" 
+                            dataKey="runs" 
+                            stroke="#2563eb" 
+                            strokeWidth={2}
+                            dot={false}
+                            activeDot={{ r: 4, fill: "#2563eb" }}
+                          />
+                          <ChartTooltip 
+                            content={({ active, payload, label }) => {
+                              if (active && payload && payload.length) {
+                                const data = payload[0].payload;
+                                return (
+                                  <div className="bg-white p-3 border rounded-lg shadow-lg">
+                                    <p className="font-medium">{data.teams}</p>
+                                    <p className="text-sm text-gray-600">{data.date}</p>
+                                    <p className="text-sm">
+                                      <span className="font-medium text-blue-600">{data.runs}</span> total runs
+                                    </p>
+                                    <p className="text-xs text-gray-500">{data.venue}</p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                  {stats.highestScoringGame && (
+                    <div className="text-center p-2 bg-green-50 rounded">
+                      <div className="font-medium text-green-700">Highest: {stats.highestScoringGame.runs}</div>
+                      <div className="text-green-600">{stats.highestScoringGame.teams}</div>
+                    </div>
+                  )}
+                  {stats.lowestScoringGame && (
+                    <div className="text-center p-2 bg-blue-50 rounded">
+                      <div className="font-medium text-blue-700">Lowest: {stats.lowestScoringGame.runs}</div>
+                      <div className="text-blue-600">{stats.lowestScoringGame.teams}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Enhanced Win/Loss Record */}
+          <Card className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-field-green" />
@@ -189,26 +288,75 @@ const Dashboard = () => {
               <p className="text-sm text-gray-600">Based on teams you rooted for</p>
             </CardHeader>
             <CardContent>
-              <div className="text-center">
-                <div className="mb-6">
-                  <div className="text-6xl font-bold text-field-green mb-2">
-                    {winPercentage.toFixed(1)}%
+              <div className="space-y-6">
+                {/* Radial Progress Ring */}
+                <div className="text-center">
+                  <div className="relative inline-flex items-center justify-center">
+                    <svg className="w-32 h-32 transform -rotate-90">
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        className="text-gray-200"
+                      />
+                      <circle
+                        cx="64"
+                        cy="64"
+                        r="56"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 56}`}
+                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - winPercentage / 100)}`}
+                        className="text-field-green transition-all duration-1000 ease-out"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-field-green">
+                          {winPercentage.toFixed(0)}%
+                        </div>
+                        <div className="text-xs text-gray-500">Win Rate</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-lg text-gray-600">Win Percentage</div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-green-50 p-4 rounded-lg">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-green-50 p-3 rounded-lg text-center">
                     <div className="text-2xl font-bold text-green-600">{stats.winRecord.wins}</div>
                     <div className="text-sm text-green-700">Wins</div>
                   </div>
-                  <div className="bg-red-50 p-4 rounded-lg">
+                  <div className="bg-red-50 p-3 rounded-lg text-center">
                     <div className="text-2xl font-bold text-red-600">{stats.winRecord.losses}</div>
                     <div className="text-sm text-red-700">Losses</div>
                   </div>
                 </div>
 
-                {/* Show teams with most wins/losses */}
+                {/* Last 5 Games Trend */}
+                {stats.last5Games && stats.last5Games.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-600">Last 5 Games</div>
+                    <div className="flex justify-center space-x-1">
+                      {stats.last5Games.map((game, index) => (
+                        <div
+                          key={index}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
+                            game.won ? 'bg-green-500' : 'bg-red-500'
+                          }`}
+                        >
+                          {game.won ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Team Records */}
                 {(stats.teamWinRecord.mostWins || stats.teamWinRecord.mostLosses) && (
                   <div className="space-y-2 pt-4 border-t border-gray-200">
                     {stats.teamWinRecord.mostWins && (
@@ -232,72 +380,49 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Watched vs Attended Pie Chart */}
-          <Card className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <CardHeader>
-              <CardTitle>Watched vs Attended</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={attendanceData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {attendanceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-              
-              <div className="flex justify-center space-x-6 mt-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-field-green rounded-full"></div>
-                  <span className="text-sm">Watched ({stats.gamesWatched})</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-sports-gold rounded-full"></div>
-                  <span className="text-sm">Attended ({stats.gamesAttended})</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Top Stats Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Total Runs/Points Standalone */}
+          {/* Enhanced Watched vs Attended */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5 text-field-green" />
-                <span>Total Runs/Points</span>
-              </CardTitle>
-              <p className="text-sm text-gray-600">Combined score from all logged games</p>
+              <CardTitle>Watched vs Attended</CardTitle>
+              <p className="text-sm text-gray-600">How you experience games</p>
             </CardHeader>
             <CardContent>
-              <div className="text-center">
-                <div className="text-6xl font-bold text-blue-600 mb-2">
-                  {stats.totalRuns.toLocaleString()}
+              <div className="space-y-6">
+                {/* Segmented Progress Bar */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-600">Attended</span>
+                    <span className="text-sm font-medium text-gray-600">Watched</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
+                    <div 
+                      className="bg-sports-gold h-4 rounded-l-full transition-all duration-1000 ease-out"
+                      style={{ width: `${attendancePercentage}%` }}
+                    />
+                    <div 
+                      className="bg-field-green h-4 rounded-r-full absolute top-0 right-0 transition-all duration-1000 ease-out"
+                      style={{ width: `${100 - attendancePercentage}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="text-lg text-gray-600">Total Scored</div>
-                <div className="mt-4 text-xs text-gray-500 space-y-1">
-                  {stats.highestScoringGame && (
-                    <div>High: {stats.highestScoringGame.runs} ({stats.highestScoringGame.teams})</div>
-                  )}
-                  {stats.lowestScoringGame && (
-                    <div>Low: {stats.lowestScoringGame.runs} ({stats.lowestScoringGame.teams})</div>
-                  )}
+
+                {/* Center Display */}
+                <div className="text-center space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <div className="text-3xl font-bold text-sports-gold">{stats.gamesAttended}</div>
+                      <div className="text-sm text-yellow-700">Attended</div>
+                      <div className="text-xs text-yellow-600">{attendancePercentage.toFixed(1)}%</div>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <div className="text-3xl font-bold text-field-green">{stats.gamesWatched}</div>
+                      <div className="text-sm text-green-700">Watched</div>
+                      <div className="text-xs text-green-600">{(100 - attendancePercentage).toFixed(1)}%</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -320,17 +445,19 @@ const Dashboard = () => {
                   const leagueType = league as 'NFL' | 'MLB';
                   
                   return (
-                    <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-2">
+                    <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-sm font-medium text-gray-400">#{index + 1}</div>
                         <img
                           src={getTeamLogo(getTeamAbbreviation(team, leagueType), leagueType)}
                           alt={team}
-                          className="h-6 w-6 mt-1"
+                          className="h-6 w-6"
                         />
                         <span className="font-medium">{getTeamAbbreviation(team, leagueType)}</span>
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-field-green">{count}</div>
+                        <div className="text-xs text-gray-500">games</div>
                       </div>
                     </div>
                   );
