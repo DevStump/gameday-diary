@@ -51,20 +51,19 @@ export const useProfileStats = () => {
         5: ratedGames.filter(log => log.rating === 5).length,
       };
 
-      const venueCounts: Record<string, number> = {};
+      // Read venues directly from database logs
       const attendedVenueCounts: Record<string, number> = {};
       const rootedForCounts: Record<string, number> = {};
       const teamCounts: Record<string, number> = {};
       const teamWins: Record<string, number> = {};
       const teamLosses: Record<string, number> = {};
-      const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string, cumulativeRuns: number }> = [];
       let totalRuns = 0;
       let wins = 0;
       let losses = 0;
       let highestScoringGame = { runs: 0, teams: '', date: '', venue: '' };
       let lowestScoringGame = { runs: Infinity, teams: '', date: '', venue: '' };
 
-      // Sort filtered logs by date for last 5 calculation - only games with rooted teams
+      // Filter for rooted games only for last 5 calculation
       const rootedGameLogs = filteredGameLogs
         .filter(log => log.rooted_for && log.rooted_for !== 'none')
         .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
@@ -86,6 +85,7 @@ export const useProfileStats = () => {
         });
 
       let cumulativeRuns = 0;
+      const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string, cumulativeRuns: number }> = [];
 
       sortedGameLogs.forEach(log => {
         const game = log.game;
@@ -94,14 +94,9 @@ export const useProfileStats = () => {
         const date = new Date(game.game_date || game.game_datetime);
         const dateString = date.toISOString();
 
-        // Venue counts (all games)
-        if (game.venue_name) {
-          venueCounts[game.venue_name] = (venueCounts[game.venue_name] || 0) + 1;
-          
-          // Attended venue counts (only attended games)
-          if (log.mode === 'attended') {
-            attendedVenueCounts[game.venue_name] = (attendedVenueCounts[game.venue_name] || 0) + 1;
-          }
+        // Only count attended venues
+        if (game.venue_name && log.mode === 'attended') {
+          attendedVenueCounts[game.venue_name] = (attendedVenueCounts[game.venue_name] || 0) + 1;
         }
 
         // Rooted for counts (normalize to abbreviation)
@@ -177,7 +172,7 @@ export const useProfileStats = () => {
         teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
       });
 
-      // Last 5 games for win/loss trend - only games where user rooted for a team
+      // Last 5 games for win/loss trend - only show actual rooted games
       const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
       const actualLast5Count = Math.min(5, rootedGameLogs.length);
       
@@ -201,13 +196,16 @@ export const useProfileStats = () => {
         });
       }
 
-      const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
-      const [mostSupportedTeamAbbr, mostSupportedTeamCount] = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0] || ['N/A', 0];
+      const mostSupportedTeamEntry = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0];
+      const mostSupportedTeam = mostSupportedTeamEntry ? {
+        team: mostSupportedTeamEntry[0],
+        count: mostSupportedTeamEntry[1]
+      } : { team: 'N/A', count: 0 };
+
       const mostWinsEntry = Object.entries(teamWins).sort(([, a], [, b]) => b - a)[0];
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
 
-      const venueBreakdown = Object.entries(venueCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
       const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 3);
       const highestRatedGame = Math.max(...ratedGames.map(log => log.rating), 0);
 
@@ -240,15 +238,13 @@ export const useProfileStats = () => {
         },
         highestRatedGame,
         teamBreakdown,
-        mostVisitedVenue,
-        mostSupportedTeam: { team: mostSupportedTeamAbbr, count: mostSupportedTeamCount },
+        mostSupportedTeam,
         totalRuns,
         avgRunsPerGame,
         gameRunsData,
         last5Games: last5Games.reverse(), // Most recent first
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
-        venueBreakdown,
         attendedVenueBreakdown,
         timeWindow: { start: windowStart, end: windowEnd },
       };

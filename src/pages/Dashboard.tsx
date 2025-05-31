@@ -7,7 +7,6 @@ import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3 } from 'lucide-r
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 import { getTeamLogo } from '@/utils/teamLogos';
 
 const Dashboard = () => {
@@ -160,46 +159,6 @@ const Dashboard = () => {
                 <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
                 <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
               </div>
-              
-              {stats.gameRunsData.length > 0 && (
-                <div className="h-20">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.gameRunsData}>
-                      <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 10 }}
-                        interval="preserveStartEnd"
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 10 }}
-                        width={30}
-                      />
-                      <Tooltip 
-                        content={({ active, payload, label }) => {
-                          if (active && payload && payload.length) {
-                            const data = payload[0].payload;
-                            return (
-                              <div className="bg-white p-2 border border-gray-200 rounded shadow text-xs">
-                                <p className="font-medium">{data.teams}</p>
-                                <p>Date: {data.date}</p>
-                                <p>Cumulative Runs: {data.cumulativeRuns}</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="cumulativeRuns" 
-                        stroke="#3b82f6" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
 
               <div className="space-y-2 pt-2 border-t border-gray-100">
                 {stats.highestScoringGame && (
@@ -348,8 +307,8 @@ const Dashboard = () => {
                         return (
                           <div key={rating} className="text-center">
                             <div className="font-medium">{rating}★</div>
-                            <div className="text-gray-500">{count}</div>
-                            <div className="text-gray-400">({percentage}%)</div>
+                            <div className="text-gray-900 font-semibold">{count}</div>
+                            <div className="text-gray-500">({percentage}%)</div>
                           </div>
                         );
                       })}
