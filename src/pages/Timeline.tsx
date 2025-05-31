@@ -18,11 +18,11 @@ const Timeline = () => {
   const navigate = useNavigate();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedLogId, setSelectedLogId] = useState<string>('');
+  const [selectedGameLog, setSelectedGameLog] = useState<any>(null);
   const [selectedYear, setSelectedYear] = useState<string>('all');
 
   // Show loading while auth is being determined
-  if (authLoading || (user && isLoading)) {
+  if (authLoading) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -54,6 +54,17 @@ const Timeline = () => {
               </div>
             </div>
           </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Show loading when user is authenticated but data is still loading
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
         </div>
       </Layout>
     );
@@ -108,13 +119,13 @@ const Timeline = () => {
     return groups;
   }, {} as Record<string, typeof filteredLogs>);
 
-  const handleEdit = (logId: string) => {
-    setSelectedLogId(logId);
+  const handleEdit = (log: any) => {
+    setSelectedGameLog(log);
     setEditModalOpen(true);
   };
 
-  const handleDelete = (logId: string) => {
-    setSelectedLogId(logId);
+  const handleDelete = (log: any) => {
+    setSelectedGameLog(log);
     setDeleteModalOpen(true);
   };
 
@@ -125,6 +136,16 @@ const Timeline = () => {
   const getModeColor = (mode: string) => {
     return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
   };
+
+  // Create a mock game object for the modals since we don't have full game data
+  const createMockGame = (log: any) => ({
+    game_id: log.game_id,
+    date: new Date(log.created_at).toISOString().split('T')[0],
+    home_team: log.rooted_for || 'Home Team',
+    away_team: 'Away Team',
+    league: 'MLB' as const,
+    venue: 'Stadium'
+  });
 
   return (
     <Layout>
@@ -207,14 +228,7 @@ const Timeline = () => {
                               {/* Game Card */}
                               <div className="lg:w-80 flex-shrink-0">
                                 <GameCard
-                                  game={{
-                                    game_id: log.game_id,
-                                    date: new Date(log.created_at).toISOString().split('T')[0],
-                                    home_team: log.rooted_for || 'Home Team',
-                                    away_team: 'Away Team',
-                                    league: 'MLB' as const,
-                                    venue: 'Stadium'
-                                  }}
+                                  game={createMockGame(log)}
                                   onAddToDiary={() => {}}
                                   isAuthenticated={true}
                                   hideDiaryButton={true}
@@ -266,7 +280,7 @@ const Timeline = () => {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => handleEdit(log.id)}
+                                      onClick={() => handleEdit(log)}
                                       className="text-xs"
                                     >
                                       <Edit className="h-3 w-3 mr-1" />
@@ -275,7 +289,7 @@ const Timeline = () => {
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => handleDelete(log.id)}
+                                      onClick={() => handleDelete(log)}
                                       className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                                     >
                                       <Trash2 className="h-3 w-3 mr-1" />
@@ -294,17 +308,25 @@ const Timeline = () => {
           </div>
         </div>
 
-        <EditGameLogModal
-          isOpen={editModalOpen}
-          onClose={() => setEditModalOpen(false)}
-          gameLogId={selectedLogId}
-        />
+        {selectedGameLog && (
+          <>
+            <EditGameLogModal
+              isOpen={editModalOpen}
+              onClose={() => setEditModalOpen(false)}
+              gameLog={selectedGameLog}
+              game={createMockGame(selectedGameLog)}
+              league="MLB"
+            />
 
-        <DeleteGameLogModal
-          isOpen={deleteModalOpen}
-          onClose={() => setDeleteModalOpen(false)}
-          gameLogId={selectedLogId}
-        />
+            <DeleteGameLogModal
+              isOpen={deleteModalOpen}
+              onClose={() => setDeleteModalOpen(false)}
+              gameLog={selectedGameLog}
+              game={createMockGame(selectedGameLog)}
+              league="MLB"
+            />
+          </>
+        )}
       </div>
     </Layout>
   );
