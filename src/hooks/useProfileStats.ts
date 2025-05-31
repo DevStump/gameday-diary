@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
+
+const ensureAbbreviation = (team: string, league: 'MLB' | 'NFL', date: Date): string => {
+  if (team.length === 3 && team === team.toUpperCase()) return team;
+  return getTeamAbbreviation(team, league, date);
+};
 
 export const useProfileStats = () => {
   const { data: gameLogs } = useGameLogs();
@@ -38,115 +44,76 @@ export const useProfileStats = () => {
         const game = gameMap[String(log.game_id)];
         if (!game) return;
 
-        console.log('Processing game log:', {
-          gameId: log.game_id,
-          rootedFor: log.rooted_for,
-          game: {
-            home_team: game.home_team,
-            away_team: game.away_team,
-            home_name: game.home_name,
-            away_name: game.away_name,
-            home_score: game.home_score,
-            away_score: game.away_score,
-            runs_scored: game.runs_scored,
-            runs_allowed: game.runs_allowed,
-            pts_off: game.pts_off,
-            pts_def: game.pts_def
-          }
-        });
+        const date = new Date(game.game_date || game.game_datetime);
 
         // Venue counts
         if (game.venue_name) {
-          const venue = game.venue_name;
-          venueCounts[venue] = (venueCounts[venue] || 0) + 1;
+          venueCounts[game.venue_name] = (venueCounts[game.venue_name] || 0) + 1;
         }
 
-        // Rooted for counts
-        const rooted = log.rooted_for;
-        if (rooted && rooted !== 'none') {
+        // Rooted for counts (normalize to abbreviation)
+        const rootedRaw = log.rooted_for;
+        if (rootedRaw && rootedRaw !== 'none') {
+          const rooted = ensureAbbreviation(rootedRaw, 'MLB', date);
           rootedForCounts[rooted] = (rootedForCounts[rooted] || 0) + 1;
-        }
 
-        // Win/loss calculation - improved logic
-        if (rooted && rooted !== 'none') {
-          const isNflGame = nflGames.some(nfl => nfl.game_id === game.game_id);
-          let homeTeam, awayTeam, homeScore, awayScore;
+          // Win/loss calc
+          const isNfl = nflGames.some(n => n.game_id === game.game_id);
+          let winner, loser;
 
-          if (isNflGame) {
-            // NFL game
-            homeTeam = game.home_team;
-            awayTeam = game.away_team;
-            homeScore = game.pts_off ?? 0;
-            awayScore = game.pts_def ?? 0;
+          if (isNfl) {
+            const { pts_off, pts_def, home_team, away_team } = game;
+            if (pts_off > pts_def) {
+              winner = home_team;
+              loser = away_team;
+            } else if (pts_def > pts_off) {
+              winner = away_team;
+              loser = home_team;
+            }
           } else {
-            // MLB game - use both possible field combinations
-            homeTeam = game.home_team ?? game.home_name;
-            awayTeam = game.away_team ?? game.away_name;
-            homeScore = game.home_score ?? game.runs_scored ?? 0;
-            awayScore = game.away_score ?? game.runs_allowed ?? 0;
+            const homeScore = game.home_score ?? game.runs_scored ?? 0;
+            const awayScore = game.away_score ?? game.runs_allowed ?? 0;
+            const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', date);
+            const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', date);
+            if (homeScore > awayScore) {
+              winner = homeTeam;
+              loser = awayTeam;
+            } else if (awayScore > homeScore) {
+              winner = awayTeam;
+              loser = homeTeam;
+            }
           }
 
-          console.log('Win/Loss calculation:', {
-            rootedFor: rooted,
-            homeTeam,
-            awayTeam,
-            homeScore,
-            awayScore,
-            isNflGame
-          });
-
-          // Only process if we have valid scores and the game is finished
-          if (homeScore !== null && awayScore !== null && homeScore !== awayScore) {
-            let didRootedTeamWin = false;
-
-            // Check if rooted team is home or away and if they won
-            if (homeTeam && (homeTeam === rooted || homeTeam.includes(rooted) || rooted.includes(homeTeam))) {
-              didRootedTeamWin = homeScore > awayScore;
-            } else if (awayTeam && (awayTeam === rooted || awayTeam.includes(rooted) || rooted.includes(awayTeam))) {
-              didRootedTeamWin = awayScore > homeScore;
-            }
-
-            console.log('Result:', { didRootedTeamWin });
-
-            if (didRootedTeamWin) {
-              wins++;
-              teamWins[rooted] = (teamWins[rooted] || 0) + 1;
-            } else {
-              losses++;
-              teamLosses[rooted] = (teamLosses[rooted] || 0) + 1;
-            }
+          if (rooted === winner) {
+            wins++;
+            teamWins[rooted] = (teamWins[rooted] || 0) + 1;
+          } else if (rooted === loser) {
+            losses++;
+            teamLosses[rooted] = (teamLosses[rooted] || 0) + 1;
           }
         }
 
         // Total runs
-        const isNflGame = nflGames.some(nfl => nfl.game_id === game.game_id);
-        if (isNflGame) {
+        const isNfl = nflGames.some(n => n.game_id === game.game_id);
+        if (isNfl) {
           totalRuns += (game.pts_off ?? 0) + (game.pts_def ?? 0);
         } else {
           totalRuns += (game.home_score ?? game.runs_scored ?? 0) + (game.away_score ?? game.runs_allowed ?? 0);
         }
 
-        // Team counts
-        const home = game.home_team ?? game.home_name;
-        const away = game.away_team ?? game.away_name;
-        if (home) teamCounts[home] = (teamCounts[home] || 0) + 1;
-        if (away) teamCounts[away] = (teamCounts[away] || 0) + 1;
+        // Team breakdown
+        const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', date);
+        const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', date);
+        teamCounts[homeAbbr] = (teamCounts[homeAbbr] || 0) + 1;
+        teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
 
         // Timeline
-        const gameDate = new Date(game.game_date ?? game.game_datetime);
-        const key = `${gameDate.getFullYear()}-${String(gameDate.getMonth() + 1).padStart(2, '0')}`;
-        timeline[key] = (timeline[key] || 0) + 1;
+        const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        timeline[month] = (timeline[month] || 0) + 1;
       });
 
-      console.log('Final win/loss totals:', { wins, losses });
-
       const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
-      const mostSupportedEntry = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0];
-      const mostSupportedTeam = mostSupportedEntry
-        ? { team: mostSupportedEntry[0], count: mostSupportedEntry[1] }
-        : null;
-
-
+      const [mostSupportedTeamAbbr, mostSupportedTeamCount] = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0] || ['N/A', 0];
       const mostWinsEntry = Object.entries(teamWins).sort(([, a], [, b]) => b - a)[0];
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
@@ -176,7 +143,7 @@ export const useProfileStats = () => {
         highestRatedGame,
         teamBreakdown,
         mostVisitedVenue,
-        mostSupportedTeam,
+        mostSupportedTeam: { team: mostSupportedTeamAbbr, count: mostSupportedTeamCount },
         gameTimelineData,
         totalRuns,
         venueBreakdown,
