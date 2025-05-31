@@ -36,14 +36,22 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
     setLoading(true);
 
     try {
-      await addGameLog.mutateAsync({
-        game_id: gameId,
+      // Client-side validation
+      if (!gameId || gameId.trim() === '') {
+        throw new Error('Invalid game ID');
+      }
+
+      // Sanitize inputs before sending
+      const sanitizedData = {
+        game_id: gameId.trim(),
         mode,
-        company: company || undefined,
+        company: company.trim().slice(0, 255) || undefined,
         rating: rating || undefined,
-        rooted_for: rootedFor === 'none' ? undefined : rootedFor || undefined,
-        notes: notes || undefined,
-      });
+        rooted_for: rootedFor === 'none' ? undefined : rootedFor.trim().slice(0, 100) || undefined,
+        notes: notes.trim().slice(0, 1000) || undefined,
+      };
+
+      await addGameLog.mutateAsync(sanitizedData);
 
       toast({
         title: 'Success',
@@ -58,9 +66,10 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
       setRootedFor('none');
       setNotes('');
     } catch (error) {
+      console.error('Error adding game log:', error);
       toast({
         title: 'Error',
-        description: 'Failed to add game to diary.',
+        description: error instanceof Error ? error.message : 'Failed to add game to diary.',
         variant: 'destructive',
       });
     } finally {
@@ -113,8 +122,9 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
             <label className="text-sm font-medium">Who did you watch with? (optional)</label>
             <Input
               value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              onChange={(e) => setCompany(e.target.value.slice(0, 255))}
               placeholder="e.g., Friends, Family, Alone"
+              maxLength={255}
             />
           </div>
 
@@ -148,14 +158,18 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
             <label className="text-sm font-medium">Notes (optional)</label>
             <Textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => setNotes(e.target.value.slice(0, 1000))}
               placeholder="What made this game memorable?"
               rows={3}
+              maxLength={1000}
             />
+            <div className="text-xs text-gray-500 mt-1">
+              {notes.length}/1000 characters
+            </div>
           </div>
 
           <div className="flex space-x-2">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="flex-1 bg-field-green hover:bg-field-dark">

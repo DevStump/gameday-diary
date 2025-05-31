@@ -44,14 +44,21 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
     setLoading(true);
 
     try {
-      await updateGameLog.mutateAsync({
+      // Client-side validation and sanitization
+      if (!gameLog.id) {
+        throw new Error('Game log ID is required');
+      }
+
+      const sanitizedData = {
         id: gameLog.id,
         mode,
-        company: company, // Allow empty strings
+        company: company.trim().slice(0, 255), // Allow empty strings
         rating: rating || undefined,
-        rooted_for: rootedFor === 'none' ? null : rootedFor,
-        notes: notes, // Allow empty strings
-      });
+        rooted_for: rootedFor === 'none' ? null : rootedFor.trim().slice(0, 100),
+        notes: notes.trim().slice(0, 1000), // Allow empty strings
+      };
+
+      await updateGameLog.mutateAsync(sanitizedData);
 
       toast({
         title: 'Success',
@@ -60,9 +67,10 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
 
       onClose();
     } catch (error) {
+      console.error('Error updating game log:', error);
       toast({
         title: 'Error',
-        description: 'Failed to update diary entry.',
+        description: error instanceof Error ? error.message : 'Failed to update diary entry.',
         variant: 'destructive',
       });
     } finally {
@@ -114,8 +122,9 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
             <label className="text-sm font-medium">Who did you watch with? (optional)</label>
             <Input
               value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              onChange={(e) => setCompany(e.target.value.slice(0, 255))}
               placeholder="e.g., Friends, Family, Alone"
+              maxLength={255}
             />
           </div>
 
@@ -149,14 +158,18 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
             <label className="text-sm font-medium">Notes (optional)</label>
             <Textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => setNotes(e.target.value.slice(0, 1000))}
               placeholder="What made this game memorable?"
               rows={3}
+              maxLength={1000}
             />
+            <div className="text-xs text-gray-500 mt-1">
+              {notes.length}/1000 characters
+            </div>
           </div>
 
           <div className="flex space-x-2">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="flex-1 bg-field-green hover:bg-field-dark">
