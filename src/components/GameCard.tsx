@@ -89,18 +89,17 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
 
   // Check if boxscore should be shown
   const shouldShowBoxscore = () => {
-    if (game.is_future) return false;
-    
-    // Only show boxscore for games that happened yesterday or earlier
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset to start of day
-    
-    const gameDate = new Date(game.date);
-    gameDate.setHours(0, 0, 0, 0); // Reset to start of day
-    
-    // Only show if game date is before today (yesterday or earlier)
-    return gameDate < today;
-  };
+  // Parse the game date and today's date, ignoring time
+  const gameDate = new Date(game.date);
+  const today = new Date();
+
+  // Reset both to midnight to compare dates only
+  gameDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  // Only show boxscore for games that occurred before today
+  return gameDate < today;
+};
 
   const getStatusTag = () => {
     // Check game_type for MLB games
