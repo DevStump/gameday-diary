@@ -157,7 +157,10 @@ export const useProfileStats = () => {
       });
 
       // Last 5 games for win/loss trend - only games where user rooted for a team
-      rootedGameLogs.slice(0, 5).forEach(log => {
+      // Fix: Only take up to 5 games, or the actual number of rooted games if less than 5
+      const actualLast5Games = rootedGameLogs.slice(0, Math.min(5, rootedGameLogs.length));
+      
+      actualLast5Games.forEach(log => {
         const game = log.game;
         const homeScore = game.home_score ?? game.runs_scored ?? 0;
         const awayScore = game.away_score ?? game.runs_allowed ?? 0;

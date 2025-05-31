@@ -77,56 +77,6 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Total Runs */}
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-                <span>Total Runs</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
-                <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
-                <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
-              </div>
-              
-              {stats.gameRunsData.length > 0 && (
-                <div className="h-20">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.gameRunsData}>
-                      <XAxis dataKey="gameNumber" hide />
-                      <YAxis hide />
-                      <Line 
-                        type="monotone" 
-                        dataKey="runs" 
-                        stroke="#3b82f6" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                {stats.highestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
-                  </div>
-                )}
-                {stats.lowestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Win/Loss Record */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
@@ -177,7 +127,7 @@ const Dashboard = () => {
                 </div>
                 {stats.last5Games.length > 0 && (
                   <div className="pt-2 border-t border-gray-100">
-                    <div className="text-xs text-gray-600 mb-1">Last 5 games</div>
+                    <div className="text-xs text-gray-600 mb-1">Last {stats.last5Games.length} games</div>
                     <div className="flex justify-center space-x-1">
                       {stats.last5Games.map((game, index) => (
                         <div
@@ -190,6 +140,56 @@ const Dashboard = () => {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Runs */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-blue-500" />
+                <span>Total Runs</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
+                <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
+                <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
+              </div>
+              
+              {stats.gameRunsData.length > 0 && (
+                <div className="h-20">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={stats.gameRunsData}>
+                      <XAxis dataKey="gameNumber" hide />
+                      <YAxis hide />
+                      <Line 
+                        type="monotone" 
+                        dataKey="runs" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                {stats.highestScoringGame && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
+                    <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
+                  </div>
+                )}
+                {stats.lowestScoringGame && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
+                    <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
                   </div>
                 )}
               </div>
