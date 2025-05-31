@@ -1,416 +1,293 @@
-import React, { useState } from 'react';
-import Layout from '@/components/Layout';
-import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar, MapPin, Edit, Trash2, Star, User, Eye } from 'lucide-react';
 import { useGameLogs } from '@/hooks/useGameLogs';
-import { useLoggedGames } from '@/hooks/useLoggedGames';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import GameCard from '@/components/GameCard';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
-import GameFilters from '@/components/GameFilters';
-import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
-import { useMLBTeamCodes } from '@/hooks/useMLBTeamCodes';
-import GameTeamDisplay from '@/components/game-card/GameTeamDisplay';
-import GameScore from '@/components/game-card/GameScore';
-import GameDateTime from '@/components/game-card/GameDateTime';
-import { MapPin } from 'lucide-react';
 
 const Timeline = () => {
+  const { data: gameLogs, isLoading } = useGameLogs();
   const { user } = useAuth();
-  const { data: gameLogs = [], isLoading: logsLoading } = useGameLogs();
-  const [editingLog, setEditingLog] = useState<any>(null);
-  const [deletingLog, setDeletingLog] = useState<any>(null);
-  const { data: teamCodeMap = {} } = useMLBTeamCodes();
+  const navigate = useNavigate();
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState<string>('');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
 
-  // Filter state - same as Games page plus mode
-  const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
-    league: '',
-    season: '',
-    playoff: '',
-    search: '',
-    mode: '', // New filter for diary entries
-  });
-
-  // Fetch games with logs using the updated hook with all filters
-  const { data: loggedGames = [], isLoading: loggedGamesLoading } = useLoggedGames({
-    mode: filters.mode,
-    startDate: filters.startDate,
-    endDate: filters.endDate,
-    league: filters.league,
-    season: filters.season,
-    playoff: filters.playoff,
-    search: filters.search,
-  });
-
-  console.log('Game logs in Timeline:', gameLogs);
-  console.log('Logged games from new hook:', loggedGames);
-
-  // Only show loading when we're actually fetching data
-  const isLoading = logsLoading || loggedGamesLoading;
-
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      startDate: '',
-      endDate: '',
-      league: '',
-      season: '',
-      playoff: '',
-      search: '',
-      mode: '',
-    });
-  };
-
-  const renderStarRating = (rating: number | null) => {
-    if (!rating) {
-      return <span className="text-gray-400">Not rated</span>;
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
     }
+  }, [user, navigate]);
 
-    return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-3 w-3 ${
-              star <= rating 
-                ? 'fill-yellow-400 text-yellow-400' 
-                : 'text-gray-300'
-            }`}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string, homeScore: number, awayScore: number) => {
-    if (!rootedFor || rootedFor === 'none') {
-      return (
-        <div className="flex items-center justify-center gap-1 min-w-[60px]">
-          <span className="text-gray-500">No team</span>
-        </div>
-      );
-    }
-    
-    // Use team abbreviations instead of full names
-    const homeTeamAbbr = getTeamAbbreviation(homeTeam, 'MLB');
-    const awayTeamAbbr = getTeamAbbreviation(awayTeam, 'MLB');
-    
-    // Determine which team they rooted for and get logo
-    const isHomeTeam = rootedFor.toLowerCase() === homeTeam.toLowerCase();
-    const teamAbbr = isHomeTeam ? homeTeamAbbr : awayTeamAbbr;
-    
-    // Determine if their team won or lost (only for completed games)
-    let winLossIndicator = '';
-    if (homeScore !== null && awayScore !== null && homeScore !== awayScore) {
-      const didWin = (isHomeTeam && homeScore > awayScore) || (!isHomeTeam && awayScore > homeScore);
-      winLossIndicator = didWin ? ' (W)' : ' (L)';
-    }
-    
-    return (
-      <div className="flex items-center justify-center gap-1 min-w-[60px]">
-        <img 
-          src={getTeamLogo(teamAbbr, 'MLB')} 
-          alt={teamAbbr}
-          className="h-4 w-4 object-contain"
-        />
-        <span className="text-xs">{teamAbbr}{winLossIndicator}</span>
-      </div>
-    );
-  };
-
-  const generateBoxscoreUrl = (game: any) => {
-    const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
-    const year = new Date(game.date).getFullYear();
-    let bbrefTeamCode = homeTeamAbbr;
-
-    if (homeTeamAbbr === 'FLA' && year <= 2002) {
-      bbrefTeamCode = 'FLO';
-    } else if (homeTeamAbbr === 'LAA') {
-      bbrefTeamCode = 'ANA';
-    } else {
-      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
-    }
-
-    bbrefTeamCode = bbrefTeamCode.toUpperCase();
-    const date = game.date.replace(/-/g, '');
-    const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
-
-    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
-  };
-
-  const getStatusTag = (game: any) => {
-    if (game.game_type === 'E') {
-      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Exhibition</Badge>;
-    }
-    if (game.game_type === 'S') {
-      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Spring Training</Badge>;
-    }
-    if (game.playoff) {
-      return <Badge variant="outline" className="border-sports-gold text-sports-gold">Playoff</Badge>;
-    }
-    return null;
-  };
-
-  const handleDeleteClose = () => {
-    setDeletingLog(null);
-  };
-
-  // Only show loading spinner when we're actually fetching data
   if (isLoading) {
     return (
-      <Layout>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-field-green" />
-            <span className="ml-2 text-gray-600">Loading your diary...</span>
-          </div>
-        </div>
-      </Layout>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-field-green"></div>
+      </div>
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center space-x-3 mb-4">
-            <Calendar className="h-10 w-10 text-field-green" />
-            <h1 className="text-4xl font-bold text-gray-900">Diary</h1>
-          </div>
-          <p className="text-lg text-gray-600">
-            A personal record of every game you've attended or watched. Explore your timeline of moments that mattered.
-          </p>
-        </div>
-
-        {/* Only show filters if there are game logs */}
-        {gameLogs.length > 0 && (
-          <GameFilters 
-            filters={filters} 
-            onFilterChange={handleFilterChange} 
-            onClearFilters={handleClearFilters}
-            showModeFilter={true}
-          />
-        )}
-
-        {/* Games Count - only show if there are logged games */}
-        {loggedGames.length > 0 && (
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {loggedGames.length} Games in Your Diary
-            </h2>
-          </div>
-        )}
-
-        {/* Games Grid with Unified Cards */}
-        {loggedGames.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loggedGames.map((game, index) => {
-              const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
-              const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
-              const statusTag = getStatusTag(game);
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
-
-              return (
-                <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
-                  <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col relative">
-                    {/* Edit/Delete controls in top right */}
-                    <div className="absolute top-3 right-3 flex space-x-1 z-10">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
-                        onClick={() => setEditingLog({ log: game.logData, game })}
-                      >
-                        <Edit className="h-4 w-4 text-gray-600" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
-                        onClick={() => setDeletingLog({ log: game.logData, game })}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                      </Button>
-                    </div>
-
-                    <CardContent className="p-3 flex-1 flex flex-col">
-                      {/* Game info section - matching GameCard layout */}
-                      <div className="flex justify-between items-start mb-1.5">
-                        <div className="flex items-center space-x-2 flex-wrap">
-                          <Badge variant="secondary" className="bg-field-green text-white">
-                            {game.league}
-                          </Badge>
-                          {statusTag}
-                        </div>
-                      </div>
-
-                      {game.venue && (
-                        <div className="flex items-center justify-center text-sm text-gray-600 mb-1.5">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span className="text-center">{game.venue}</span>
-                        </div>
-                      )}
-
-                      <div className="text-center mb-1 flex-1 flex flex-col justify-center">
-                        <GameTeamDisplay 
-                          homeTeam={homeTeamAbbr}
-                          awayTeam={awayTeamAbbr}
-                          league={game.league}
-                          gameDate={game.date}
-                        />
-                        <GameScore 
-                          league={game.league}
-                          runsScored={game.runs_scored}
-                          runsAllowed={game.runs_allowed}
-                        />
-                      </div>
-
-                      <div className="text-center flex flex-col justify-start">
-                        <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
-                      </div>
-                    </CardContent>
-
-                    {/* Footer with boxscore button and metadata */}
-                    <div className="border-t border-gray-200 mx-3"></div>
-                    <CardFooter className="p-3 pt-2">
-                      <div className="w-full">
-                        {/* Boxscore button - always show but greyed out if not available */}
-                        <div className="mb-3">
-                          {isBeforeToday ? (
-                            <a 
-                              href={generateBoxscoreUrl(game)} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="block"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
-                              >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Boxscore
-                              </Button>
-                            </a>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled
-                              className="w-full border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
-                            >
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              Boxscore
-                            </Button>
-                          )}
-                        </div>
-
-                        {/* Diary metadata */}
-                        <div className="space-y-2 text-xs text-gray-600">
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="text-center">
-                              <span className="font-medium block">Mode:</span>
-                              <span className="capitalize">
-                                {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
-                              </span>
-                            </div>
-                            
-                            <div className="text-center">
-                              <span className="font-medium block">Rating:</span>
-                              <div className="flex justify-center">
-                                {renderStarRating(game.logData.rating)}
-                              </div>
-                            </div>
-                            
-                            <div className="text-center">
-                              <span className="font-medium block">Rooted for:</span>
-                              <div className="flex justify-center">
-                                {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team, game.runs_scored, game.runs_allowed)}
-                              </div>
-                            </div>
-                            
-                            <div className="text-center">
-                              <span className="font-medium block">Company:</span>
-                              <div className="truncate px-1" title={game.logData.company || 'Solo'}>
-                                {game.logData.company || 
-                                  <span className="text-gray-400">Solo</span>
-                                }
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Always show Notes section */}
-                          <div className="pt-1.5 border-t border-gray-100">
-                            <span className="font-medium">Notes:</span>
-                            <p className="mt-0.5 text-gray-700 truncate">
-                              {game.logData.notes || <span className="text-gray-400">No notes</span>}
-                            </p>
-                          </div>
-                          
-                          <div className="pt-1.5 border-t border-gray-100 text-gray-400 text-center">
-                            Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          /* Empty State */
-          <div className="text-center py-12">
-            <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No games logged yet</h3>
-            <p className="text-gray-600 mb-6">Start building your game diary by adding games you've watched or attended.</p>
-            <Link to="/">
-              <Button className="bg-field-green hover:bg-field-dark">
+  if (!gameLogs || gameLogs.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No games logged</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Get started by adding a game to your diary.
+            </p>
+            <div className="mt-6">
+              <Button 
+                onClick={() => navigate('/')}
+                className="bg-field-green hover:bg-field-dark"
+              >
                 Browse Games
               </Button>
-            </Link>
+            </div>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  // Get unique years for filtering
+  const years = Array.from(new Set(
+    gameLogs.map(log => new Date(log.created_at).getFullYear())
+  )).sort((a, b) => b - a);
+
+  // Filter logs by selected year
+  const filteredLogs = selectedYear === 'all' 
+    ? gameLogs 
+    : gameLogs.filter(log => new Date(log.created_at).getFullYear() === parseInt(selectedYear));
+
+  // Group logs by month
+  const groupedLogs = filteredLogs.reduce((groups, log) => {
+    const date = new Date(log.created_at);
+    const monthYear = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    
+    if (!groups[monthYear]) {
+      groups[monthYear] = [];
+    }
+    groups[monthYear].push(log);
+    return groups;
+  }, {} as Record<string, typeof filteredLogs>);
+
+  const handleEdit = (logId: string) => {
+    setSelectedLogId(logId);
+    setEditModalOpen(true);
+  };
+
+  const handleDelete = (logId: string) => {
+    setSelectedLogId(logId);
+    setDeleteModalOpen(true);
+  };
+
+  const getModeIcon = (mode: string) => {
+    return mode === 'attended' ? <User className="h-4 w-4" /> : <Eye className="h-4 w-4" />;
+  };
+
+  const getModeColor = (mode: string) => {
+    return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
+  };
+
+  // Function to determine the league based on the rooted_for team
+  const getLeague = (teamName: string): 'MLB' | 'NFL' => {
+    // Basic logic to determine league (can be expanded)
+    return teamName === 'Yankees' ? 'MLB' : 'NFL';
+  };
+
+  // Function to get the venue (can be expanded)
+  const getVenue = (teamName: string): string => {
+    // Basic logic to determine venue (can be expanded)
+    return teamName === 'Yankees' ? 'Yankee Stadium' : 'Stadium';
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">My Game Timeline</h1>
+          
+          {/* Year Filter */}
+          <div className="mb-6">
+            <label htmlFor="year-filter" className="block text-sm font-medium text-gray-700 mb-2">
+              Filter by Year
+            </label>
+            <select
+              id="year-filter"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="mt-1 block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-field-green focus:border-field-green sm:text-sm rounded-md"
+            >
+              <option value="all">All Years</option>
+              {years.map(year => (
+                <option key={year} value={year.toString()}>{year}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Total Games</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{filteredLogs.length}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Games Attended</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {filteredLogs.filter(log => log.mode === 'attended').length}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {filteredLogs.filter(log => log.rating).length > 0
+                    ? (filteredLogs.reduce((sum, log) => sum + (log.rating || 0), 0) / 
+                       filteredLogs.filter(log => log.rating).length).toFixed(1)
+                    : 'N/A'}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {Object.entries(groupedLogs)
+            .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+            .map(([monthYear, logs]) => (
+              <div key={monthYear}>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                  {monthYear}
+                </h2>
+                
+                <div className="space-y-4">
+                  {logs
+                    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                    .map((log) => (
+                      <Card key={log.id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                            {/* Game Card */}
+                            <div className="lg:w-80 flex-shrink-0">
+                              <GameCard
+                                game={{
+                                  game_id: log.game_id,
+                                  date: new Date(log.created_at).toISOString().split('T')[0],
+                                  home_team: log.rooted_for || 'Home Team',
+                                  away_team: 'Away Team',
+                                  league: 'MLB' as const,
+                                  venue: 'Stadium'
+                                }}
+                                onAddToDiary={() => {}}
+                                isAuthenticated={true}
+                                hideDiaryButton={true}
+                              />
+                            </div>
+
+                            {/* Log Details */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <Badge className={getModeColor(log.mode)}>
+                                  {getModeIcon(log.mode)}
+                                  <span className="ml-1 capitalize">{log.mode}</span>
+                                </Badge>
+                                
+                                {log.rating && (
+                                  <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
+                                    <Star className="h-3 w-3 mr-1 fill-current" />
+                                    {log.rating}/5
+                                  </Badge>
+                                )}
+                                
+                                {log.rooted_for && (
+                                  <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
+                                    Rooted for: {log.rooted_for}
+                                  </Badge>
+                                )}
+                                
+                                {log.company && (
+                                  <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200">
+                                    With: {log.company}
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {log.notes && (
+                                <div className="mb-4">
+                                  <p className="text-gray-700 text-sm leading-relaxed">
+                                    {log.notes}
+                                  </p>
+                                </div>
+                              )}
+
+                              <div className="flex items-center justify-between">
+                                <div className="text-xs text-gray-500">
+                                  Added {new Date(log.created_at).toLocaleDateString()}
+                                </div>
+                                
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEdit(log.id)}
+                                    className="text-xs"
+                                  >
+                                    <Edit className="h-3 w-3 mr-1" />
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDelete(log.id)}
+                                    className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-3 w-3 mr-1" />
+                                    Delete
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+            ))}
+        </div>
       </div>
 
-      {/* Modals */}
-      {editingLog && (
-        <EditGameLogModal
-          isOpen={!!editingLog}
-          onClose={() => setEditingLog(null)}
-          gameLog={editingLog.log}
-          game={editingLog.game}
-          league="MLB"
-        />
-      )}
-      
-      {deletingLog && (
-        <DeleteGameLogModal
-          isOpen={!!deletingLog}
-          onClose={handleDeleteClose}
-          gameLog={deletingLog.log}
-          game={deletingLog.game}
-          league="MLB"
-        />
-      )}
-    </Layout>
+      <EditGameLogModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        gameLogId={selectedLogId}
+      />
+
+      <DeleteGameLogModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        gameLogId={selectedLogId}
+      />
+    </div>
   );
 };
 
