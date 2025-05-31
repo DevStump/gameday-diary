@@ -228,8 +228,6 @@ const Timeline = () => {
 
   const handleDeleteClose = () => {
     setDeletingLog(null);
-    // Refresh the page to show the deleted game is gone
-    window.location.reload();
   };
 
   // Only show loading spinner when we're actually fetching data
