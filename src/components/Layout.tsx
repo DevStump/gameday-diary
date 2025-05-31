@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, User, Search } from 'lucide-react';
+import { Calendar, User, Search, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import WelcomeModal from '@/components/WelcomeModal';
@@ -18,6 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
     { name: 'Games', href: '/', icon: Search },
     { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
     { name: 'Profile', href: '/profile', icon: User, requireAuth: true },
+    { name: 'About', href: '/about', icon: Info },
   ];
 
   const isActive = (path: string) => location.pathname === path;
