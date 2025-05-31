@@ -27,7 +27,7 @@ const About = () => {
           </div>
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-600">
-              Manage your account and learn more about how GamedayDiary was built. Discover the data sources, team logos, and technology that power your personal sports diary experience.
+              Manage your account and discover the data sources, team logos, and technology that power your personal sports diary experience.
             </p>
           </div>
         </div>
