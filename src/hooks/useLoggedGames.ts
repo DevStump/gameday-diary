@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,11 +30,10 @@ export const useLoggedGames = (filters: {
       
       console.log('Fetching logged games for user:', user.id);
       
-      // First, fetch all user game logs
+      // First, fetch all user game logs - RLS will automatically filter to current user
       const { data: gameLogs, error: logsError } = await supabase
         .from('user_game_logs')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (logsError) {
@@ -52,7 +52,7 @@ export const useLoggedGames = (filters: {
       const gameIds = [...new Set(gameLogs.map(log => parseInt(log.game_id)))];
       console.log('Fetching games for IDs:', gameIds);
 
-      // Fetch only the games that have logs
+      // Fetch only the games that have logs - RLS will automatically filter accessible games
       const { data: mlbGames, error: gamesError } = await supabase
         .from('mlb_schedule')
         .select('*')

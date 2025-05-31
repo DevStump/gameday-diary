@@ -22,7 +22,7 @@ export const useProfileStats = () => {
       // Extract unique game IDs from logs
       const gameIds = [...new Set(gameLogs.map(log => parseInt(log.game_id)))];
       
-      // Fetch only the games that have logs
+      // Fetch only the games that have logs - RLS will automatically filter accessible games
       const { data: mlbGames, error } = await supabase
         .from('mlb_schedule')
         .select('*')

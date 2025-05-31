@@ -158,7 +158,7 @@ export type Database = {
           rating: number | null
           rooted_for: string | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           company?: string | null
@@ -170,7 +170,7 @@ export type Database = {
           rating?: number | null
           rooted_for?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           company?: string | null
@@ -182,7 +182,7 @@ export type Database = {
           rating?: number | null
           rooted_for?: string | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }

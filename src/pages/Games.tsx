@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -94,7 +95,7 @@ const Games = () => {
 
   const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
     if (!user) {
-      // Store current URL with filters
+      // Store current URL with filters for redirect after authentication
       const currentUrl = window.location.origin + location.pathname + location.search;
       Object.entries(filters).forEach(([key, value]) => {
         if (value) {
@@ -106,6 +107,13 @@ const Games = () => {
       navigate('/auth');
       return;
     }
+    
+    // Security: Validate game ID format before proceeding
+    if (!gameId || typeof gameId !== 'string' || gameId.trim() === '') {
+      console.error('Invalid game ID provided');
+      return;
+    }
+    
     setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
@@ -191,7 +199,6 @@ const Games = () => {
         {/* Games Grid */}
         {!loading && (
           <>
-
             {displayedGames.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
