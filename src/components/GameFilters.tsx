@@ -12,7 +12,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { formatTeamName } from '@/utils/teamLogos';
-import type { DateRange } from 'react-day-picker';
 
 interface GameFiltersProps {
   filters: {
@@ -49,27 +48,22 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     'SEA', 'STL', 'TB', 'TEX', 'TOR', 'WSH'
   ].sort();
 
-  // Convert filters to DateRange for the calendar
-  const getDateRange = (): DateRange | undefined => {
-    if (!filters.startDate || !filters.endDate) return undefined;
+  // Convert filters to selected date for the calendar
+  const getSelectedDate = (): Date | undefined => {
+    if (!filters.startDate) return undefined;
     
     try {
-      const [startYear, startMonth, startDay] = filters.startDate.split('-').map(Number);
-      const [endYear, endMonth, endDay] = filters.endDate.split('-').map(Number);
-      
-      return {
-        from: new Date(startYear, startMonth - 1, startDay),
-        to: new Date(endYear, endMonth - 1, endDay)
-      };
+      const [year, month, day] = filters.startDate.split('-').map(Number);
+      return new Date(year, month - 1, day);
     } catch {
       return undefined;
     }
   };
 
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    console.log('Date range changed:', range);
+  const handleDateChange = (date: Date | undefined) => {
+    console.log('Date changed:', date);
     
-    if (range?.from && range?.to) {
+    if (date) {
       // Format as YYYY-MM-DD
       const formatDate = (date: Date) => {
         const year = date.getFullYear();
@@ -78,15 +72,15 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
         return `${year}-${month}-${day}`;
       };
       
-      const startDate = formatDate(range.from);
-      const endDate = formatDate(range.to);
+      const selectedDate = formatDate(date);
       
-      console.log('Setting date range:', startDate, 'to', endDate);
-      onFilterChange('startDate', startDate);
-      onFilterChange('endDate', endDate);
+      console.log('Setting date:', selectedDate);
+      // Set both start and end date to the same value for compatibility
+      onFilterChange('startDate', selectedDate);
+      onFilterChange('endDate', selectedDate);
     } else {
-      // Clear both dates if range is incomplete
-      console.log('Clearing date range');
+      // Clear both dates if no date is selected
+      console.log('Clearing date');
       onFilterChange('startDate', '');
       onFilterChange('endDate', '');
     }
@@ -137,7 +131,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     setIsOpen(false);
   };
 
-  const dateRange = getDateRange();
+  const selectedDate = getSelectedDate();
 
   // Filter content component to avoid duplication
   const FilterContent = () => (
@@ -218,32 +212,29 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           </SelectContent>
         </Select>
 
-        {/* Date Range Picker */}
+        {/* Date Picker */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
                 "justify-start text-left font-normal",
-                !dateRange && "text-muted-foreground"
+                !selectedDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange ? (
-                <>
-                  {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
-                </>
+              {selectedDate ? (
+                format(selectedDate, "MMM dd, yyyy")
               ) : (
-                "Pick date range"
+                "Select date"
               )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
-              mode="range"
-              selected={dateRange}
-              onSelect={handleDateRangeChange}
-              numberOfMonths={2}
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDateChange}
               initialFocus
               className="p-3 pointer-events-auto"
             />
@@ -294,10 +285,10 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               />
             </Badge>
           )}
-          {dateRange && (
+          {selectedDate && (
             <Badge variant="secondary" className="flex items-center space-x-1">
               <span>
-                {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                Date: {format(selectedDate, "MMM dd, yyyy")}
               </span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
