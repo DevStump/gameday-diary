@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { User, TrendingUp, Star, Calendar, Target, Plus } from 'lucide-react';
@@ -18,7 +19,7 @@ const Profile = () => {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">Loading your profile...</div>
+          <div className="text-center">Loading your summary...</div>
         </div>
       </Layout>
     );
@@ -33,10 +34,10 @@ const Profile = () => {
           <div className="text-center mb-8">
             <div className="flex justify-center items-center space-x-3 mb-4">
               <User className="h-10 w-10 text-field-green" />
-              <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
+              <h1 className="text-4xl font-bold text-gray-900">Summary</h1>
             </div>
             <p className="text-lg text-gray-600">
-              Your game-watching statistics and achievements
+              Track your most-watched teams, top venues, ratings, and game totals — all in one place.
             </p>
           </div>
 
@@ -91,10 +92,10 @@ const Profile = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
             <User className="h-10 w-10 text-field-green" />
-            <h1 className="text-4xl font-bold text-gray-900">My Profile</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Summary</h1>
           </div>
           <p className="text-lg text-gray-600">
-            Your game-watching statistics and achievements
+            Track your most-watched teams, top venues, ratings, and game totals — all in one place.
           </p>
         </div>
 

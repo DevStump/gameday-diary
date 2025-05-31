@@ -132,7 +132,7 @@ const Games = () => {
             <h1 className="text-4xl font-bold text-gray-900">Games</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Relive your favorite moments. Search for any NFL or MLB game you've seen — live or on screen — and add it to your diary.
+            Search every NFL and MLB game in history. Add the ones you've seen — live or on screen — to your diary.
           </p>
           {!user && (
             <p className="text-sm text-sports-gold mt-2 font-medium">

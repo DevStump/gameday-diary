@@ -251,10 +251,10 @@ const Timeline = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
             <Calendar className="h-10 w-10 text-field-green" />
-            <h1 className="text-4xl font-bold text-gray-900">My Diary</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Diary</h1>
           </div>
           <p className="text-lg text-gray-600">
-            Your personal journey through the games you've watched and attended
+            A personal record of every game you've attended or watched. Explore your timeline of moments that mattered.
           </p>
         </div>
 
