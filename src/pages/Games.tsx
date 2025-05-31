@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -85,6 +84,7 @@ const Games = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      
     }
   };
 
