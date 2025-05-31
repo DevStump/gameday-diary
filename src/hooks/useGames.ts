@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeTeamName } from '@/utils/team-name-map';
@@ -128,12 +127,15 @@ export const useGames = (filters: GameFilters) => {
       // Get today's date for filtering future games
       const today = new Date().toISOString().split('T')[0];
       
+      // Only apply date range filtering if both startDate and endDate are provided
+      const shouldApplyDateRange = filters.startDate && filters.endDate;
+      
       // Fetch NFL games if no league filter or NFL is selected
       if (!filters.league || filters.league === 'NFL') {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false }).order('game_time', { ascending: false });
         
-        // Always filter out future games unless specific date filters are provided
-        if (!filters.startDate && !filters.endDate) {
+        // Filter out future games unless specific date filters are provided
+        if (!shouldApplyDateRange) {
           nflQuery = nflQuery.lte('date', today);
         }
         
@@ -167,11 +169,8 @@ export const useGames = (filters: GameFilters) => {
           // For NFL, exhibition games are typically week 0 or negative weeks (preseason)
           nflQuery = nflQuery.lte('week', 0);
         }
-        if (filters.startDate) {
-          nflQuery = nflQuery.gte('date', filters.startDate);
-        }
-        if (filters.endDate) {
-          nflQuery = nflQuery.lte('date', filters.endDate);
+        if (shouldApplyDateRange) {
+          nflQuery = nflQuery.gte('date', filters.startDate).lte('date', filters.endDate);
         }
         
         promises.push(nflQuery);
@@ -181,8 +180,8 @@ export const useGames = (filters: GameFilters) => {
       if (!filters.league || filters.league === 'MLB') {
         let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
         
-        // Always filter out future games unless specific date filters are provided
-        if (!filters.startDate && !filters.endDate) {
+        // Filter out future games unless specific date filters are provided
+        if (!shouldApplyDateRange) {
           mlbQuery = mlbQuery.lte('game_date', today);
         }
         
@@ -223,11 +222,8 @@ export const useGames = (filters: GameFilters) => {
           // Exhibition games - Spring Training, Exhibition, etc.
           mlbQuery = mlbQuery.in('game_type', ['S', 'E']); // Spring Training, Exhibition
         }
-        if (filters.startDate) {
-          mlbQuery = mlbQuery.gte('game_date', filters.startDate);
-        }
-        if (filters.endDate) {
-          mlbQuery = mlbQuery.lte('game_date', filters.endDate);
+        if (shouldApplyDateRange) {
+          mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         }
         
         promises.push(mlbQuery);
@@ -293,7 +289,7 @@ export const useGames = (filters: GameFilters) => {
       console.log('Total games before filtering:', allGames.length);
       
       // Filter out scheduled games (is_future: true) by default unless date filters are specified
-      if (!filters.startDate && !filters.endDate) {
+      if (!shouldApplyDateRange) {
         allGames = allGames.filter(game => !game.is_future);
         console.log('Games after filtering out scheduled games:', allGames.length);
       }
