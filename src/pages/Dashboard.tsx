@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -66,7 +67,7 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
           <p className="text-sm text-gray-500 mt-1">
-            {stats.totalGames} games logged
+            {stats.totalGames} games added to diary
           </p>
         </div>
 
@@ -84,7 +85,7 @@ const Dashboard = () => {
               {stats.totalGames === 0 ? (
                 <div className="text-center py-6">
                   <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-sm text-gray-600">No win/loss record yet</p>
                   <p className="text-xs text-gray-500">Add games to see win/loss record</p>
                 </div>
               ) : (
@@ -163,7 +164,7 @@ const Dashboard = () => {
               {stats.totalGames === 0 ? (
                 <div className="text-center py-6">
                   <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-sm text-gray-600">No total runs yet</p>
                   <p className="text-xs text-gray-500">Add games to see total runs</p>
                 </div>
               ) : (
@@ -306,7 +307,7 @@ const Dashboard = () => {
               ) : (
                 <div className="text-center py-6">
                   <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">No games added to diary yet</p>
+                  <p className="text-sm text-gray-600">No top teams yet</p>
                   <p className="text-xs text-gray-500">Add games to see top teams</p>
                 </div>
               )}
