@@ -39,8 +39,17 @@ export const useProfileStats = () => {
 
       const ratedGames = filteredGameLogs.filter(log => log.rating && log.rating > 0);
       const avgRating = ratedGames.length
-        ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 100) / 100
+        ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 10) / 10
         : 0;
+
+      // Rating breakdown
+      const ratingBreakdown = {
+        1: ratedGames.filter(log => log.rating === 1).length,
+        2: ratedGames.filter(log => log.rating === 2).length,
+        3: ratedGames.filter(log => log.rating === 3).length,
+        4: ratedGames.filter(log => log.rating === 4).length,
+        5: ratedGames.filter(log => log.rating === 5).length,
+      };
 
       const venueCounts: Record<string, number> = {};
       const attendedVenueCounts: Record<string, number> = {};
@@ -48,7 +57,7 @@ export const useProfileStats = () => {
       const teamCounts: Record<string, number> = {};
       const teamWins: Record<string, number> = {};
       const teamLosses: Record<string, number> = {};
-      const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string }> = [];
+      const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string, cumulativeRuns: number }> = [];
       let totalRuns = 0;
       let wins = 0;
       let losses = 0;
@@ -66,10 +75,20 @@ export const useProfileStats = () => {
           return dateB.getTime() - dateA.getTime();
         });
 
-      const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
+      // Sort all games by date for cumulative runs
+      const sortedGameLogs = filteredGameLogs
+        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
+        .filter(log => log.game)
+        .sort((a, b) => {
+          const dateA = new Date(a.game.game_date || a.game.game_datetime);
+          const dateB = new Date(b.game.game_date || b.game.game_datetime);
+          return dateA.getTime() - dateB.getTime();
+        });
 
-      filteredGameLogs.forEach(log => {
-        const game = gameMap[String(log.game_id)];
+      let cumulativeRuns = 0;
+
+      sortedGameLogs.forEach(log => {
+        const game = log.game;
         if (!game) return;
 
         const date = new Date(game.game_date || game.game_datetime);
@@ -117,9 +136,10 @@ export const useProfileStats = () => {
           }
         }
 
-        // Total runs and game data for sparkline
+        // Total runs and cumulative data
         const gameRuns = (game.home_score ?? game.runs_scored ?? 0) + (game.away_score ?? game.runs_allowed ?? 0);
         totalRuns += gameRuns;
+        cumulativeRuns += gameRuns;
 
         const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
         const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
@@ -128,7 +148,8 @@ export const useProfileStats = () => {
           date: game.game_date,
           runs: gameRuns,
           teams: `${awayAbbr} @ ${homeAbbr}`,
-          venue: game.venue_name || ''
+          venue: game.venue_name || '',
+          cumulativeRuns
         });
 
         // Track highest scoring game
@@ -157,10 +178,11 @@ export const useProfileStats = () => {
       });
 
       // Last 5 games for win/loss trend - only games where user rooted for a team
-      // Fix: Only take up to 5 games, or the actual number of rooted games if less than 5
-      const actualLast5Games = rootedGameLogs.slice(0, Math.min(5, rootedGameLogs.length));
+      const last5Games: Array<{ date: string, won: boolean, team: string }> = [];
+      const actualLast5Count = Math.min(5, rootedGameLogs.length);
       
-      actualLast5Games.forEach(log => {
+      for (let i = 0; i < actualLast5Count; i++) {
+        const log = rootedGameLogs[i];
         const game = log.game;
         const homeScore = game.home_score ?? game.runs_scored ?? 0;
         const awayScore = game.away_score ?? game.runs_allowed ?? 0;
@@ -177,7 +199,7 @@ export const useProfileStats = () => {
           won,
           team: rooted
         });
-      });
+      }
 
       const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
       const [mostSupportedTeamAbbr, mostSupportedTeamCount] = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0] || ['N/A', 0];
@@ -191,11 +213,6 @@ export const useProfileStats = () => {
 
       // Calculate average runs per game
       const avgRunsPerGame = totalGames > 0 ? Math.round((totalRuns / totalGames) * 10) / 10 : 0;
-
-      // Sort game runs data chronologically for sparkline
-      const sortedGameRunsData = gameRunsData
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .map((game, index) => ({ ...game, gameNumber: index + 1 }));
 
       // Calculate 12-month window dates for display
       const windowStart = twelveMonthsAgo.toLocaleDateString('en-US', { 
@@ -214,6 +231,8 @@ export const useProfileStats = () => {
         gamesWatched,
         gamesAttended,
         avgRating,
+        ratingBreakdown,
+        ratedGamesCount: ratedGames.length,
         winRecord: { wins, losses },
         teamWinRecord: {
           mostWins: mostWinsEntry ? { team: mostWinsEntry[0], count: mostWinsEntry[1] } : null,
@@ -225,7 +244,7 @@ export const useProfileStats = () => {
         mostSupportedTeam: { team: mostSupportedTeamAbbr, count: mostSupportedTeamCount },
         totalRuns,
         avgRunsPerGame,
-        gameRunsData: sortedGameRunsData,
+        gameRunsData,
         last5Games: last5Games.reverse(), // Most recent first
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,

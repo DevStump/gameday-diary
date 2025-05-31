@@ -7,7 +7,7 @@ import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3 } from 'lucide-r
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 import { getTeamLogo } from '@/utils/teamLogos';
 
 const Dashboard = () => {
@@ -165,11 +165,33 @@ const Dashboard = () => {
                 <div className="h-20">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={stats.gameRunsData}>
-                      <XAxis dataKey="gameNumber" hide />
-                      <YAxis hide />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10 }}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 10 }}
+                        width={30}
+                      />
+                      <Tooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            return (
+                              <div className="bg-white p-2 border border-gray-200 rounded shadow text-xs">
+                                <p className="font-medium">{data.teams}</p>
+                                <p>Date: {data.date}</p>
+                                <p>Cumulative Runs: {data.cumulativeRuns}</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
                       <Line 
                         type="monotone" 
-                        dataKey="runs" 
+                        dataKey="cumulativeRuns" 
                         stroke="#3b82f6" 
                         strokeWidth={2}
                         dot={false}
@@ -261,7 +283,7 @@ const Dashboard = () => {
                   </Badge>
                   {stats.teamWinRecord.mostWins?.team === stats.mostSupportedTeam.team && (
                     <div className="text-xs text-gray-600">
-                      {stats.teamWinRecord.mostWins.count} wins when rooting
+                      {stats.teamWinRecord.mostWins.count} wins when rooting ({Math.round((stats.teamWinRecord.mostWins.count / stats.mostSupportedTeam.count) * 100)}%)
                     </div>
                   )}
                 </div>
@@ -313,13 +335,24 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-center space-y-3">
                 <div>
-                  <div className="text-3xl font-bold text-gray-900">{stats.avgRating}</div>
+                  <div className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</div>
                   <div className="text-sm text-gray-600">Average rating</div>
                 </div>
-                {stats.highestRatedGame > 0 && (
-                  <div className="pt-3 border-t border-gray-100">
-                    <div className="text-xs text-gray-600">
-                      Highest rated: <span className="font-medium">{stats.highestRatedGame}/5</span>
+                {stats.ratedGamesCount > 0 && (
+                  <div className="pt-3 border-t border-gray-100 space-y-2">
+                    <div className="text-xs text-gray-600 mb-2">Rating breakdown</div>
+                    <div className="grid grid-cols-5 gap-1 text-xs">
+                      {[1, 2, 3, 4, 5].map((rating) => {
+                        const count = stats.ratingBreakdown[rating as keyof typeof stats.ratingBreakdown];
+                        const percentage = stats.ratedGamesCount > 0 ? Math.round((count / stats.ratedGamesCount) * 100) : 0;
+                        return (
+                          <div key={rating} className="text-center">
+                            <div className="font-medium">{rating}★</div>
+                            <div className="text-gray-500">{count}</div>
+                            <div className="text-gray-400">({percentage}%)</div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
