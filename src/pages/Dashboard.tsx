@@ -144,11 +144,11 @@ const Dashboard = () => {
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
                   <p className="text-lg font-bold text-gray-900 truncate">
                     {stats.mostSupportedTeam ? `${getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')} (${stats.mostSupportedTeam.count})` : 'N/A'}
-                  </p>
+                  
                   {stats.mostSupportedTeam && (
                     <img
                       src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')}
-                      alt={stats.mostSupportedTeam.team}
+                      alt={stats.mostSupportedTeam.team}</p>
                       className="h-6 w-6 mt-1"
                     />
                   )}
