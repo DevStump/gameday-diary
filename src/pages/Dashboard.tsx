@@ -8,7 +8,7 @@ import { useProfileStats } from '@/hooks/useProfileStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis } from 'recharts';
-import { getTeamLogoUrl } from '@/utils/teamLogos';
+import { getTeamLogo } from '@/utils/teamLogos';
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -77,6 +77,56 @@ const Dashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Total Runs */}
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-blue-500" />
+                <span>Total Runs</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
+                <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
+                <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
+              </div>
+              
+              {stats.gameRunsData.length > 0 && (
+                <div className="h-20">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={stats.gameRunsData}>
+                      <XAxis dataKey="gameNumber" hide />
+                      <YAxis hide />
+                      <Line 
+                        type="monotone" 
+                        dataKey="runs" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                {stats.highestScoringGame && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
+                    <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
+                  </div>
+                )}
+                {stats.lowestScoringGame && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
+                    <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Win/Loss Record */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
@@ -146,56 +196,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Total Runs */}
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-                <span>Total Runs</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900">{stats.totalRuns}</div>
-                <div className="text-sm text-gray-600">Combined score from your logged MLB games</div>
-                <div className="text-xs text-gray-500 mt-1">Avg: {stats.avgRunsPerGame} per game</div>
-              </div>
-              
-              {stats.gameRunsData.length > 0 && (
-                <div className="h-20">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.gameRunsData}>
-                      <XAxis dataKey="gameNumber" hide />
-                      <YAxis hide />
-                      <Line 
-                        type="monotone" 
-                        dataKey="runs" 
-                        stroke="#3b82f6" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                {stats.highestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Highest:</span> {stats.highestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.highestScoringGame.teams} • {stats.highestScoringGame.date}</div>
-                  </div>
-                )}
-                {stats.lowestScoringGame && (
-                  <div className="text-xs text-gray-600">
-                    <span className="font-medium">Lowest:</span> {stats.lowestScoringGame.runs} runs
-                    <div className="text-gray-500">{stats.lowestScoringGame.teams} • {stats.lowestScoringGame.date}</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Top 3 Venues (Attended) */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
@@ -247,7 +247,7 @@ const Dashboard = () => {
                 <div className="text-center space-y-3">
                   <div className="flex items-center justify-center space-x-3">
                     <img 
-                      src={getTeamLogoUrl(stats.mostSupportedTeam.team, 'MLB', '2024')}
+                      src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB', '2024')}
                       alt={`${stats.mostSupportedTeam.team} logo`}
                       className="h-6 w-6 object-contain"
                       onError={(e) => {
@@ -286,9 +286,10 @@ const Dashboard = () => {
                   <div key={team} className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                       <img 
-                        src={getTeamLogoUrl(team, 'MLB', '2024')}
+                        src={getTeamLogo(team, 'MLB', '2024')}
                         alt={`${team} logo`}
                         className="h-6 w-6 object-contain"
+                        style={{ maxWidth: '24px', height: '24px', objectFit: 'contain' }}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}

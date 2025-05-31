@@ -79,10 +79,21 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
     return null;
   };
 
+  // Check if boxscore should be available (3 AM EST the day after game)
+  const shouldShowBoxscore = () => {
+    const gameDate = new Date(game.date);
+    const now = new Date();
+    
+    // Create the cutoff time: 3 AM EST the day after the game
+    const cutoffDate = new Date(gameDate);
+    cutoffDate.setDate(cutoffDate.getDate() + 1);
+    cutoffDate.setHours(8, 0, 0, 0); // 3 AM EST = 8 AM UTC (assuming EST, not EDT)
+    
+    return now >= cutoffDate;
+  };
+
   const statusTag = getStatusTag();
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
+  const isBeforeToday = new Date(game.date) <= new Date(new Date().toDateString());
 
   return (
     <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
@@ -162,7 +173,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                   </Button>
                 )}
 
-                {isAuthenticated && isBeforeToday && (
+                {isAuthenticated && isBeforeToday && shouldShowBoxscore() && (
                   <a 
                     href={generateBoxscoreUrl()} 
                     target="_blank" 
