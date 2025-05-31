@@ -60,33 +60,33 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
     return (
       <Card 
         key={game.game_id} 
-        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 ${
+        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 min-h-[320px] flex flex-col ${
           isLogged ? 'opacity-60' : ''
         }`}
       >
-        <CardContent className="p-3">
-          {/* Top badges - compact */}
+        <CardContent className="p-5 flex-1 flex flex-col">
+          {/* Top badges */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs px-2 py-0.5">
+              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-sm px-2 py-0.5">
                 #{index + 1} Hot
               </Badge>
-              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-xs px-2 py-0.5">
+              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-sm px-2 py-0.5">
                 {game.league}
               </Badge>
             </div>
           </div>
 
-          {/* Venue row - compact */}
+          {/* Venue row */}
           {game.venue && (
-            <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
-              <MapPin className="h-3 w-3 mr-1" />
+            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
+              <MapPin className="h-4 w-4 mr-1" />
               <span className="text-center truncate">{game.venue}</span>
             </div>
           )}
 
-          {/* Teams and logos - compact */}
-          <div className="text-center mb-2">
+          {/* Teams and logos */}
+          <div className="text-center mb-2 flex-1 flex flex-col justify-center">
             <GameTeamDisplay 
               homeTeam={homeTeamAbbr}
               awayTeam={awayTeamAbbr}
@@ -94,10 +94,6 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               isFuture={game.is_future}
               gameDate={game.date}
             />
-          </div>
-
-          {/* Score - compact */}
-          <div className="text-center mb-2">
             <GameScore 
               league={game.league}
               ptsOff={game.pts_off}
@@ -108,57 +104,58 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
             />
           </div>
 
-          {/* Date - compact */}
-          <div className="text-center mb-2">
+          {/* Date */}
+          <div className="text-center mb-2 min-h-[30px] flex flex-col justify-start">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           </div>
 
-          {/* Add to Diary Button - compact */}
-          {onAddToDiary && (
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                if (!isLogged) {
-                  // Ensure game_id is a valid string
-                  const gameId = String(game.game_id).trim();
-                  console.log('Hot Games - calling onAddToDiary with gameId:', gameId);
-                  
-                  if (gameId && gameId !== 'null' && gameId !== 'undefined') {
-                    onAddToDiary(
-                      gameId,
-                      `${game.away_team} @ ${game.home_team}`,
-                      game.home_team,
-                      game.away_team,
-                      game.league,
-                      game.venue
-                    );
-                  } else {
-                    console.error('Invalid game ID in Hot Games:', game.game_id);
+          {/* Add to Diary Button - positioned at bottom */}
+          <div className="mt-auto pt-2">
+            {onAddToDiary && (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isLogged) {
+                    const gameId = String(game.game_id).trim();
+                    console.log('Hot Games - calling onAddToDiary with gameId:', gameId);
+                    
+                    if (gameId && gameId !== 'null' && gameId !== 'undefined') {
+                      onAddToDiary(
+                        gameId,
+                        `${game.away_team} @ ${game.home_team}`,
+                        game.home_team,
+                        game.away_team,
+                        game.league,
+                        game.venue
+                      );
+                    } else {
+                      console.error('Invalid game ID in Hot Games:', game.game_id);
+                    }
                   }
-                }
-              }}
-              variant={isLogged ? "secondary" : "outline"}
-              size="sm"
-              disabled={isLogged}
-              className={`w-full transition-colors text-xs py-1 ${
-                isLogged 
-                  ? 'bg-green-100 text-green-800 border-green-300 cursor-not-allowed' 
-                  : 'text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100'
-              }`}
-            >
-              {isLogged ? (
-                <>
-                  <Check className="h-3 w-3 mr-1" />
-                  Added
-                </>
-              ) : (
-                <>
-                  <BookOpen className="h-3 w-3 mr-1" />
-                  {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
-                </>
-              )}
-            </Button>
-          )}
+                }}
+                variant={isLogged ? "secondary" : "outline"}
+                size="sm"
+                disabled={isLogged}
+                className={`w-full transition-colors h-10 px-4 text-sm font-medium ${
+                  isLogged 
+                    ? 'bg-green-100 text-green-800 border-green-300 cursor-not-allowed' 
+                    : 'text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100'
+                }`}
+              >
+                {isLogged ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Added
+                  </>
+                ) : (
+                  <>
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     );
@@ -185,16 +182,16 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
           <div className="text-center">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm text-gray-500 hover:text-gray-700 transition-colors py-2"
             >
               {showAll ? (
                 <>
-                  <ChevronUp className="h-3 w-3 inline mr-1" />
+                  <ChevronUp className="h-4 w-4 inline mr-1" />
                   Show Less
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-3 w-3 inline mr-1" />
+                  <ChevronDown className="h-4 w-4 inline mr-1" />
                   Show More ({hotGames.length - 1} more)
                 </>
               )}

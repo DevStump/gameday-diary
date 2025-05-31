@@ -97,18 +97,6 @@ const Timeline = () => {
     return mode === 'attended' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
   };
 
-  // Function to determine the league based on the rooted_for team
-  const getLeague = (teamName: string): 'MLB' | 'NFL' => {
-    // Basic logic to determine league (can be expanded)
-    return teamName === 'Yankees' ? 'MLB' : 'NFL';
-  };
-
-  // Function to get the venue (can be expanded)
-  const getVenue = (teamName: string): string => {
-    // Basic logic to determine venue (can be expanded)
-    return teamName === 'Yankees' ? 'Yankee Stadium' : 'Stadium';
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -279,13 +267,13 @@ const Timeline = () => {
       <EditGameLogModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
-        gameLogId={selectedLogId}
+        gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
       />
 
       <DeleteGameLogModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        gameLogId={selectedLogId}
+        gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
       />
     </div>
   );
