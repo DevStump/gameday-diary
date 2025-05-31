@@ -84,6 +84,11 @@ const Dashboard = () => {
     attended: { label: 'Attended', color: '#ca8a04' },
   };
 
+  // Get the count for most visited venue
+  const mostVisitedVenueCount = stats.venueBreakdown && stats.venueBreakdown.length > 0 
+    ? stats.venueBreakdown[0][1] 
+    : 0;
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
@@ -129,7 +134,12 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Visited</p>
-                  <p className="text-lg font-bold text-gray-900 truncate">{stats.mostVisitedVenue}</p>
+                  <p className="text-lg font-bold text-gray-900 truncate">
+                    {stats.mostVisitedVenue !== 'N/A' 
+                      ? `${stats.mostVisitedVenue} (${mostVisitedVenueCount})`
+                      : 'N/A'
+                    }
+                  </p>
                 </div>
                 <MapPin className="h-8 w-8 text-field-green opacity-80" />
               </div>
