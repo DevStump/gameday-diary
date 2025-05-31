@@ -40,7 +40,7 @@ export const mlbLogosByYear: LogoByYear = {
     '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png'
   },
   'COL': {
-    '2017-current': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_20171892.png'
+    '2017-current': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_20171892.png',
     '1993-2016': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_19932879.png'
   },
   'CWS': {
