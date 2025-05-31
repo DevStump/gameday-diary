@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,14 +24,12 @@ const WelcomeModal = () => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
-          <div className="flex items-center justify-center mb-4">
+          <DialogTitle className="flex items-center justify-center text-2xl font-bold text-gray-900 mb-4">
             <img 
               src="/lovable-uploads/4101cd3e-afd4-4dd3-baa0-ef8722d1bcef.png" 
               alt="GamedayDiary Logo" 
-              className="h-12 w-12"
+              className="h-8 w-8 mr-3"
             />
-          </div>
-          <DialogTitle className="text-center text-2xl font-bold text-gray-900 mb-4">
             Welcome to GamedayDiary!
           </DialogTitle>
         </DialogHeader>
