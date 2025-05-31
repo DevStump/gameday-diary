@@ -20,11 +20,11 @@ interface EditGameLogModalProps {
 }
 
 const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLogModalProps) => {
-  const [mode, setMode] = useState<'attended' | 'watched'>(gameLog.mode);
-  const [company, setCompany] = useState(gameLog.company || '');
-  const [rating, setRating] = useState(gameLog.rating || 0);
-  const [rootedFor, setRootedFor] = useState(gameLog.rooted_for || 'none');
-  const [notes, setNotes] = useState(gameLog.notes || '');
+  const [mode, setMode] = useState<'attended' | 'watched'>('watched');
+  const [company, setCompany] = useState('');
+  const [rating, setRating] = useState(0);
+  const [rootedFor, setRootedFor] = useState('none');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   
   const updateGameLog = useUpdateGameLog();
@@ -33,13 +33,25 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
 
   useEffect(() => {
     if (gameLog) {
-      setMode(gameLog.mode);
+      setMode(gameLog.mode || 'watched');
       setCompany(gameLog.company || '');
       setRating(gameLog.rating || 0);
       setRootedFor(gameLog.rooted_for || 'none');
       setNotes(gameLog.notes || '');
+    } else {
+      // Reset to defaults when gameLog is null
+      setMode('watched');
+      setCompany('');
+      setRating(0);
+      setRootedFor('none');
+      setNotes('');
     }
   }, [gameLog]);
+
+  // Don't render the modal content if gameLog is null
+  if (!gameLog) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
