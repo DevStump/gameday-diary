@@ -42,28 +42,23 @@ interface GameCardProps {
 }
 
 // ---------- 📅 Date Helper Functions ----------
-const isFutureGame = (gameDateString: string): boolean => {
-  const gameDate = new Date(gameDateString);
-  const today = new Date();
-  gameDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return gameDate > today;
-};
-
-const isTodayGame = (gameDateString: string): boolean => {
-  const gameDate = new Date(gameDateString);
-  const today = new Date();
-  gameDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return gameDate.getTime() === today.getTime();
+const getDateString = (date: Date): string => {
+  return date.toISOString().split('T')[0]; // "YYYY-MM-DD"
 };
 
 const isPastGame = (gameDateString: string): boolean => {
-  const gameDate = new Date(gameDateString);
-  const today = new Date();
-  gameDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return gameDate < today;
+  const todayStr = getDateString(new Date());
+  return gameDateString < todayStr;
+};
+
+const isTodayGame = (gameDateString: string): boolean => {
+  const todayStr = getDateString(new Date());
+  return gameDateString === todayStr;
+};
+
+const isFutureGame = (gameDateString: string): boolean => {
+  const todayStr = getDateString(new Date());
+  return gameDateString > todayStr;
 };
 // ----------------------------------------------
 
@@ -99,7 +94,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    return isPastGame(game.date); // ✅ Show only for games before today
+    return isPastGame(game.date); // ✅ Only show for games before today
   };
 
   const getStatusTag = () => {
