@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
@@ -11,7 +10,15 @@ const ensureAbbreviation = (team: string, league: 'MLB' | 'NFL', date: string): 
 
 export const useProfileStats = () => {
   const { data: gameLogs } = useGameLogs();
-  const { data: mlbGames } = useGames({ search: '', league: 'MLB', season: '', playoff: '', startDate: '', endDate: '' });
+  const { data: mlbGames } = useGames({ 
+    search: '', 
+    league: 'MLB', 
+    season: '', 
+    playoff: '', 
+    startDate: '', 
+    endDate: '',
+    excludeFutureGames: false
+  });
 
   return useQuery({
     queryKey: ['profile-stats', gameLogs],

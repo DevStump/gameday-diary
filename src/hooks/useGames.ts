@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeTeamName } from '@/utils/team-name-map';
@@ -10,6 +9,7 @@ interface GameFilters {
   playoff: string;
   startDate: string;
   endDate: string;
+  excludeFutureGames?: boolean;
 }
 
 // Helper function to get all possible team abbreviation variants
@@ -105,10 +105,11 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else {
-        // Filter out future games (default behavior for Games page)
+      } else if (filters.excludeFutureGames === true) {
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
+      } else {
+        console.log('No default date filter applied');
       }
       
       if (searchTeam) {

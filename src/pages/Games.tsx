@@ -40,7 +40,10 @@ const Games = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: games = [], isLoading: loading } = useGames(filters);
+  const { data: games = [], isLoading: loading } = useGames({
+    ...filters,
+    excludeFutureGames: true
+  });
   const { data: gameLogs = [] } = useGameLogs();
 
   // Create a set of logged game IDs for quick lookup
@@ -120,7 +123,8 @@ const Games = () => {
     season: '',
     playoff: '',
     startDate: threeDaysAgoString,
-    endDate: todayString
+    endDate: todayString,
+    excludeFutureGames: true
   });
 
   return (

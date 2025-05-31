@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -45,6 +44,7 @@ const Timeline = () => {
     playoff: filters.playoff,
     startDate: filters.startDate,
     endDate: filters.endDate,
+    excludeFutureGames: false
   });
 
   // Only show loading when we're actually fetching data, not when filtering
