@@ -10,6 +10,7 @@ interface GameFilters {
   playoff: string;
   startDate: string;
   endDate: string;
+  excludeFutureGames?: boolean; // New parameter to control future game filtering
 }
 
 // Helper function to get all possible team abbreviation variants
@@ -92,7 +93,7 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
-      // Get yesterday's date for filtering future games (only used when no date range is specified)
+      // Get yesterday's date for filtering future games (only used when excludeFutureGames is true)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayString = yesterday.toISOString().split('T')[0];
@@ -105,10 +106,12 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else {
-        // Filter out future games (default behavior)
+      } else if (filters.excludeFutureGames !== false) {
+        // Only filter out future games if excludeFutureGames is not explicitly false
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
+      } else {
+        console.log('Not applying future game filter - showing all games including future ones');
       }
       
       if (searchTeam) {
