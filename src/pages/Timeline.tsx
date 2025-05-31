@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, MapPin, Star, Users, Heart, Edit, Trash2, Plus, ExternalLink } from 'lucide-react';
@@ -96,14 +97,27 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     if (nflGames) {
       const nflGame = nflGames.find(g => g.game_id === log.game_id);
       if (nflGame) {
-        return { game: { ...nflGame, league: 'NFL' }, league: 'NFL' as const };
+        return { game: nflGame, league: 'NFL' as const };
       }
     }
     
     if (mlbGames) {
       const mlbGame = mlbGames.find(g => g.game_id === log.game_id);
       if (mlbGame) {
-        return { game: { ...mlbGame, league: 'MLB' }, league: 'MLB' as const };
+        // Map MLB game data to expected format
+        const mappedGame = {
+          ...mlbGame,
+          league: 'MLB' as const,
+          date: mlbGame.date || mlbGame.game_date,
+          home_team: mlbGame.home_team || mlbGame.home_name,
+          away_team: mlbGame.away_team || mlbGame.away_name,
+          runs_scored: mlbGame.runs_scored || mlbGame.home_score,
+          runs_allowed: mlbGame.runs_allowed || mlbGame.away_score,
+          venue: mlbGame.venue || mlbGame.venue_name || 'Stadium',
+          playoff: mlbGame.playoff || ['W', 'D', 'L'].includes(mlbGame.game_type),
+          boxscore_url: mlbGame.boxscore_url
+        };
+        return { game: mappedGame, league: 'MLB' as const };
       }
     }
     
@@ -168,27 +182,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
     };
   };
 
-  // Get the game score regardless of rooting preference (away - home format)
-  const getGameScore = () => {
-    if (!game) return null;
-
-    let awayScore, homeScore;
-
-    if (league === 'NFL' && game.pts_off !== undefined && game.pts_def !== undefined) {
-      // For NFL: pts_def is away team score, pts_off is home team score
-      awayScore = game.pts_def;
-      homeScore = game.pts_off;
-    } else if (league === 'MLB' && game.runs_scored !== undefined && game.runs_allowed !== undefined) {
-      // For MLB: runs_scored is home team score, runs_allowed is away team score
-      awayScore = game.runs_allowed;
-      homeScore = game.runs_scored;
-    }
-
-    if (awayScore === undefined || homeScore === undefined) return null;
-
-    return `${awayScore} - ${homeScore}`;
-  };
-
   const generateBoxscoreUrl = () => {
     if (game?.league === 'MLB') {
       // Use the same boxscore URL generation logic as GameCard
@@ -215,7 +208,6 @@ const GameLogEntry = ({ log, index }: { log: any; index: number }) => {
   }
 
   const rootedResult = getRootedTeamResult();
-  const gameScore = getGameScore();
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
