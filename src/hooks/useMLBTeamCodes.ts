@@ -8,6 +8,17 @@ const baseballReferenceOverrides: Record<string, string> = {
   'ANA': 'ANA', // Anaheim Angels
   'CAL': 'CAL', // California Angels
   'MON': 'MON', // Montreal Expos
+  // Current teams that use different codes on Baseball Reference
+  'LAD': 'LAN', // Los Angeles Dodgers
+  'STL': 'SLN', // St. Louis Cardinals
+  'CHC': 'CHN', // Chicago Cubs
+  'NYM': 'NYN', // New York Mets
+  'SF': 'SFN', // San Francisco Giants
+  'SD': 'SDN', // San Diego Padres
+  'CWS': 'CHA', // Chicago White Sox
+  'NYY': 'NYA', // New York Yankees
+  'TB': 'TBA', // Tampa Bay Rays
+  'KC': 'KCA', // Kansas City Royals
 };
 
 export const useMLBTeamCodes = () => {
