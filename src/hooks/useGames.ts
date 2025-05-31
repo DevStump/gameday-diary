@@ -138,14 +138,14 @@ export const useGames = (filters: GameFilters) => {
       }
       
       if (filters.playoff === 'true') {
-        // Filter by game_type for playoffs
-        mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']); // Wild Card, Division, League Championship, World Series
+        mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']);
       } else if (filters.playoff === 'false') {
-        // Regular season games
         mlbQuery = mlbQuery.eq('game_type', 'R');
       } else if (filters.playoff === 'exhibition') {
-        // Exhibition games - Spring Training, Exhibition, etc.
-        mlbQuery = mlbQuery.in('game_type', ['S', 'E']); // Spring Training, Exhibition
+        mlbQuery = mlbQuery.in('game_type', ['S', 'E']);
+      } else {
+        // No playoff filter specified — fetch all types
+        console.log('No playoff filter set — including all game types');
       }
 
       const result = await mlbQuery;
