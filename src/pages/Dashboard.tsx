@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Layout from '@/components/Layout';
-import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy } from 'lucide-react';
+import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -180,9 +180,31 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 mb-4">
                   Record: {stats.winRecord.wins}-{stats.winRecord.losses}
                 </div>
+
+                {/* Show teams with most wins/losses */}
+                {(stats.teamWinRecord.mostWins || stats.teamWinRecord.mostLosses) && (
+                  <div className="space-y-2 pt-4 border-t border-gray-200">
+                    {stats.teamWinRecord.mostWins && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Most wins:</span>
+                        <span className="font-medium text-green-600">
+                          {formatTeamName(stats.teamWinRecord.mostWins.team, 'MLB')} ({stats.teamWinRecord.mostWins.count})
+                        </span>
+                      </div>
+                    )}
+                    {stats.teamWinRecord.mostLosses && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-600">Most losses:</span>
+                        <span className="font-medium text-red-600">
+                          {formatTeamName(stats.teamWinRecord.mostLosses.team, 'MLB')} ({stats.teamWinRecord.mostLosses.count})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -230,39 +252,23 @@ const Dashboard = () => {
 
         {/* Top Stats Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* League Breakdown */}
+          {/* Total Runs/Points Standalone */}
           <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Target className="h-5 w-5 text-field-green" />
-                <span>League & Special Games</span>
+                <Activity className="h-5 w-5 text-field-green" />
+                <span>Total Runs/Points</span>
               </CardTitle>
+              <p className="text-sm text-gray-600">Combined score from all logged games</p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">NFL Games</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-field-green">{stats.nflGames}</div>
-                  </div>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-blue-600 mb-2">
+                  {stats.totalRuns.toLocaleString()}
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">MLB Games</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-field-green">{stats.mlbGames}</div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium">Playoff Games</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-sports-gold">{stats.playoffGames}</div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                  <span className="font-medium">Total Runs/Points</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-blue-600">{stats.totalRuns}</div>
-                  </div>
+                <div className="text-lg text-gray-600">Total Scored</div>
+                <div className="text-sm text-gray-500 mt-2">
+                  Across {stats.totalGames} game{stats.totalGames !== 1 ? 's' : ''}
                 </div>
               </div>
             </CardContent>
@@ -298,20 +304,20 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Timeline of Games Logged */}
-        {stats.timelineData && stats.timelineData.length > 0 && (
+        {/* Timeline of Games by Game Date */}
+        {stats.gameTimelineData && stats.gameTimelineData.length > 0 && (
           <Card className="animate-slide-up mb-8" style={{ animationDelay: '0.8s' }}>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5 text-field-green" />
-                <span>Games Logged Over Time</span>
+                <span>Games by Date</span>
               </CardTitle>
-              <p className="text-sm text-gray-600">Your logging activity by month</p>
+              <p className="text-sm text-gray-600">Games you've logged organized by when they were played</p>
             </CardHeader>
             <CardContent>
               <ChartContainer config={{ games: { label: 'Games', color: '#16a34a' } }} className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.timelineData}>
+                  <BarChart data={stats.gameTimelineData}>
                     <XAxis dataKey="month" />
                     <YAxis />
                     <ChartTooltip content={<ChartTooltipContent />} />

@@ -44,6 +44,10 @@ export const useProfileStats = () => {
       let wins = 0;
       let losses = 0;
       
+      // Track wins/losses by team
+      const teamWins: Record<string, number> = {};
+      const teamLosses: Record<string, number> = {};
+      
       gameLogs.forEach(log => {
         // Only count games where user actually rooted for a team
         if (log.rooted_for && log.rooted_for !== 'none') {
@@ -76,14 +80,25 @@ export const useProfileStats = () => {
             if (teamScore !== undefined && oppScore !== undefined) {
               if (teamScore > oppScore) {
                 wins++;
+                teamWins[log.rooted_for] = (teamWins[log.rooted_for] || 0) + 1;
               } else if (teamScore < oppScore) {
                 losses++;
+                teamLosses[log.rooted_for] = (teamLosses[log.rooted_for] || 0) + 1;
               }
               // Note: ties are not counted in either wins or losses
             }
           }
         }
       });
+
+      // Find teams with most wins and losses
+      const mostWinsEntry = Object.entries(teamWins).sort(([,a], [,b]) => b - a)[0];
+      const mostLossesEntry = Object.entries(teamLosses).sort(([,a], [,b]) => b - a)[0];
+
+      const teamWinRecord = {
+        mostWins: mostWinsEntry ? { team: mostWinsEntry[0], count: mostWinsEntry[1] } : null,
+        mostLosses: mostLossesEntry ? { team: mostLossesEntry[0], count: mostLossesEntry[1] } : null,
+      };
 
       // League breakdown
       const nflLogs = gameLogs.filter(log => 
@@ -156,15 +171,18 @@ export const useProfileStats = () => {
       const mostSupportedTeam = Object.entries(rootedForCounts)
         .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
 
-      // Timeline data - games logged by month
-      const monthCounts: Record<string, number> = {};
+      // Timeline data - games by their actual game date (not log date)
+      const gameDateCounts: Record<string, number> = {};
       gameLogs.forEach(log => {
-        const date = new Date(log.created_at);
-        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        monthCounts[monthYear] = (monthCounts[monthYear] || 0) + 1;
+        const game = allGames.find(g => g.game_id === log.game_id);
+        if (game) {
+          const gameDate = new Date(game.game_date || game.game_datetime);
+          const monthYear = `${gameDate.getFullYear()}-${String(gameDate.getMonth() + 1).padStart(2, '0')}`;
+          gameDateCounts[monthYear] = (gameDateCounts[monthYear] || 0) + 1;
+        }
       });
 
-      const timelineData = Object.entries(monthCounts)
+      const gameTimelineData = Object.entries(gameDateCounts)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([monthYear, count]) => {
           const [year, month] = monthYear.split('-');
@@ -193,6 +211,7 @@ export const useProfileStats = () => {
         gamesAttended,
         avgRating,
         winRecord: { wins, losses },
+        teamWinRecord,
         nflGames: nflLogs.length,
         mlbGames: mlbLogs.length,
         playoffGames,
@@ -200,7 +219,7 @@ export const useProfileStats = () => {
         teamBreakdown: sortedTeams,
         mostVisitedVenue,
         mostSupportedTeam,
-        timelineData,
+        gameTimelineData,
         totalRuns,
         venueBreakdown: Object.entries(venueCounts)
           .sort(([,a], [,b]) => b - a)
