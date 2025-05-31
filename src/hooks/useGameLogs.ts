@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,7 +39,7 @@ const validateGameLogInput = (gameLog: {
   return sanitizedGameLog;
 };
 
-export const useGameLogs = () => {
+export const useGameLogs = (options?: { enabled?: boolean }) => {
   const { user } = useAuth();
   
   return useQuery({
@@ -57,7 +56,7 @@ export const useGameLogs = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!user,
+    enabled: options?.enabled !== false && !!user,
   });
 };
 

@@ -33,10 +33,16 @@ interface HotGamesProps {
 
 const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
   const [showAll, setShowAll] = useState(false);
-  const { data: gameLogs } = useGameLogs();
+  
+  // Only fetch game logs if user is authenticated
+  const { data: gameLogs } = useGameLogs({
+    enabled: !!isAuthenticated
+  });
 
-  // Create set of logged game IDs for quick lookup
-  const loggedGameIds = new Set(gameLogs?.map(log => String(log.game_id)) || []);
+  // Create set of logged game IDs for quick lookup (only if authenticated)
+  const loggedGameIds = isAuthenticated 
+    ? new Set(gameLogs?.map(log => String(log.game_id)) || []) 
+    : new Set();
 
   // Get top 3 games with highest diary entries (already consistent from useGames)
   const hotGames = games
@@ -55,7 +61,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
   const renderGameCard = (game: typeof hotGames[0], index: number) => {
     const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
     const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
-    const isLogged = loggedGameIds.has(String(game.game_id));
+    const isLogged = isAuthenticated && loggedGameIds.has(String(game.game_id));
     
     return (
       <Card 

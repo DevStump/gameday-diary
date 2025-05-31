@@ -27,7 +27,7 @@ const About = () => {
           </div>
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-600">
-              Manage your account and learn more about how GamedayDiary was built. Discover the data sources, team logos, and technology that power your personal sports diary experience.
+              {user ? 'Manage your account and learn more about how GamedayDiary was built.' : 'Learn more about how GamedayDiary was built.'} Discover the data sources, team logos, and technology that power your personal sports diary experience.
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ const About = () => {
         </Card>
         
         {/* Data Sources */}
-        <Card className="mb-6">
+        <Card className={user ? "mb-6" : ""}>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <span>📊</span>
@@ -121,7 +121,7 @@ const About = () => {
           </CardContent>
         </Card>
 
-        {/* User Info - Only show if logged in - moved to bottom */}
+        {/* User Info - Only show if logged in */}
         {user && (
           <Card>
             <CardHeader>
