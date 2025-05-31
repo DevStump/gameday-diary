@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { formatTeamName } from '@/utils/teamLogos';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
 import { useUpdateGameLog } from '@/hooks/useGameLogs';
 
 interface EditGameLogModalProps {
@@ -15,7 +15,7 @@ interface EditGameLogModalProps {
   onClose: () => void;
   gameLog: any;
   game: any;
-  league: 'NFL' | 'MLB';
+  league: 'MLB';
 }
 
 const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLogModalProps) => {
@@ -55,14 +55,14 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
 
       toast({
         title: 'Success',
-        description: 'Game log updated successfully!',
+        description: 'Diary entry updated successfully!',
       });
 
       onClose();
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update game log.',
+        description: 'Failed to update diary entry.',
         variant: 'destructive',
       });
     } finally {
@@ -70,13 +70,15 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
     }
   };
 
-  const gameTitle = `${formatTeamName(game.away_team, league)} @ ${formatTeamName(game.home_team, league)}`;
+  const homeTeamAbbr = getTeamAbbreviation(game.home_team, league, game.date);
+  const awayTeamAbbr = getTeamAbbreviation(game.away_team, league, game.date);
+  const gameTitle = `${awayTeamAbbr} @ ${homeTeamAbbr} (${league})`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Game Log</DialogTitle>
+          <DialogTitle>Edit Diary Entry</DialogTitle>
           <p className="text-sm text-gray-600">{gameTitle}</p>
         </DialogHeader>
         
@@ -95,15 +97,6 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
           </div>
 
           <div>
-            <label className="text-sm font-medium">Who did you watch with? (optional)</label>
-            <Input
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder="e.g., Friends, Family, Alone"
-            />
-          </div>
-
-          <div>
             <label className="text-sm font-medium">Who did you root for?</label>
             <Select value={rootedFor} onValueChange={setRootedFor}>
               <SelectTrigger>
@@ -111,10 +104,19 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No preference</SelectItem>
-                <SelectItem value={game.away_team}>{formatTeamName(game.away_team, league)}</SelectItem>
-                <SelectItem value={game.home_team}>{formatTeamName(game.home_team, league)}</SelectItem>
+                <SelectItem value={game.away_team}>{awayTeamAbbr}</SelectItem>
+                <SelectItem value={game.home_team}>{homeTeamAbbr}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Who did you watch with? (optional)</label>
+            <Input
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="e.g., Friends, Family, Alone"
+            />
           </div>
 
           <div>
@@ -158,7 +160,7 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="flex-1 bg-field-green hover:bg-field-dark">
-              {loading ? 'Updating...' : 'Update Log'}
+              {loading ? 'Updating...' : 'Update Entry'}
             </Button>
           </div>
         </form>

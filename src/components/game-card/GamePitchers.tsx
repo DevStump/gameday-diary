@@ -7,9 +7,6 @@ interface GamePitchersProps {
   homeProbablePitcher?: string;
   awayTeam: string;
   homeTeam: string;
-  winningPitcher?: string;
-  losingPitcher?: string;
-  savePitcher?: string;
 }
 
 const GamePitchers = ({ 
@@ -17,10 +14,7 @@ const GamePitchers = ({
   awayProbablePitcher, 
   homeProbablePitcher, 
   awayTeam, 
-  homeTeam,
-  winningPitcher,
-  losingPitcher,
-  savePitcher
+  homeTeam
 }: GamePitchersProps) => {
   const getProbablePitchers = () => {
     if (!isFuture || !awayProbablePitcher || !homeProbablePitcher) {
@@ -34,37 +28,14 @@ const GamePitchers = ({
     );
   };
 
-  const getPitchingResults = () => {
-    if (isFuture) return null;
-    
-    const results = [];
-    if (winningPitcher) results.push(`WP: ${winningPitcher}`);
-    if (losingPitcher) results.push(`LP: ${losingPitcher}`);
-    if (savePitcher) results.push(`SV: ${savePitcher}`);
-    
-    if (results.length === 0) return null;
-    
-    return (
-      <div className="text-sm text-gray-600 min-h-[40px] flex flex-col justify-start">
-        <div className="leading-tight">
-          {results.map((result, index) => (
-            <div key={index}>{result}</div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
   const probablePitchers = getProbablePitchers();
-  const pitchingResults = getPitchingResults();
 
-  if (!probablePitchers && !pitchingResults) {
+  if (!probablePitchers) {
     return <div className="min-h-[40px]"></div>;
   }
 
   return (
     <div className="min-h-[40px] flex flex-col justify-start">
-      {pitchingResults}
       {probablePitchers}
     </div>
   );

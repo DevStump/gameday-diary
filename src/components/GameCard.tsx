@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ interface GameCardProps {
     game_datetime?: string;
     home_team: string;
     away_team: string;
-    league: 'NFL' | 'MLB';
+    league: 'MLB';
     pts_off?: number;
     pts_def?: number;
     runs_scored?: number;
@@ -27,9 +28,6 @@ interface GameCardProps {
     boxscore_url?: string;
     status?: string;
     game_type?: string;
-    winning_pitcher?: string;
-    losing_pitcher?: string;
-    save_pitcher?: string;
     home_probable_pitcher?: string;
     away_probable_pitcher?: string;
     diaryEntries?: number;
@@ -48,27 +46,23 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
 
   const generateBoxscoreUrl = () => {
-    if (game.league === 'MLB') {
-      const year = new Date(game.date).getFullYear();
-      let bbrefTeamCode = homeTeamAbbr;
+    const year = new Date(game.date).getFullYear();
+    let bbrefTeamCode = homeTeamAbbr;
 
-      if (homeTeamAbbr === 'FLA' && year <= 2002) {
-        bbrefTeamCode = 'FLO';
-      } else if (homeTeamAbbr === 'LAA') {
-        bbrefTeamCode = 'ANA';
-      } else {
-        const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-        bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
-      }
-
-      bbrefTeamCode = bbrefTeamCode.toUpperCase();
-      const date = game.date.replace(/-/g, '');
-      const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
-
-      return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
+    if (homeTeamAbbr === 'FLA' && year <= 2002) {
+      bbrefTeamCode = 'FLO';
+    } else if (homeTeamAbbr === 'LAA') {
+      bbrefTeamCode = 'ANA';
     } else {
-      return game.boxscore_url;
+      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
+      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
     }
+
+    bbrefTeamCode = bbrefTeamCode.toUpperCase();
+    const date = game.date.replace(/-/g, '');
+    const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
+
+    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
   };
 
   const getStatusTag = () => {
@@ -94,7 +88,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
       <CardContent className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-3 min-h-[32px]">
           <div className="flex items-center space-x-2 flex-wrap">
-            <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
+            <Badge variant="secondary" className="bg-field-green text-white">
               {game.league}
             </Badge>
             {statusTag}
@@ -131,9 +125,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
             homeProbablePitcher={game.home_probable_pitcher}
             awayTeam={awayTeamAbbr}
             homeTeam={homeTeamAbbr}
-            winningPitcher={game.winning_pitcher}
-            losingPitcher={game.losing_pitcher}
-            savePitcher={game.save_pitcher}
+            isFuture={!game.runs_scored && !game.runs_allowed && game.status !== 'Final'}
           />
         </div>
       </CardContent>

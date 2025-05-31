@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import GameCard from '@/components/GameCard';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
-import { getTeamLogo } from '@/utils/teamLogos';
+import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 
 const Timeline = () => {
   const { user } = useAuth();
@@ -97,18 +97,22 @@ const Timeline = () => {
       return <span className="text-gray-500">No team</span>;
     }
     
+    // Use team abbreviations instead of full names
+    const homeTeamAbbr = getTeamAbbreviation(homeTeam, 'MLB');
+    const awayTeamAbbr = getTeamAbbreviation(awayTeam, 'MLB');
+    
     // Determine which team they rooted for and get logo
     const isHomeTeam = rootedFor.toLowerCase() === homeTeam.toLowerCase();
-    const teamCode = isHomeTeam ? homeTeam : awayTeam;
+    const teamAbbr = isHomeTeam ? homeTeamAbbr : awayTeamAbbr;
     
     return (
       <div className="flex items-center gap-1">
         <img 
-          src={getTeamLogo(teamCode, 'MLB')} 
-          alt={teamCode}
+          src={getTeamLogo(teamAbbr, 'MLB')} 
+          alt={teamAbbr}
           className="h-4 w-4 object-contain"
         />
-        <span>{teamCode}</span>
+        <span>{teamAbbr}</span>
       </div>
     );
   };
