@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,9 +38,10 @@ interface GameCardProps {
   };
   onAddToDiary: (gameId: string) => void;
   isAuthenticated: boolean;
+  hideDiaryButton?: boolean;
 }
 
-const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
+const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
 
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
@@ -102,13 +102,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </div>
 
         {game.venue && (
-          <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-1 min-h-[20px]">
             <MapPin className="h-4 w-4 mr-1" />
             <span className="text-center">{game.venue}</span>
           </div>
         )}
 
-        <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[100px]">
+        <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
@@ -124,7 +124,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           />
         </div>
 
-        <div className="text-center min-h-[50px] flex flex-col justify-start">
+        <div className="text-center min-h-[65px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           <GamePitchers 
             awayProbablePitcher={game.away_probable_pitcher}
@@ -138,44 +138,48 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </div>
       </CardContent>
 
-      <div className="border-t border-gray-200 mx-4"></div>
+      {!hideDiaryButton && (
+        <>
+          <div className="border-t border-gray-200 mx-4"></div>
 
-      <CardFooter className="p-4 pt-3">
-        <div className="w-full">
-          <div className="flex gap-x-2">
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                onAddToDiary(game.game_id);
-              }}
-              className="flex-1 bg-field-green transition-colors"
-              size="sm"
-            >
-              <BookOpen className="h-4 w-4 mr-2" />
-              {isAuthenticated ? 'Add' : 'Sign in to Add'}
-            </Button>
-
-            {isAuthenticated && isBeforeToday && (
-              <a 
-                href={generateBoxscoreUrl()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex-1"
-                onClick={(e) => e.stopPropagation()}
-              >
+          <CardFooter className="p-4 pt-3">
+            <div className="w-full">
+              <div className="flex gap-x-2">
                 <Button
-                  variant="outline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onAddToDiary(game.game_id);
+                  }}
+                  className="flex-1 bg-field-green transition-colors"
                   size="sm"
-                  className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
                 >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Boxscore
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  {isAuthenticated ? 'Add' : 'Sign in to Add'}
                 </Button>
-              </a>
-            )}
-          </div>
-        </div>
-      </CardFooter>
+
+                {isAuthenticated && isBeforeToday && (
+                  <a 
+                    href={generateBoxscoreUrl()} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Boxscore
+                    </Button>
+                  </a>
+                )}
+              </div>
+            </div>
+          </CardFooter>
+        </>
+      )}
     </Card>
   );
 };

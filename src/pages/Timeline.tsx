@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2 } from 'lucide-react';
@@ -10,6 +9,7 @@ import { Link } from 'react-router-dom';
 import GameCard from '@/components/GameCard';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
+import { getTeamLogo } from '@/utils/teamLogos';
 
 const Timeline = () => {
   const { user } = useAuth();
@@ -92,6 +92,27 @@ const Timeline = () => {
     console.log('Game already in diary:', gameId);
   };
 
+  const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string) => {
+    if (!rootedFor || rootedFor === 'none') {
+      return <span className="text-gray-500">No team</span>;
+    }
+    
+    // Determine which team they rooted for and get logo
+    const isHomeTeam = rootedFor.toLowerCase() === homeTeam.toLowerCase();
+    const teamCode = isHomeTeam ? homeTeam : awayTeam;
+    
+    return (
+      <div className="flex items-center gap-1">
+        <img 
+          src={getTeamLogo(teamCode, 'MLB')} 
+          alt={teamCode}
+          className="h-4 w-4 object-contain"
+        />
+        <span>{teamCode}</span>
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -132,12 +153,13 @@ const Timeline = () => {
         {sortedLoggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedLoggedGames.map((game, index) => (
-              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="relative">
-                <div className="relative">
+              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="relative h-full">
+                <div className="relative h-full flex flex-col">
                   <GameCard
                     game={game}
                     onAddToDiary={handleAddToDiary}
                     isAuthenticated={!!user}
+                    hideDiaryButton={true}
                   />
                   
                   {/* Edit/Delete overlay in top right */}
@@ -182,20 +204,17 @@ const Timeline = () => {
                     </div>
                     
                     <div>
+                      <span className="font-medium text-gray-700">Rooted for:</span>
+                      <div className="ml-2 text-gray-900">
+                        {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
+                      </div>
+                    </div>
+                    
+                    <div>
                       <span className="font-medium text-gray-700">Company:</span>
                       <span className="ml-2 text-gray-900">
                         {game.logData.company || 
                           <span className="text-gray-500">No company</span>
-                        }
-                      </span>
-                    </div>
-                    
-                    <div>
-                      <span className="font-medium text-gray-700">Rooted for:</span>
-                      <span className="ml-2 text-gray-900">
-                        {game.logData.rooted_for && game.logData.rooted_for !== 'none' ? 
-                          `🏳️ ${game.logData.rooted_for}` : 
-                          <span className="text-gray-500">No team</span>
                         }
                       </span>
                     </div>

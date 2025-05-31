@@ -45,8 +45,12 @@ const GamePitchers = ({
     if (results.length === 0) return null;
     
     return (
-      <div className="text-sm text-gray-600">
-        {results.join(', ')}
+      <div className="text-sm text-gray-600 min-h-[40px] flex flex-col justify-start">
+        <div className="leading-tight">
+          {results.map((result, index) => (
+            <div key={index}>{result}</div>
+          ))}
+        </div>
       </div>
     );
   };
@@ -55,11 +59,11 @@ const GamePitchers = ({
   const pitchingResults = getPitchingResults();
 
   if (!probablePitchers && !pitchingResults) {
-    return null;
+    return <div className="min-h-[40px]"></div>;
   }
 
   return (
-    <div className="min-h-[15px] flex flex-col justify-start">
+    <div className="min-h-[40px] flex flex-col justify-start">
       {pitchingResults}
       {probablePitchers}
     </div>
