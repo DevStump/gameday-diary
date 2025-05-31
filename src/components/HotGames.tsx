@@ -119,14 +119,22 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               onClick={(e) => {
                 e.preventDefault();
                 if (!isLogged) {
-                  onAddToDiary(
-                    game.game_id,
-                    `${game.away_team} @ ${game.home_team}`,
-                    game.home_team,
-                    game.away_team,
-                    game.league,
-                    game.venue
-                  );
+                  // Ensure game_id is a valid string
+                  const gameId = String(game.game_id).trim();
+                  console.log('Hot Games - calling onAddToDiary with gameId:', gameId);
+                  
+                  if (gameId && gameId !== 'null' && gameId !== 'undefined') {
+                    onAddToDiary(
+                      gameId,
+                      `${game.away_team} @ ${game.home_team}`,
+                      game.home_team,
+                      game.away_team,
+                      game.league,
+                      game.venue
+                    );
+                  } else {
+                    console.error('Invalid game ID in Hot Games:', game.game_id);
+                  }
                 }
               }}
               variant={isLogged ? "secondary" : "outline"}
