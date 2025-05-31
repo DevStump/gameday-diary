@@ -16,8 +16,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
-    { name: 'Diary', href: '/diary', icon: Calendar },
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+    { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, requireAuth: true },
     { name: 'About', href: '/about', icon: Info },
   ];
 
@@ -49,22 +49,26 @@ const Layout = ({ children }: LayoutProps) => {
               <span className="text-xl font-bold text-gray-900">GamedayDiary</span>
             </Link>
 
-            {/* Navigation - Show all items on desktop */}
+            {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? 'text-field-green bg-green-50'
-                      : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+              {navigation.map((item) => {
+                if (item.requireAuth && !user) return null;
+                
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? 'text-field-green bg-green-50'
+                        : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Auth Button - Only show sign in when not authenticated */}
@@ -79,30 +83,32 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      {/* Main Content with mobile bottom padding (bottom nav always present) */}
-      <main className="flex-1 pb-20 md:pb-0">
+      {/* Main Content with mobile bottom padding when authenticated (bottom nav present) */}
+      <main className={`flex-1 ${user ? 'pb-20 md:pb-0' : ''}`}>
         {children}
       </main>
 
-      {/* Mobile Navigation - Always show all tabs */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="flex justify-around">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={`flex flex-col items-center py-2 px-3 text-xs ${
-                isActive(item.href)
-                  ? 'text-field-green'
-                  : 'text-gray-600'
-              }`}
-            >
-              <item.icon className="h-6 w-6 mb-1" />
-              <span>{item.name}</span>
-            </Link>
-          ))}
+      {/* Mobile Navigation */}
+      {user && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+          <div className="flex justify-around">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`flex flex-col items-center py-2 px-3 text-xs ${
+                  isActive(item.href)
+                    ? 'text-field-green'
+                    : 'text-gray-600'
+                }`}
+              >
+                <item.icon className="h-6 w-6 mb-1" />
+                <span>{item.name}</span>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
