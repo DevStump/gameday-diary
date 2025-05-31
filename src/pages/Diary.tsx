@@ -188,7 +188,7 @@ const Diary = () => {
             <h1 className="text-4xl font-bold text-gray-900">Diary</h1>
           </div>
           <p className="text-lg text-gray-600">
-            A personal record of every game you've attended or watched. Explore your timeline of moments that mattered.
+            A personal record of every game you've attended or watched.
           </p>
         </div>
 

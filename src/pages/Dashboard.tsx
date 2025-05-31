@@ -47,7 +47,7 @@ const Dashboard = () => {
           </div>
           <div className="max-w-5xl mx-auto">
             <p className="text-lg text-gray-600 mb-2">
-              Get a summary view of all the games in your diary with some fun and cool analysis. Track win/loss records, discover patterns, and explore your baseball viewing habits.
+              Track win/loss records, discover patterns, and explore your baseball viewing habits.
             </p>
             {user && stats && (
               <p className="text-sm text-gray-500">
