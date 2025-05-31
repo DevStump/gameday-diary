@@ -116,12 +116,15 @@ export const useGames = (filters: GameFilters) => {
       }
       
       // Filter MLB games by year using the game_date field
-      if (filters.season) {
+       if (filters.season) {
         const seasonYear = parseInt(filters.season);
-        const startOfYear = `${seasonYear}-01-01`;
-        const endOfYear = `${seasonYear}-12-31`;
-        mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
+        if (!isNaN(seasonYear)) {
+          const startOfYear = `${seasonYear}-01-01`;
+          const endOfYear = `${seasonYear}-12-31`;
+          mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
+        }
       }
+
       
       const playoffFilter = String(filters.playoff);
     
