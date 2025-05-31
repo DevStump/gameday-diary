@@ -1,17 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, Loader2 } from 'lucide-react';
+import { Calendar, Loader2, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import GameCard from '@/components/GameCard';
+import EditGameLogModal from '@/components/EditGameLogModal';
+import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 
 const Timeline = () => {
   const { user } = useAuth();
   const { data: gameLogs, isLoading: logsLoading } = useGameLogs();
+  const [editingLog, setEditingLog] = useState<any>(null);
+  const [deletingLog, setDeletingLog] = useState<any>(null);
 
   // Fetch MLB games only since we're focusing on MLB data
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
@@ -129,15 +133,37 @@ const Timeline = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedLoggedGames.map((game, index) => (
               <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="relative">
-                <GameCard
-                  game={game}
-                  onAddToDiary={handleAddToDiary}
-                  isAuthenticated={!!user}
-                />
+                <div className="relative">
+                  <GameCard
+                    game={game}
+                    onAddToDiary={handleAddToDiary}
+                    isAuthenticated={!!user}
+                  />
+                  
+                  {/* Edit/Delete overlay in top right */}
+                  <div className="absolute top-2 right-2 flex space-x-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                      onClick={() => setEditingLog({ log: game.logData, game })}
+                    >
+                      <Edit className="h-4 w-4 text-gray-600" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                      onClick={() => setDeletingLog({ log: game.logData, game })}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </div>
+                </div>
                 
-                {/* Diary Metadata Overlay */}
-                <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                {/* Diary Metadata Overlay with reduced spacing */}
+                <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="font-medium text-gray-700">Mode:</span>
                       <span className="ml-2 capitalize text-gray-900">
@@ -176,13 +202,13 @@ const Timeline = () => {
                   </div>
                   
                   {game.logData.notes && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="mt-2 pt-2 border-t border-gray-200">
                       <span className="font-medium text-gray-700">Notes:</span>
                       <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
                     </div>
                   )}
                   
-                  <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
+                  <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500">
                     Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
@@ -210,6 +236,27 @@ const Timeline = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {editingLog && (
+        <EditGameLogModal
+          isOpen={!!editingLog}
+          onClose={() => setEditingLog(null)}
+          gameLog={editingLog.log}
+          game={editingLog.game}
+          league="MLB"
+        />
+      )}
+      
+      {deletingLog && (
+        <DeleteGameLogModal
+          isOpen={!!deletingLog}
+          onClose={() => setDeletingLog(null)}
+          gameLog={deletingLog.log}
+          game={deletingLog.game}
+          league="MLB"
+        />
+      )}
     </Layout>
   );
 };

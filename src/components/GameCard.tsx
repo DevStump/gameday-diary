@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -101,13 +102,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </div>
 
         {game.venue && (
-          <div className="flex items-center justify-center text-sm text-gray-600 mb-3 min-h-[20px]">
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-2 min-h-[20px]">
             <MapPin className="h-4 w-4 mr-1" />
             <span className="text-center">{game.venue}</span>
           </div>
         )}
 
-        <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
+        <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[100px]">
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
