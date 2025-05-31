@@ -7,6 +7,7 @@ import { BookOpen, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameDateTime from './game-card/GameDateTime';
+import GameScore from './game-card/GameScore';
 
 interface HotGamesProps {
   games: Array<{
@@ -20,6 +21,10 @@ interface HotGamesProps {
     diaryEntries?: number;
     boxscore_url?: string;
     is_future?: boolean;
+    pts_off?: number;
+    pts_def?: number;
+    runs_scored?: number;
+    runs_allowed?: number;
   }>;
   onAddToDiary?: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => void;
   isAuthenticated?: boolean;
@@ -86,6 +91,18 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     league={game.league}
                     isFuture={game.is_future}
                     gameDate={game.date}
+                  />
+                </div>
+
+                {/* Score - compact */}
+                <div className="text-center mb-2">
+                  <GameScore 
+                    league={game.league}
+                    ptsOff={game.pts_off}
+                    ptsDef={game.pts_def}
+                    runsScored={game.runs_scored}
+                    runsAllowed={game.runs_allowed}
+                    isFuture={game.is_future}
                   />
                 </div>
 
@@ -158,6 +175,18 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                     league={game.league}
                     isFuture={game.is_future}
                     gameDate={game.date}
+                  />
+                </div>
+
+                {/* Score - compact */}
+                <div className="text-center mb-2">
+                  <GameScore 
+                    league={game.league}
+                    ptsOff={game.pts_off}
+                    ptsDef={game.pts_def}
+                    runsScored={game.runs_scored}
+                    runsAllowed={game.runs_allowed}
+                    isFuture={game.is_future}
                   />
                 </div>
 
