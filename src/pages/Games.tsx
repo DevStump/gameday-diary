@@ -4,7 +4,7 @@ import GameCard from '@/components/GameCard';
 import GameFilters from '@/components/GameFilters';
 import GameLogModal from '@/components/GameLogModal';
 import HotGames from '@/components/HotGames';
-import { Loader2, Trophy } from 'lucide-react';
+import { Loader2, Trophy, X, Info } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useAuth } from '@/contexts/AuthContext';
@@ -34,6 +34,7 @@ const Games = () => {
     league: string; 
   } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showInfoBanner, setShowInfoBanner] = useState(true);
   const gamesPerPage = 24;
 
   const { user } = useAuth();
@@ -125,6 +126,24 @@ const Games = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Info Banner */}
+        {showInfoBanner && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Info className="h-5 w-5 text-blue-600" />
+              <span className="text-blue-800 font-medium">
+                🧠 GamedayDiary currently supports MLB only. We're working on NFL next, with NBA to follow!
+              </span>
+            </div>
+            <button
+              onClick={() => setShowInfoBanner(false)}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         {/* Hero Section */}
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
@@ -132,7 +151,7 @@ const Games = () => {
             <h1 className="text-4xl font-bold text-gray-900">Games</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Search every NFL and MLB game in history. Add the ones you've seen — live or on screen — to your diary.
+            Search every MLB game in history. Add the ones you've seen — live or on screen — to your diary.
           </p>
           {!user && (
             <p className="text-sm text-sports-gold mt-2 font-medium">

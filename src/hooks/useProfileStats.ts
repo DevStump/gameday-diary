@@ -43,9 +43,9 @@ export const useProfileStats = () => {
         : 0;
 
       const venueCounts: Record<string, number> = {};
+      const attendedVenueCounts: Record<string, number> = {};
       const rootedForCounts: Record<string, number> = {};
       const teamCounts: Record<string, number> = {};
-      const timeline: Record<string, number> = {};
       const teamWins: Record<string, number> = {};
       const teamLosses: Record<string, number> = {};
       const gameRunsData: Array<{ date: string, runs: number, teams: string, venue: string }> = [];
@@ -75,9 +75,14 @@ export const useProfileStats = () => {
         const date = new Date(game.game_date || game.game_datetime);
         const dateString = date.toISOString();
 
-        // Venue counts
+        // Venue counts (all games)
         if (game.venue_name) {
           venueCounts[game.venue_name] = (venueCounts[game.venue_name] || 0) + 1;
+          
+          // Attended venue counts (only attended games)
+          if (log.mode === 'attended') {
+            attendedVenueCounts[game.venue_name] = (attendedVenueCounts[game.venue_name] || 0) + 1;
+          }
         }
 
         // Rooted for counts (normalize to abbreviation)
@@ -149,10 +154,6 @@ export const useProfileStats = () => {
         // Team breakdown
         teamCounts[homeAbbr] = (teamCounts[homeAbbr] || 0) + 1;
         teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
-
-        // Timeline
-        const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        timeline[month] = (timeline[month] || 0) + 1;
       });
 
       // Last 5 games for win/loss trend - only games where user rooted for a team
@@ -181,16 +182,8 @@ export const useProfileStats = () => {
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
 
-      const gameTimelineData = Object.entries(timeline)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, count]) => {
-          const [year, month] = key.split('-');
-          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-          return { month: `${monthNames[parseInt(month) - 1]} ${year}`, games: count };
-        })
-        .slice(-12);
-
       const venueBreakdown = Object.entries(venueCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
+      const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 3);
       const highestRatedGame = Math.max(...ratedGames.map(log => log.rating), 0);
 
       // Calculate average runs per game
@@ -227,7 +220,6 @@ export const useProfileStats = () => {
         teamBreakdown,
         mostVisitedVenue,
         mostSupportedTeam: { team: mostSupportedTeamAbbr, count: mostSupportedTeamCount },
-        gameTimelineData,
         totalRuns,
         avgRunsPerGame,
         gameRunsData: sortedGameRunsData,
@@ -235,6 +227,7 @@ export const useProfileStats = () => {
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
         venueBreakdown,
+        attendedVenueBreakdown,
         timeWindow: { start: windowStart, end: windowEnd },
       };
     },
