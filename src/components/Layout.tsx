@@ -16,8 +16,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
-    { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, requireAuth: true },
+    { name: 'Diary', href: '/diary', icon: Calendar },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
     { name: 'About', href: '/about', icon: Info },
   ];
 
@@ -51,24 +51,20 @@ const Layout = ({ children }: LayoutProps) => {
 
             {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => {
-                if (item.requireAuth && !user) return null;
-                
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                        ? 'text-field-green bg-green-50'
-                        : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
-                    }`}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.href)
+                      ? 'text-field-green bg-green-50'
+                      : 'text-gray-600 hover:text-field-green hover:bg-gray-100'
+                  }`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              ))}
             </nav>
 
             {/* Auth Button - Only show sign in when not authenticated */}

@@ -1,8 +1,8 @@
-
 import React, { useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3, Star } from 'lucide-react';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,12 +14,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { data: stats, isLoading } = useProfileStats();
 
-  React.useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
-
   const winPercentage = useMemo(() => {
     if (!stats?.winRecord) return 0;
     const { wins, losses } = stats.winRecord;
@@ -30,13 +24,34 @@ const Dashboard = () => {
   const circumference = 2 * Math.PI * 45;
   const strokeDasharray = `${(winPercentage / 100) * circumference} ${circumference}`;
 
-  if (authLoading || isLoading) {
+  if (authLoading || (user && isLoading)) {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-field-green" />
             <span className="ml-2 text-gray-600">Loading your stats...</span>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Show sign-in prompt when not authenticated
+  if (!user) {
+    return (
+      <Layout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <BarChart3 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Sign in to view your dashboard</h3>
+            <p className="text-gray-600 mb-6">See detailed analytics of your baseball game experiences.</p>
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="bg-field-green hover:bg-field-dark"
+            >
+              Sign In
+            </Button>
           </div>
         </div>
       </Layout>
