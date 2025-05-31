@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,8 +30,15 @@ interface GameFiltersProps {
 
 const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false, games = [] }: GameFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  // Pending filters for mobile - only applied when "Apply Filters" is clicked
+  const [pendingFilters, setPendingFilters] = useState(filters);
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
+  // Sync pending filters with actual filters when they change (for desktop updates)
+  useEffect(() => {
+    setPendingFilters(filters);
+  }, [filters]);
+
   // Show years from 2000 to 2025 for MLB data coverage
   const seasons = Array.from({ length: 26 }, (_, i) => 2025 - i);
 
@@ -85,18 +91,18 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   };
 
   // Convert filters to selected date for the calendar
-  const getSelectedDate = (): Date | undefined => {
-    if (!filters.startDate) return undefined;
+  const getSelectedDate = (filtersToUse = filters): Date | undefined => {
+    if (!filtersToUse.startDate) return undefined;
     
     try {
-      const [year, month, day] = filters.startDate.split('-').map(Number);
+      const [year, month, day] = filtersToUse.startDate.split('-').map(Number);
       return new Date(year, month - 1, day);
     } catch {
       return undefined;
     }
   };
 
-  const handleDateChange = (date: Date | undefined) => {
+  const handleDateChange = (date: Date | undefined, isMobile = false) => {
     console.log('Date changed:', date);
     
     if (date) {
@@ -111,15 +117,41 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
       const selectedDate = formatDate(date);
       
       console.log('Setting date:', selectedDate);
-      // Set both start and end date to the same value for compatibility
-      onFilterChange('startDate', selectedDate);
-      onFilterChange('endDate', selectedDate);
+      
+      if (isMobile) {
+        // Update pending filters for mobile
+        setPendingFilters(prev => ({
+          ...prev,
+          startDate: selectedDate,
+          endDate: selectedDate
+        }));
+      } else {
+        // Set both start and end date to the same value for compatibility
+        onFilterChange('startDate', selectedDate);
+        onFilterChange('endDate', selectedDate);
+      }
     } else {
       // Clear both dates if no date is selected
       console.log('Clearing date');
-      onFilterChange('startDate', '');
-      onFilterChange('endDate', '');
+      if (isMobile) {
+        setPendingFilters(prev => ({
+          ...prev,
+          startDate: '',
+          endDate: ''
+        }));
+      } else {
+        onFilterChange('startDate', '');
+        onFilterChange('endDate', '');
+      }
     }
+  };
+
+  // Handler for mobile filter changes (updates pending state only)
+  const handleMobileFilterChange = (key: string, value: string) => {
+    setPendingFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   // Helper function to get the display text for selected team
@@ -156,19 +188,50 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   };
 
   const handleApplyFilters = () => {
+    // Apply all pending filters
+    Object.entries(pendingFilters).forEach(([key, value]) => {
+      onFilterChange(key, value);
+    });
     setIsOpen(false);
   };
 
   const handleClearAndClose = () => {
+    // Clear both pending and actual filters
+    const clearedFilters = {
+      search: '',
+      league: '',
+      season: '',
+      playoff: '',
+      startDate: '',
+      endDate: '',
+      venue: '',
+      mode: ''
+    };
+    setPendingFilters(clearedFilters);
     onClearFilters();
     setIsOpen(false);
   };
 
+  const handleMobileClearFilters = () => {
+    const clearedFilters = {
+      search: '',
+      league: '',
+      season: '',
+      playoff: '',
+      startDate: '',
+      endDate: '',
+      venue: '',
+      mode: ''
+    };
+    setPendingFilters(clearedFilters);
+  };
+
   const selectedDate = getSelectedDate();
+  const pendingSelectedDate = getSelectedDate(pendingFilters);
   const smartDefaultDate = getSmartDefaultDate();
 
-  // Filter content component to avoid duplication
-  const FilterContent = () => (
+  // Desktop filter content component
+  const DesktopFilterContent = () => (
     <>
       <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-4 lg:grid-cols-5">
         {/* Teams Dropdown - MLB Only */}
@@ -239,7 +302,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={handleDateChange}
+              onSelect={(date) => handleDateChange(date, false)}
               defaultMonth={smartDefaultDate}
               initialFocus
               className="p-3 pointer-events-auto"
@@ -324,6 +387,116 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
     </>
   );
 
+  // Mobile filter content component with no focus styles and pending state
+  const MobileFilterContent = () => (
+    <>
+      <div className="grid gap-4 mb-4 grid-cols-1">
+        {/* Teams Dropdown - MLB Only (Mobile) */}
+        <Select value={pendingFilters.search || undefined} onValueChange={(value) => handleMobileFilterChange('search', value === 'all' ? '' : value)}>
+          <SelectTrigger className="focus:ring-0 focus:ring-offset-0 outline-none">
+            <SelectValue placeholder="All Teams" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Teams</SelectItem>
+            <SelectGroup>
+              <SelectLabel>MLB Teams</SelectLabel>
+              {mlbTeams.map((team) => (
+                <SelectItem key={`mlb-${team}`} value={`${team}:MLB`}>
+                  {team} - {formatTeamName(team, 'MLB')}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        {/* Season (Mobile) */}
+        <Select value={pendingFilters.season} onValueChange={(value) => handleMobileFilterChange('season', value === 'all' ? '' : value)}>
+          <SelectTrigger className="focus:ring-0 focus:ring-offset-0 outline-none">
+            <SelectValue placeholder="All Seasons" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Seasons</SelectItem>
+            {seasons.map((season) => (
+              <SelectItem key={season} value={season.toString()}>
+                {season}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Playoff (Mobile) */}
+        <Select value={pendingFilters.playoff} onValueChange={(value) => handleMobileFilterChange('playoff', value === 'all' ? '' : value)}>
+          <SelectTrigger className="focus:ring-0 focus:ring-offset-0 outline-none">
+            <SelectValue placeholder="All Games" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Games</SelectItem>
+            <SelectItem value="true">Playoff Games</SelectItem>
+            <SelectItem value="false">Regular Season</SelectItem>
+            <SelectItem value="exhibition">Exhibition</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Date Picker (Mobile) */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left font-normal focus:ring-0 focus:ring-offset-0 outline-none",
+                !pendingSelectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {pendingSelectedDate ? (
+                format(pendingSelectedDate, "MMM dd, yyyy")
+              ) : (
+                "Select date"
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={pendingSelectedDate}
+              onSelect={(date) => handleDateChange(date, true)}
+              defaultMonth={smartDefaultDate}
+              initialFocus
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+
+        {/* Mode Filter - Only show on diary pages (Mobile) */}
+        {showModeFilter && (
+          <Select value={pendingFilters.mode || ''} onValueChange={(value) => handleMobileFilterChange('mode', value === 'all' ? '' : value)}>
+            <SelectTrigger className="focus:ring-0 focus:ring-offset-0 outline-none">
+              <SelectValue placeholder="All Modes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Modes</SelectItem>
+              <SelectItem value="watched">Watched</SelectItem>
+              <SelectItem value="attended">Attended</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {/* Clear Filters Button for Mobile */}
+      <div className="mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleMobileClearFilters}
+          className="text-gray-600 hover:text-gray-900 focus:ring-0 focus:ring-offset-0 outline-none"
+        >
+          <X className="h-4 w-4 mr-1" />
+          Clear All Filters
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <>
       {/* Desktop Version */}
@@ -345,14 +518,14 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
             </Button>
           )}
         </div>
-        <FilterContent />
+        <DesktopFilterContent />
       </div>
 
       {/* Mobile Version */}
       <div className="md:hidden mb-6">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full focus:ring-0 focus:ring-offset-0 outline-none">
               <Filter className="h-4 w-4 mr-2" />
               Filter Games
               {hasActiveFilters && (
@@ -372,7 +545,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
               </SheetTitle>
             </SheetHeader>
             <div className="mt-6 overflow-y-auto flex-1 pb-20">
-              <FilterContent />
+              <MobileFilterContent />
             </div>
             {/* Bottom Action Buttons */}
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
@@ -380,13 +553,13 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
                 <Button
                   variant="outline"
                   onClick={handleClearAndClose}
-                  className="flex-1"
+                  className="flex-1 focus:ring-0 focus:ring-offset-0 outline-none"
                 >
                   Clear All
                 </Button>
                 <Button
                   onClick={handleApplyFilters}
-                  className="flex-1"
+                  className="flex-1 focus:ring-0 focus:ring-offset-0 outline-none"
                 >
                   Apply Filters
                 </Button>
