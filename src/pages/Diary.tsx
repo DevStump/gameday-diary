@@ -22,8 +22,8 @@ import { MapPin } from 'lucide-react';
 
 // Helper component for conditional tooltips
 const TooltipWrapper = ({ children, text, isMobile }: { children: React.ReactNode; text: string; isMobile: boolean }) => {
-  // Only show tooltip if text is longer than 15 characters to avoid unnecessary tooltips
-  if (!text || text.length <= 15) {
+  // Only show tooltip if text is longer than 25 characters (indicating potential overflow)
+  if (!text || text.length <= 25) {
     return <>{children}</>;
   }
 
@@ -387,7 +387,7 @@ const Diary = () => {
                                   <div className="text-center">
                                     <span className="font-medium block">Company:</span>
                                     <TooltipWrapper text={game.logData.company || ''} isMobile={isMobile}>
-                                      <div className="truncate px-1 cursor-help">
+                                      <div className="truncate px-1">
                                         {game.logData.company || 
                                           <span className="text-gray-400">Solo</span>
                                         }
@@ -400,7 +400,7 @@ const Diary = () => {
                                 <div className="pt-1.5 border-t border-gray-100">
                                   <span className="font-medium">Notes:</span>
                                   <TooltipWrapper text={game.logData.notes || ''} isMobile={isMobile}>
-                                    <p className="mt-0.5 text-gray-700 truncate cursor-help">
+                                    <p className="mt-0.5 text-gray-700 truncate">
                                       {game.logData.notes || <span className="text-gray-400">No notes</span>}
                                     </p>
                                   </TooltipWrapper>
