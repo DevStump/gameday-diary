@@ -121,11 +121,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   return (
     <TooltipProvider>
-      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col min-h-[320px]">
-        <CardContent className="p-5 flex-1 flex flex-col">
-          <div className="flex justify-between items-start mb-2 min-h-[24px]">
+      <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col min-h-[280px]">
+        <CardContent className="p-4 flex-1 flex flex-col">
+          <div className="flex justify-between items-start mb-2 min-h-[20px]">
             <div className="flex items-center space-x-2 flex-wrap">
-              <Badge variant="secondary" className="bg-field-green text-white text-sm px-2 py-0.5">
+              <Badge variant="secondary" className="bg-field-green text-white text-xs px-2 py-0.5">
                 {game.league}
               </Badge>
               {statusTag}
@@ -133,13 +133,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           </div>
 
           {game.venue && (
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
-              <MapPin className="h-4 w-4 mr-1" />
+            <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
+              <MapPin className="h-3 w-3 mr-1" />
               <span className="text-center">{game.venue}</span>
             </div>
           )}
 
-          <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[60px]">
+          <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[50px]">
             <GameTeamDisplay 
               homeTeam={homeTeamAbbr}
               awayTeam={awayTeamAbbr}
@@ -155,7 +155,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
             />
           </div>
 
-          <div className="text-center min-h-[50px] flex flex-col justify-start mb-2">
+          <div className="text-center min-h-[40px] flex flex-col justify-start mb-2">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
             <GamePitchers 
               awayProbablePitcher={game.away_probable_pitcher}
@@ -171,26 +171,26 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           <>
             <div className="border-t border-gray-200 mx-3"></div>
 
-            <CardFooter className="p-5 pt-3">
+            <CardFooter className="p-4 pt-2">
               <div className="w-full">
                 <div className="flex gap-x-2">
                   {isAlreadyLogged ? (
                     <Button
                       disabled
                       variant="outline"
-                      className="flex-1 border-gray-300 text-gray-500 cursor-default h-10 px-4 text-sm font-medium"
+                      className="flex-1 border-gray-300 text-gray-500 cursor-default h-8 px-3 text-xs font-medium"
                       size="sm"
                     >
-                      <BookOpen className="h-4 w-4 mr-2" />
+                      <BookOpen className="h-3 w-3 mr-1" />
                       Added
                     </Button>
                   ) : (
                     <Button
                       onClick={handleAddClick}
-                      className="flex-1 bg-field-green transition-colors h-10 px-4 text-sm font-medium"
+                      className="flex-1 bg-field-green transition-colors h-8 px-3 text-xs font-medium"
                       size="sm"
                     >
-                      <BookOpen className="h-4 w-4 mr-2" />
+                      <BookOpen className="h-3 w-3 mr-1" />
                       {isAuthenticated ? 'Add' : 'Sign in to Add'}
                     </Button>
                   )}
@@ -208,9 +208,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                           <Button
                             variant="outline"
                             size="sm"
-                            className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors h-10 px-4 text-sm font-medium"
+                            className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors h-8 px-3 text-xs font-medium"
                           >
-                            <ExternalLink className="h-4 w-4 mr-2" />
+                            <ExternalLink className="h-3 w-3 mr-1" />
                             Boxscore
                           </Button>
                         </a>

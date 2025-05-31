@@ -60,18 +60,18 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
     return (
       <Card 
         key={game.game_id} 
-        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 min-h-[320px] flex flex-col ${
+        className={`bg-gradient-to-br from-orange-50 to-red-50 border-orange-200 min-h-[280px] flex flex-col ${
           isLogged ? 'opacity-60' : ''
         }`}
       >
-        <CardContent className="p-5 flex-1 flex flex-col">
+        <CardContent className="p-4 flex-1 flex flex-col">
           {/* Top badges */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-sm px-2 py-0.5">
+              <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300 text-xs px-2 py-0.5">
                 #{index + 1} Hot
               </Badge>
-              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-sm px-2 py-0.5">
+              <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white text-xs px-2 py-0.5">
                 {game.league}
               </Badge>
             </div>
@@ -79,8 +79,8 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
 
           {/* Venue row */}
           {game.venue && (
-            <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
-              <MapPin className="h-4 w-4 mr-1" />
+            <div className="flex items-center justify-center text-xs text-gray-600 mb-2">
+              <MapPin className="h-3 w-3 mr-1" />
               <span className="text-center truncate">{game.venue}</span>
             </div>
           )}
@@ -105,7 +105,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
           </div>
 
           {/* Date */}
-          <div className="text-center mb-2 min-h-[30px] flex flex-col justify-start">
+          <div className="text-center mb-2 min-h-[24px] flex flex-col justify-start">
             <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           </div>
 
@@ -136,7 +136,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
                 variant={isLogged ? "secondary" : "outline"}
                 size="sm"
                 disabled={isLogged}
-                className={`w-full transition-colors h-10 px-4 text-sm font-medium ${
+                className={`w-full transition-colors h-8 px-3 text-xs font-medium ${
                   isLogged 
                     ? 'bg-green-100 text-green-800 border-green-300 cursor-not-allowed' 
                     : 'text-orange-800 border-orange-300 bg-transparent hover:bg-orange-100'
@@ -144,12 +144,12 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
               >
                 {isLogged ? (
                   <>
-                    <Check className="h-4 w-4 mr-2" />
+                    <Check className="h-3 w-3 mr-1" />
                     Added
                   </>
                 ) : (
                   <>
-                    <BookOpen className="h-4 w-4 mr-2" />
+                    <BookOpen className="h-3 w-3 mr-1" />
                     {isAuthenticated ? 'Add to Diary' : 'Sign in to Add'}
                   </>
                 )}

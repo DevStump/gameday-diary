@@ -268,12 +268,28 @@ const Timeline = () => {
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
+        game={{
+          game_id: '',
+          date: '',
+          home_team: '',
+          away_team: '',
+          league: 'MLB'
+        }}
+        league="MLB"
       />
 
       <DeleteGameLogModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         gameLog={gameLogs?.find(log => log.id === selectedLogId) || null}
+        game={{
+          game_id: '',
+          date: '',
+          home_team: '',
+          away_team: '',
+          league: 'MLB'
+        }}
+        league="MLB"
       />
     </div>
   );
