@@ -1,24 +1,30 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, Loader2, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Loader2, Edit, Trash2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useGameLogs } from '@/hooks/useGameLogs';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import GameCard from '@/components/GameCard';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 import GameFilters from '@/components/GameFilters';
 import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
+import { useMLBTeamCodes } from '@/hooks/useMLBTeamCodes';
+import GameTeamDisplay from '@/components/game-card/GameTeamDisplay';
+import GameScore from '@/components/game-card/GameScore';
+import GameDateTime from '@/components/game-card/GameDateTime';
+import { MapPin } from 'lucide-react';
 
 const Timeline = () => {
   const { user } = useAuth();
   const { data: gameLogs, isLoading: logsLoading } = useGameLogs();
   const [editingLog, setEditingLog] = useState<any>(null);
   const [deletingLog, setDeletingLog] = useState<any>(null);
+  const { data: teamCodeMap = {} } = useMLBTeamCodes();
 
   // Filter state - same as Games page plus mode
   const [filters, setFilters] = useState({
@@ -113,11 +119,6 @@ const Timeline = () => {
     return new Date(b.logData.created_at).getTime() - new Date(a.logData.created_at).getTime();
   });
 
-  const handleAddToDiary = (gameId: string) => {
-    // This won't be used since these games are already in the diary
-    console.log('Game already in diary:', gameId);
-  };
-
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -157,6 +158,40 @@ const Timeline = () => {
         <span>{teamAbbr}</span>
       </div>
     );
+  };
+
+  const generateBoxscoreUrl = (game: any) => {
+    const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+    const year = new Date(game.date).getFullYear();
+    let bbrefTeamCode = homeTeamAbbr;
+
+    if (homeTeamAbbr === 'FLA' && year <= 2002) {
+      bbrefTeamCode = 'FLO';
+    } else if (homeTeamAbbr === 'LAA') {
+      bbrefTeamCode = 'ANA';
+    } else {
+      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
+      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
+    }
+
+    bbrefTeamCode = bbrefTeamCode.toUpperCase();
+    const date = game.date.replace(/-/g, '');
+    const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
+
+    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
+  };
+
+  const getStatusTag = (game: any) => {
+    if (game.game_type === 'E') {
+      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Exhibition</Badge>;
+    }
+    if (game.game_type === 'S') {
+      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Spring Training</Badge>;
+    }
+    if (game.playoff) {
+      return <Badge variant="outline" className="border-sports-gold text-sports-gold">Playoff</Badge>;
+    }
+    return null;
   };
 
   if (isLoading) {
@@ -203,102 +238,163 @@ const Timeline = () => {
           </div>
         )}
 
-        {/* Games Grid with Enhanced GameCards */}
+        {/* Games Grid with Unified Cards */}
         {sortedLoggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedLoggedGames.map((game, index) => (
-              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
-                <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col relative">
-                  {/* Edit/Delete overlay in top right */}
-                  <div className="absolute top-2 right-2 flex space-x-1 z-10">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
-                      onClick={() => setEditingLog({ log: game.logData, game })}
-                    >
-                      <Edit className="h-4 w-4 text-gray-600" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
-                      onClick={() => setDeletingLog({ log: game.logData, game })}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </div>
-                  
-                  <CardContent className="p-3 flex-1 flex flex-col">
-                    {/* GameCard content without footer */}
-                    <GameCard
-                      game={game}
-                      onAddToDiary={handleAddToDiary}
-                      isAuthenticated={!!user}
-                      hideDiaryButton={true}
-                    />
-                  </CardContent>
-                  
-                  <CardFooter className="p-3 pt-0 border-t border-gray-200">
-                    {/* Diary Metadata integrated into the card */}
-                    <div className="w-full">
-                      <div className="grid grid-cols-2 gap-1.5 text-sm mb-2">
-                        <div>
-                          <span className="font-medium text-gray-700">Mode:</span>
-                          <span className="ml-2 capitalize text-gray-900">
-                            {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
-                          </span>
-                        </div>
-                        
-                        <div>
-                          <span className="font-medium text-gray-700">Rating:</span>
-                          <span className="ml-2 text-gray-900">
-                            {game.logData.rating ? 
-                              `⭐ ${game.logData.rating}/5` : 
-                              <span className="text-gray-500">Not rated</span>
-                            }
-                          </span>
-                        </div>
-                        
-                        <div>
-                          <span className="font-medium text-gray-700">Rooted for:</span>
-                          <div className="ml-2 text-gray-900 inline-flex">
-                            {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <span className="font-medium text-gray-700">Company:</span>
-                          <span className="ml-2 text-gray-900">
-                            {game.logData.company || 
-                              <span className="text-gray-500">No company</span>
-                            }
-                          </span>
+            {sortedLoggedGames.map((game, index) => {
+              const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+              const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
+              const statusTag = getStatusTag(game);
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
+
+              return (
+                <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
+                  <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col relative">
+                    {/* Edit/Delete controls in top right */}
+                    <div className="absolute top-3 right-3 flex space-x-1 z-10">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                        onClick={() => setEditingLog({ log: game.logData, game })}
+                      >
+                        <Edit className="h-4 w-4 text-gray-600" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                        onClick={() => setDeletingLog({ log: game.logData, game })}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </Button>
+                    </div>
+
+                    <CardContent className="p-3 flex-1 flex flex-col">
+                      {/* Game info section - matching GameCard layout */}
+                      <div className="flex justify-between items-start mb-1.5">
+                        <div className="flex items-center space-x-2 flex-wrap">
+                          <Badge variant="secondary" className="bg-field-green text-white">
+                            {game.league}
+                          </Badge>
+                          {statusTag}
                         </div>
                       </div>
-                      
-                      {game.logData.notes && (
-                        <div className="mb-2 pt-1.5 border-t border-gray-200">
-                          <span className="font-medium text-gray-700">Notes:</span>
-                          <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
+
+                      {game.venue && (
+                        <div className="flex items-center justify-center text-sm text-gray-600 mb-1.5">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span className="text-center">{game.venue}</span>
                         </div>
                       )}
-                      
-                      <div className="pt-1.5 border-t border-gray-200 text-xs text-gray-500">
-                        Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit'
-                        })}
+
+                      <div className="text-center mb-1 flex-1 flex flex-col justify-center">
+                        <GameTeamDisplay 
+                          homeTeam={homeTeamAbbr}
+                          awayTeam={awayTeamAbbr}
+                          league={game.league}
+                          gameDate={game.date}
+                        />
+                        <GameScore 
+                          league={game.league}
+                          ptsOff={game.pts_off}
+                          ptsDef={game.pts_def}
+                          runsScored={game.runs_scored}
+                          runsAllowed={game.runs_allowed}
+                        />
                       </div>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </div>
-            ))}
+
+                      <div className="text-center flex flex-col justify-start">
+                        <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
+                      </div>
+                    </CardContent>
+
+                    {/* Footer with boxscore button and metadata */}
+                    <div className="border-t border-gray-200 mx-3"></div>
+                    <CardFooter className="p-3 pt-2">
+                      <div className="w-full">
+                        {/* Boxscore button */}
+                        {isBeforeToday && (
+                          <div className="mb-3">
+                            <a 
+                              href={generateBoxscoreUrl(game)} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="block"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                              >
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Boxscore
+                              </Button>
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Diary metadata */}
+                        <div className="space-y-2 text-xs text-gray-600">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <span className="font-medium">Mode:</span>
+                              <span className="ml-1 capitalize">
+                                {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
+                              </span>
+                            </div>
+                            
+                            <div>
+                              <span className="font-medium">Rating:</span>
+                              <span className="ml-1">
+                                {game.logData.rating ? 
+                                  `⭐ ${game.logData.rating}/5` : 
+                                  <span className="text-gray-400">Not rated</span>
+                                }
+                              </span>
+                            </div>
+                            
+                            <div>
+                              <span className="font-medium">Rooted for:</span>
+                              <div className="ml-1 inline-flex">
+                                {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <span className="font-medium">Company:</span>
+                              <span className="ml-1">
+                                {game.logData.company || 
+                                  <span className="text-gray-400">Solo</span>
+                                }
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {game.logData.notes && (
+                            <div className="pt-1.5 border-t border-gray-100">
+                              <span className="font-medium">Notes:</span>
+                              <p className="mt-0.5 text-gray-700">{game.logData.notes}</p>
+                            </div>
+                          )}
+                          
+                          <div className="pt-1.5 border-t border-gray-100 text-gray-400">
+                            Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </div>
+              );
+            })}
           </div>
         ) : (
           /* Empty State */
