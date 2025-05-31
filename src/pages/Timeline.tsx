@@ -47,7 +47,13 @@ const Timeline = () => {
   }
 
   const { data: loggedGames, isLoading } = useLoggedGames({
-    enabled: !!user
+    mode: '',
+    startDate: undefined,
+    endDate: undefined,
+    league: undefined,
+    season: undefined,
+    playoff: undefined,
+    search: undefined
   });
 
   const handleEditClick = (gameLog: any) => {
@@ -236,7 +242,7 @@ const Timeline = () => {
                             alt={game.logData.rooted_for}
                             className="w-4 h-4"
                           />
-                          <span className="text-sm font-medium">{game.logData.rooted_for} (W)</span>
+                          <span className="text-sm font-medium">{game.logData.rooted_for}</span>
                         </div>
                       </div>
                     )}
@@ -281,7 +287,7 @@ const Timeline = () => {
             }}
             gameLog={selectedGameLog}
             game={loggedGames?.find(g => g.logData.id === selectedGameLog.id)}
-            league="mlb"
+            league="MLB"
           />
         )}
 
@@ -295,7 +301,7 @@ const Timeline = () => {
             }}
             gameLog={selectedGameLog}
             game={loggedGames?.find(g => g.logData.id === selectedGameLog.id)}
-            league="mlb"
+            league="MLB"
           />
         )}
       </div>
