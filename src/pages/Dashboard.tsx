@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity } from 'lucide-react';
@@ -146,13 +145,16 @@ const Dashboard = () => {
                     {stats.mostSupportedTeam ? (
                       <>
                         <span className="text-lg font-bold text-gray-900 truncate">
-                          {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')} ({stats.mostSupportedTeam.count})
+                          {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
                         </span>
                         <img
                           src={getTeamLogo(getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB'), 'MLB')}
                           alt={stats.mostSupportedTeam.team}
                           className="h-6 w-6"
                         />
+                        <span className="text-lg font-bold text-gray-900">
+                          ({stats.mostSupportedTeam.count})
+                        </span>
                       </>
                     ) : (
                       <span className="text-lg font-bold text-gray-900">N/A</span>
