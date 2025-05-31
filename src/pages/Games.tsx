@@ -106,7 +106,7 @@ const Games = () => {
     setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
-  // Get games from past 3 days for hot games section
+  // Get games from past 3 days for hot games section (excluding future games)
   const threeDaysAgo = new Date();
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
   const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0];
@@ -162,7 +162,7 @@ const Games = () => {
 
         {/* Hot Games Section */}
         <HotGames 
-          games={hotGamesData} 
+          games={hotGamesData.filter(game => !game.is_future)} 
           onAddToDiary={handleAddToDiary}
           isAuthenticated={!!user}
         />

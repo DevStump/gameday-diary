@@ -20,7 +20,7 @@ export const useProfileStats = () => {
 
       const gameMap = Object.fromEntries(mlbGames.map(g => [String(g.game_id), g]));
 
-      // Use all game logs
+      // Use all game logs without date filtering
       const filteredGameLogs = gameLogs.filter(log => {
         const game = gameMap[String(log.game_id)];
         return !!game; // Only filter out logs without corresponding games
@@ -179,7 +179,7 @@ export const useProfileStats = () => {
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
 
-      const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
+      const attendedVenueBreakdown = Object.entries(attendedVenueCounts).sort(([, a], [, b]) => b - a).slice(0, 3);
       const highestRatedGame = Math.max(...ratedGames.map(log => log.rating), 0);
 
       // Calculate average runs per game

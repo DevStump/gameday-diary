@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -26,39 +25,41 @@ const Timeline = () => {
   const [deletingLog, setDeletingLog] = useState<any>(null);
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
 
-  // Filter state - remove date filters for diary
+  // Filter state - same as Games page plus mode
   const [filters, setFilters] = useState({
+    startDate: '',
+    endDate: '',
     league: '',
     season: '',
     playoff: '',
     search: '',
-    mode: '', // Filter for diary entries
+    mode: '', // New filter for diary entries
   });
 
-  // Fetch MLB games - show all games without date filtering
+  // Fetch MLB games only since we're focusing on MLB data
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: filters.search,
     league: 'MLB',
     season: filters.season,
     playoff: filters.playoff,
-    startDate: '',
-    endDate: ''
+    startDate: filters.startDate,
+    endDate: filters.endDate
   });
 
   // Only show loading when we're actually fetching data, not when filtering
   const isLoading = logsLoading || gamesLoading;
 
-  // Create enriched games with log data - focus on MLB, but show ALL logs even if game data is missing
+  // Create enriched games with log data - focus on MLB
   const enrichedLoggedGames = React.useMemo(() => {
-    if (!gameLogs) return [];
+    if (!gameLogs || !mlbGames) return [];
 
     console.log('Game logs:', gameLogs);
     console.log('MLB games:', mlbGames);
 
     return gameLogs.map(log => {
-      console.log('Processing log with game ID:', log.game_id);
+      console.log('Looking for game with ID:', log.game_id);
       
-      // Try to find the corresponding MLB game - convert both to string for comparison
+      // Find the corresponding MLB game - convert both to string for comparison
       const game = mlbGames.find(g => {
         const gameId = g.game_id?.toString();
         const logGameId = log.game_id?.toString();
@@ -67,31 +68,8 @@ const Timeline = () => {
       });
       
       if (!game) {
-        console.log('No game found for log, creating fallback entry:', log);
-        // Create a fallback game object for logs where we can't find the game data
-        return {
-          game_id: log.game_id,
-          date: log.created_at.split('T')[0], // Use log creation date as fallback
-          home_team: 'Unknown Team',
-          away_team: 'Unknown Team',
-          runs_scored: null,
-          runs_allowed: null,
-          venue: 'Unknown Venue',
-          league: 'MLB' as const,
-          playoff: false,
-          game_datetime: log.created_at,
-          // Add log metadata
-          logData: {
-            id: log.id,
-            mode: log.mode,
-            company: log.company,
-            rating: log.rating,
-            rooted_for: log.rooted_for,
-            notes: log.notes,
-            created_at: log.created_at,
-            updated_at: log.updated_at
-          }
-        };
+        console.log('No game found for log:', log);
+        return null;
       }
 
       console.log('Found game:', game);
@@ -121,7 +99,7 @@ const Timeline = () => {
           updated_at: log.updated_at
         }
       };
-    });
+    }).filter(Boolean);
   }, [gameLogs, mlbGames]);
 
   // Apply filters to enriched games
@@ -171,6 +149,8 @@ const Timeline = () => {
 
   const handleClearFilters = () => {
     setFilters({
+      startDate: '',
+      endDate: '',
       league: '',
       season: '',
       playoff: '',
@@ -209,15 +189,6 @@ const Timeline = () => {
       );
     }
     
-    // Handle unknown teams gracefully
-    if (homeTeam === 'Unknown Team' || awayTeam === 'Unknown Team') {
-      return (
-        <div className="flex items-center justify-center gap-1 min-w-[60px]">
-          <span className="text-xs">{rootedFor}</span>
-        </div>
-      );
-    }
-    
     // Use team abbreviations instead of full names
     const homeTeamAbbr = getTeamAbbreviation(homeTeam, 'MLB');
     const awayTeamAbbr = getTeamAbbreviation(awayTeam, 'MLB');
@@ -246,11 +217,6 @@ const Timeline = () => {
   };
 
   const generateBoxscoreUrl = (game: any) => {
-    // Only generate boxscore URL for games with valid team data
-    if (game.home_team === 'Unknown Team' || game.away_team === 'Unknown Team') {
-      return '#';
-    }
-    
     const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
     const year = new Date(game.date).getFullYear();
     let bbrefTeamCode = homeTeamAbbr;
@@ -316,21 +282,12 @@ const Timeline = () => {
           </p>
         </div>
 
-        {/* Filters - Hide date filter for diary */}
+        {/* Filters */}
         <GameFilters 
-          filters={{
-            startDate: '',
-            endDate: '',
-            league: filters.league,
-            season: filters.season,
-            playoff: filters.playoff,
-            search: filters.search,
-            mode: filters.mode
-          }} 
+          filters={filters} 
           onFilterChange={handleFilterChange} 
           onClearFilters={handleClearFilters}
           showModeFilter={true}
-          hideDateFilter={true}
         />
 
         {/* Games Count */}
@@ -346,10 +303,12 @@ const Timeline = () => {
         {sortedLoggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedLoggedGames.map((game, index) => {
-              const homeTeamAbbr = game.home_team === 'Unknown Team' ? 'UNK' : getTeamAbbreviation(game.home_team, game.league, game.date);
-              const awayTeamAbbr = game.away_team === 'Unknown Team' ? 'UNK' : getTeamAbbreviation(game.away_team, game.league, game.date);
+              const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+              const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
               const statusTag = getStatusTag(game);
-              const boxscoreUrl = generateBoxscoreUrl(game);
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const isBeforeToday = new Date(game.date) <= new Date(yesterday.toDateString());
 
               return (
                 <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="h-full">
@@ -385,7 +344,7 @@ const Timeline = () => {
                         </div>
                       </div>
 
-                      {game.venue && game.venue !== 'Unknown Venue' && (
+                      {game.venue && (
                         <div className="flex items-center justify-center text-sm text-gray-600 mb-1.5">
                           <MapPin className="h-4 w-4 mr-1" />
                           <span className="text-center">{game.venue}</span>
@@ -417,11 +376,11 @@ const Timeline = () => {
                     <div className="border-t border-gray-200 mx-3"></div>
                     <CardFooter className="p-3 pt-2">
                       <div className="w-full">
-                        {/* Boxscore button - only show for games with valid data */}
-                        {boxscoreUrl !== '#' && (
-                          <div className="mb-3">
+                        {/* Boxscore button - always show but greyed out if not available */}
+                        <div className="mb-3">
+                          {isBeforeToday ? (
                             <a 
-                              href={boxscoreUrl} 
+                              href={generateBoxscoreUrl(game)} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="block"
@@ -436,8 +395,18 @@ const Timeline = () => {
                                 Boxscore
                               </Button>
                             </a>
-                          </div>
-                        )}
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="w-full border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Boxscore
+                            </Button>
+                          )}
+                        </div>
 
                         {/* Diary metadata */}
                         <div className="space-y-2 text-xs text-gray-600">

@@ -92,6 +92,11 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
+      // Get yesterday's date for filtering future games (only used when no date range is specified)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayString = yesterday.toISOString().split('T')[0];
+      
       // Fetch MLB games only
       let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
       
@@ -100,6 +105,10 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
+      } else {
+        // Filter out future games (default behavior)
+        mlbQuery = mlbQuery.lte('game_date', yesterdayString);
+        console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
       }
       
       if (searchTeam) {
@@ -116,24 +125,22 @@ export const useGames = (filters: GameFilters) => {
       }
       
       // Filter MLB games by year using the game_date field
-       if (filters.season) {
+      if (filters.season) {
         const seasonYear = parseInt(filters.season);
-        if (!isNaN(seasonYear)) {
-          const startOfYear = `${seasonYear}-01-01`;
-          const endOfYear = `${seasonYear}-12-31`;
-          mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
-        }
+        const startOfYear = `${seasonYear}-01-01`;
+        const endOfYear = `${seasonYear}-12-31`;
+        mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
       }
-
       
-      const playoffFilter = String(filters.playoff);
-    
-      if (playoffFilter === 'true') {
-        mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']);
-      } else if (playoffFilter === 'false') {
+      if (filters.playoff === 'true') {
+        // Filter by game_type for playoffs
+        mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']); // Wild Card, Division, League Championship, World Series
+      } else if (filters.playoff === 'false') {
+        // Regular season games
         mlbQuery = mlbQuery.eq('game_type', 'R');
-      } else if (playoffFilter === 'exhibition') {
-        mlbQuery = mlbQuery.in('game_type', ['S', 'E']);
+      } else if (filters.playoff === 'exhibition') {
+        // Exhibition games - Spring Training, Exhibition, etc.
+        mlbQuery = mlbQuery.in('game_type', ['S', 'E']); // Spring Training, Exhibition
       }
 
       const result = await mlbQuery;
@@ -158,6 +165,7 @@ export const useGames = (filters: GameFilters) => {
         runs_allowed: game.away_score,
         playoff: ['W', 'D', 'L'].includes(game.game_type),
         venue: game.venue_name || 'Stadium',
+        is_future: !game.home_score && !game.away_score && game.status !== 'Final',
         diaryEntries: generateDiaryEntries(game.game_id.toString()),
       }));
 
