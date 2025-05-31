@@ -130,6 +130,63 @@ export const useProfileStats = () => {
         }
       }).length;
 
+      // Venue breakdown - count games by venue
+      const venueCounts: Record<string, number> = {};
+      gameLogs.forEach(log => {
+        const game = allGames.find(g => g.game_id === log.game_id);
+        if (game) {
+          const venue = game.venue || game.venue_name || 'Unknown Venue';
+          venueCounts[venue] = (venueCounts[venue] || 0) + 1;
+        }
+      });
+
+      // Get most visited venue
+      const mostVisitedVenue = Object.entries(venueCounts)
+        .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
+
+      // Teams rooted for breakdown
+      const rootedForCounts: Record<string, number> = {};
+      gameLogs.forEach(log => {
+        if (log.rooted_for && log.rooted_for !== 'none') {
+          rootedForCounts[log.rooted_for] = (rootedForCounts[log.rooted_for] || 0) + 1;
+        }
+      });
+
+      // Get most supported team
+      const mostSupportedTeam = Object.entries(rootedForCounts)
+        .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
+
+      // Timeline data - games logged by month
+      const monthCounts: Record<string, number> = {};
+      gameLogs.forEach(log => {
+        const date = new Date(log.created_at);
+        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        monthCounts[monthYear] = (monthCounts[monthYear] || 0) + 1;
+      });
+
+      const timelineData = Object.entries(monthCounts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([monthYear, count]) => {
+          const [year, month] = monthYear.split('-');
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return {
+            month: `${monthNames[parseInt(month) - 1]} ${year}`,
+            games: count
+          };
+        })
+        .slice(-12); // Last 12 months
+
+      // Total runs from logged games
+      const totalRuns = gameLogs.reduce((sum, log) => {
+        const game = allGames.find(g => g.game_id === log.game_id);
+        if (game) {
+          const homeScore = game.home_score || game.runs_scored || game.pts_off || 0;
+          const awayScore = game.away_score || game.runs_allowed || game.pts_def || 0;
+          return sum + homeScore + awayScore;
+        }
+        return sum;
+      }, 0);
+
       return {
         totalGames,
         gamesWatched,
@@ -141,6 +198,13 @@ export const useProfileStats = () => {
         playoffGames,
         highestRatedGame: Math.max(...ratedGames.map(log => log.rating), 0),
         teamBreakdown: sortedTeams,
+        mostVisitedVenue,
+        mostSupportedTeam,
+        timelineData,
+        totalRuns,
+        venueBreakdown: Object.entries(venueCounts)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 5),
       };
     },
     enabled: !!gameLogs && !!nflGames && !!mlbGames,
