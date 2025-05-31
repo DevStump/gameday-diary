@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3 } from 'lucide-react';
+import { Loader2, Trophy, TrendingUp, MapPin, Target, BarChart3, Star } from 'lucide-react';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -345,9 +345,10 @@ const Dashboard = () => {
                     </div>
                   </>
                 ) : (
-                  <div className="py-6">
-                    <div className="text-lg text-gray-600 mb-2">No average rating yet</div>
-                    <div className="text-sm text-gray-500">Rate a game to see your average rating</div>
+                  <div className="text-center py-6">
+                    <Star className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">No average rating yet</p>
+                    <p className="text-xs text-gray-500">Rate a game to see your average rating</p>
                   </div>
                 )}
               </div>
