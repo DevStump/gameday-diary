@@ -46,15 +46,18 @@ export const useProfileStats = () => {
         ? Math.round((ratedGames.reduce((sum, log) => sum + log.rating, 0) / ratedGames.length) * 100) / 100
         : 0;
 
-      // Most Visited Venue - count venue frequency from actual games
       const venueCounts: Record<string, number> = {};
+      
       gameLogs.forEach(log => {
         const game = allGames.find(g => g.game_id === log.game_id);
-        if (game) {
-          const venue = game.venue || game.venue_name || 'Unknown Venue';
+        if (game?.venue_name) {
+          const venue = game.venue_name;
           venueCounts[venue] = (venueCounts[venue] || 0) + 1;
         }
       });
+      
+      const mostVisitedVenue = Object.entries(venueCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+
 
       console.log('Venue counts:', venueCounts);
       const mostVisitedVenue = Object.entries(venueCounts)
