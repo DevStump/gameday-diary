@@ -138,7 +138,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${showModeFilter ? '6' : '5'} gap-4 mb-4`}>
+      <div className={`grid gap-4 mb-4 ${showModeFilter ? 'grid-cols-6' : 'grid-cols-5'}`}>
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
