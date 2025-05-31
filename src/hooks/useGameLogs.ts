@@ -182,7 +182,7 @@ export const useDeleteGameLog = () => {
       });
 
       // Update all logged-games queries to remove the deleted entry
-      queryClient.getQueryCache().findAll(['logged-games']).forEach(query => {
+      queryClient.getQueryCache().findAll({ queryKey: ['logged-games'] }).forEach(query => {
         queryClient.setQueryData(query.queryKey, (old: any[]) => {
           return old ? old.filter(game => game.logData?.id !== gameLogId) : [];
         });

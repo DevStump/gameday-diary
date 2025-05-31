@@ -97,14 +97,26 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
   const isBeforeToday = new Date(game.date) <= new Date(new Date().toDateString());
 
   const handleAddClick = () => {
+    console.log('Add button clicked for game:', game.game_id);
+    
     if (!isAuthenticated) {
       // Handle unauthenticated case - this should redirect to auth
-      onAddToDiary(game.game_id, '', '', '', '');
+      onAddToDiary(game.game_id?.toString() || '', '', '', '', '');
       return;
     }
     
     const gameTitle = `${awayTeamAbbr} @ ${homeTeamAbbr}`;
-    onAddToDiary(game.game_id, gameTitle, game.home_team, game.away_team, game.league);
+    const gameIdString = game.game_id?.toString() || '';
+    
+    console.log('Calling onAddToDiary with:', {
+      gameId: gameIdString,
+      gameTitle,
+      homeTeam: game.home_team,
+      awayTeam: game.away_team,
+      league: game.league
+    });
+    
+    onAddToDiary(gameIdString, gameTitle, game.home_team, game.away_team, game.league);
   };
 
   return (

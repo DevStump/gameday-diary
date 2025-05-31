@@ -36,6 +36,8 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
     setLoading(true);
 
     try {
+      console.log('Submitting game log with gameId:', gameId);
+      
       // Client-side validation
       if (!gameId || gameId.trim() === '') {
         throw new Error('Invalid game ID');
@@ -43,13 +45,15 @@ const GameLogModal = ({ isOpen, onClose, gameId, gameTitle, homeTeam, awayTeam, 
 
       // Sanitize inputs before sending
       const sanitizedData = {
-        game_id: gameId.trim(),
+        game_id: gameId.toString().trim(),
         mode,
         company: company.trim().slice(0, 255) || undefined,
         rating: rating || undefined,
         rooted_for: rootedFor === 'none' ? undefined : rootedFor.trim().slice(0, 100) || undefined,
         notes: notes.trim().slice(0, 1000) || undefined,
       };
+
+      console.log('Sanitized data:', sanitizedData);
 
       await addGameLog.mutateAsync(sanitizedData);
 
