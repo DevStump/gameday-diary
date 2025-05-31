@@ -25,6 +25,11 @@ const About = () => {
             <Info className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">About</h1>
           </div>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600">
+              Manage your account and learn more about how GamedayDiary was built
+            </p>
+          </div>
         </div>
 
         {/* User Info - Only show if logged in */}

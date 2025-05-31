@@ -154,14 +154,16 @@ const Games = () => {
             <Trophy className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Games</h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Search every MLB game in history. Add the ones you've seen — live or on screen — to your diary.
-          </p>
-          {!user && (
-            <p className="text-sm text-sports-gold mt-2 font-medium">
-              Sign in to start tracking your game-watching journey
+          <div className="max-w-4xl mx-auto">
+            <p className="text-lg text-gray-600">
+              Search every MLB game in history. Add the ones you've seen — live or on screen — to your diary.
             </p>
-          )}
+            {!user && (
+              <p className="text-sm text-sports-gold mt-2 font-medium">
+                Sign in to start tracking your game-watching journey
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Hot Games Section */}

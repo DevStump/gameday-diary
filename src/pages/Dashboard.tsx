@@ -66,9 +66,14 @@ const Dashboard = () => {
             <BarChart3 className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
-            {stats.totalGames} games added to diary
-          </p>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 mb-2">
+              Get a summary view of all the games in your diary with some fun and cool analysis
+            </p>
+            <p className="text-sm text-gray-500">
+              {stats.totalGames} games added to diary
+            </p>
+          </div>
         </div>
 
         {/* Stats Grid */}

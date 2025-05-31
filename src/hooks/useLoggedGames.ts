@@ -1,8 +1,8 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { normalizeTeamName } from '@/utils/team-name-map';
+import { getTeamAbbreviation } from '@/utils/teamLogos';
 
 // Function to generate consistent random diary entries based on game_id
 const generateDiaryEntries = (gameId: string): number => {
@@ -143,16 +143,18 @@ export const useLoggedGames = (filters: {
             const [teamAbbr, league] = filters.search.split(':');
             if (league !== game.league) return false;
             
-            // Check if either home or away team matches - use correct field names
-            const homeTeamMatches = game.home_name?.toLowerCase().includes(teamAbbr.toLowerCase());
-            const awayTeamMatches = game.away_name?.toLowerCase().includes(teamAbbr.toLowerCase());
-            return homeTeamMatches || awayTeamMatches;
+            // Get standardized team abbreviations for comparison
+            const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
+            const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
+            
+            // Check if either home or away team matches the selected abbreviation
+            return homeTeamAbbr === teamAbbr || awayTeamAbbr === teamAbbr;
           }
           
           // Legacy format - check team names - use correct field names
           const searchLower = filters.search.toLowerCase();
-          const homeTeamMatches = game.home_name?.toLowerCase().includes(searchLower);
-          const awayTeamMatches = game.away_name?.toLowerCase().includes(searchLower);
+          const homeTeamMatches = game.home_team?.toLowerCase().includes(searchLower);
+          const awayTeamMatches = game.away_team?.toLowerCase().includes(searchLower);
           return homeTeamMatches || awayTeamMatches;
         });
       }
