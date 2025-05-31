@@ -38,6 +38,23 @@ export const useProfileStats = () => {
         const game = gameMap[String(log.game_id)];
         if (!game) return;
 
+        console.log('Processing game log:', {
+          gameId: log.game_id,
+          rootedFor: log.rooted_for,
+          game: {
+            home_team: game.home_team,
+            away_team: game.away_team,
+            home_name: game.home_name,
+            away_name: game.away_name,
+            home_score: game.home_score,
+            away_score: game.away_score,
+            runs_scored: game.runs_scored,
+            runs_allowed: game.runs_allowed,
+            pts_off: game.pts_off,
+            pts_def: game.pts_def
+          }
+        });
+
         // Venue counts
         if (game.venue_name) {
           const venue = game.venue_name;
@@ -50,39 +67,54 @@ export const useProfileStats = () => {
           rootedForCounts[rooted] = (rootedForCounts[rooted] || 0) + 1;
         }
 
-        // Win/loss calc
+        // Win/loss calculation - improved logic
         if (rooted && rooted !== 'none') {
           const isNflGame = nflGames.some(nfl => nfl.game_id === game.game_id);
-          let winningTeam, losingTeam;
+          let homeTeam, awayTeam, homeScore, awayScore;
 
           if (isNflGame) {
-            if (game.pts_off !== undefined && game.pts_def !== undefined) {
-              if (game.pts_off > game.pts_def) {
-                winningTeam = game.home_team;
-                losingTeam = game.away_team;
-              } else if (game.pts_def > game.pts_off) {
-                winningTeam = game.away_team;
-                losingTeam = game.home_team;
-              }
-            }
+            // NFL game
+            homeTeam = game.home_team;
+            awayTeam = game.away_team;
+            homeScore = game.pts_off ?? 0;
+            awayScore = game.pts_def ?? 0;
           } else {
-            const homeScore = game.home_score ?? game.runs_scored ?? 0;
-            const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-            if (homeScore > awayScore) {
-              winningTeam = game.home_team ?? game.home_name;
-              losingTeam = game.away_team ?? game.away_name;
-            } else if (awayScore > homeScore) {
-              winningTeam = game.away_team ?? game.away_name;
-              losingTeam = game.home_team ?? game.home_name;
-            }
+            // MLB game - use both possible field combinations
+            homeTeam = game.home_team ?? game.home_name;
+            awayTeam = game.away_team ?? game.away_name;
+            homeScore = game.home_score ?? game.runs_scored ?? 0;
+            awayScore = game.away_score ?? game.runs_allowed ?? 0;
           }
 
-          if (winningTeam === rooted) {
-            wins++;
-            teamWins[rooted] = (teamWins[rooted] || 0) + 1;
-          } else if (losingTeam === rooted) {
-            losses++;
-            teamLosses[rooted] = (teamLosses[rooted] || 0) + 1;
+          console.log('Win/Loss calculation:', {
+            rootedFor: rooted,
+            homeTeam,
+            awayTeam,
+            homeScore,
+            awayScore,
+            isNflGame
+          });
+
+          // Only process if we have valid scores and the game is finished
+          if (homeScore !== null && awayScore !== null && homeScore !== awayScore) {
+            let didRootedTeamWin = false;
+
+            // Check if rooted team is home or away and if they won
+            if (homeTeam && (homeTeam === rooted || homeTeam.includes(rooted) || rooted.includes(homeTeam))) {
+              didRootedTeamWin = homeScore > awayScore;
+            } else if (awayTeam && (awayTeam === rooted || awayTeam.includes(rooted) || rooted.includes(awayTeam))) {
+              didRootedTeamWin = awayScore > homeScore;
+            }
+
+            console.log('Result:', { didRootedTeamWin });
+
+            if (didRootedTeamWin) {
+              wins++;
+              teamWins[rooted] = (teamWins[rooted] || 0) + 1;
+            } else {
+              losses++;
+              teamLosses[rooted] = (teamLosses[rooted] || 0) + 1;
+            }
           }
         }
 
@@ -105,6 +137,8 @@ export const useProfileStats = () => {
         const key = `${gameDate.getFullYear()}-${String(gameDate.getMonth() + 1).padStart(2, '0')}`;
         timeline[key] = (timeline[key] || 0) + 1;
       });
+
+      console.log('Final win/loss totals:', { wins, losses });
 
       const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
       const mostSupportedEntry = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0];
