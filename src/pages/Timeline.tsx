@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -26,25 +25,23 @@ const Timeline = () => {
   const [deletingLog, setDeletingLog] = useState<any>(null);
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
 
-  // Filter state - same as Games page plus mode
+  // Filter state - remove date filters for diary
   const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
     league: '',
     season: '',
     playoff: '',
     search: '',
-    mode: '', // New filter for diary entries
+    mode: '', // Filter for diary entries
   });
 
-  // Fetch MLB games - show all games
+  // Fetch MLB games - show all games without date filtering
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: filters.search,
     league: 'MLB',
     season: filters.season,
     playoff: filters.playoff,
-    startDate: filters.startDate,
-    endDate: filters.endDate
+    startDate: '',
+    endDate: ''
   });
 
   // Only show loading when we're actually fetching data, not when filtering
@@ -150,8 +147,6 @@ const Timeline = () => {
 
   const handleClearFilters = () => {
     setFilters({
-      startDate: '',
-      endDate: '',
       league: '',
       season: '',
       playoff: '',
@@ -283,12 +278,21 @@ const Timeline = () => {
           </p>
         </div>
 
-        {/* Filters */}
+        {/* Filters - Hide date filter for diary */}
         <GameFilters 
-          filters={filters} 
+          filters={{
+            startDate: '',
+            endDate: '',
+            league: filters.league,
+            season: filters.season,
+            playoff: filters.playoff,
+            search: filters.search,
+            mode: filters.mode
+          }} 
           onFilterChange={handleFilterChange} 
           onClearFilters={handleClearFilters}
           showModeFilter={true}
+          hideDateFilter={true}
         />
 
         {/* Games Count */}

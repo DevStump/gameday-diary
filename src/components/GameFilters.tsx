@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -26,9 +25,10 @@ interface GameFiltersProps {
   onFilterChange: (key: string, value: string) => void;
   onClearFilters: () => void;
   showModeFilter?: boolean; // Whether to show the mode filter
+  hideDateFilter?: boolean; // Whether to hide the date filter
 }
 
-const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false }: GameFiltersProps) => {
+const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false, hideDateFilter = false }: GameFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
@@ -138,7 +138,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${showModeFilter ? '6' : '5'} gap-4 mb-4`}>
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${showModeFilter ? (hideDateFilter ? '5' : '6') : (hideDateFilter ? '4' : '5')} gap-4 mb-4`}>
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
@@ -214,34 +214,36 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
           </SelectContent>
         </Select>
 
-        {/* Date Picker */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? (
-                format(selectedDate, "MMM dd, yyyy")
-              ) : (
-                "Select date"
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateChange}
-              initialFocus
-              className="p-3 pointer-events-auto"
-            />
-          </PopoverContent>
-        </Popover>
+        {/* Date Picker - Only show if not hidden */}
+        {!hideDateFilter && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "MMM dd, yyyy")
+                ) : (
+                  "Select date"
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateChange}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        )}
 
         {/* Mode Filter - Only show on diary pages */}
         {showModeFilter && (
@@ -310,7 +312,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
               />
             </Badge>
           )}
-          {selectedDate && (
+          {!hideDateFilter && selectedDate && (
             <Badge variant="secondary" className="flex items-center space-x-1">
               <span>
                 Date: {format(selectedDate, "MMM dd, yyyy")}
