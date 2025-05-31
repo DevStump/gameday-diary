@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
@@ -45,6 +46,7 @@ export const useProfileStats = () => {
         if (!game) return;
 
         const date = new Date(game.game_date || game.game_datetime);
+        const dateString = date.toISOString();
 
         // Venue counts
         if (game.venue_name) {
@@ -54,7 +56,7 @@ export const useProfileStats = () => {
         // Rooted for counts (normalize to abbreviation)
         const rootedRaw = log.rooted_for;
         if (rootedRaw && rootedRaw !== 'none') {
-          const rooted = ensureAbbreviation(rootedRaw, 'MLB', date);
+          const rooted = ensureAbbreviation(rootedRaw, 'MLB', dateString);
           rootedForCounts[rooted] = (rootedForCounts[rooted] || 0) + 1;
 
           // Win/loss calc
@@ -73,8 +75,8 @@ export const useProfileStats = () => {
           } else {
             const homeScore = game.home_score ?? game.runs_scored ?? 0;
             const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-            const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', date);
-            const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', date);
+            const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
+            const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
             if (homeScore > awayScore) {
               winner = homeTeam;
               loser = awayTeam;
@@ -102,8 +104,8 @@ export const useProfileStats = () => {
         }
 
         // Team breakdown
-        const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', date);
-        const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', date);
+        const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
+        const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
         teamCounts[homeAbbr] = (teamCounts[homeAbbr] || 0) + 1;
         teamCounts[awayAbbr] = (teamCounts[awayAbbr] || 0) + 1;
 
