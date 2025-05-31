@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, User, Search, Info } from 'lucide-react';
+import { Calendar, BarChart3, Search, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import WelcomeModal from '@/components/WelcomeModal';
@@ -16,7 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
     { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
-    { name: 'Profile', href: '/profile', icon: User, requireAuth: true },
+    { name: 'Dashboard', href: '/profile', icon: BarChart3, requireAuth: true },
     { name: 'About', href: '/about', icon: Info },
   ];
 
