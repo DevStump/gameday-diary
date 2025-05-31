@@ -28,19 +28,36 @@ const Timeline = () => {
 
   const isLoading = logsLoading || gamesLoading;
 
-  // Filter games to only include those that have been logged
-  const loggedGames = allGames.filter(game => 
-    loggedGameIds.includes(game.game_id)
-  );
+  // Create enriched games with log data
+  const enrichedLoggedGames = React.useMemo(() => {
+    if (!gameLogs || !allGames) return [];
+
+    return gameLogs.map(log => {
+      // Find the corresponding game
+      const game = allGames.find(g => g.game_id === log.game_id);
+      if (!game) return null;
+
+      // Return enriched game object with log data
+      return {
+        ...game,
+        // Add log metadata
+        logData: {
+          id: log.id,
+          mode: log.mode,
+          company: log.company,
+          rating: log.rating,
+          rooted_for: log.rooted_for,
+          notes: log.notes,
+          created_at: log.created_at,
+          updated_at: log.updated_at
+        }
+      };
+    }).filter(Boolean);
+  }, [gameLogs, allGames]);
 
   // Sort by most recently logged (based on game log creation date)
-  const sortedLoggedGames = loggedGames.sort((a, b) => {
-    const logA = gameLogs?.find(log => log.game_id === a.game_id);
-    const logB = gameLogs?.find(log => log.game_id === b.game_id);
-    
-    if (!logA || !logB) return 0;
-    
-    return new Date(logB.created_at).getTime() - new Date(logA.created_at).getTime();
+  const sortedLoggedGames = enrichedLoggedGames.sort((a, b) => {
+    return new Date(b.logData.created_at).getTime() - new Date(a.logData.created_at).getTime();
   });
 
   const handleAddToDiary = (gameId: string) => {
@@ -84,16 +101,75 @@ const Timeline = () => {
           </div>
         )}
 
-        {/* Games Grid - Using exact same GameCard components */}
+        {/* Games Grid with Enhanced GameCards */}
         {sortedLoggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedLoggedGames.map((game, index) => (
-              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
+              <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }} className="relative">
                 <GameCard
                   game={game}
                   onAddToDiary={handleAddToDiary}
                   isAuthenticated={!!user}
                 />
+                
+                {/* Diary Metadata Overlay */}
+                <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-700">Mode:</span>
+                      <span className="ml-2 capitalize text-gray-900">
+                        {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <span className="font-medium text-gray-700">Rating:</span>
+                      <span className="ml-2 text-gray-900">
+                        {game.logData.rating ? 
+                          `⭐ ${game.logData.rating}/5` : 
+                          <span className="text-gray-500">Not rated</span>
+                        }
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <span className="font-medium text-gray-700">Company:</span>
+                      <span className="ml-2 text-gray-900">
+                        {game.logData.company || 
+                          <span className="text-gray-500">No company</span>
+                        }
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <span className="font-medium text-gray-700">Rooted for:</span>
+                      <span className="ml-2 text-gray-900">
+                        {game.logData.rooted_for && game.logData.rooted_for !== 'none' ? 
+                          `🏳️ ${game.logData.rooted_for}` : 
+                          <span className="text-gray-500">No team</span>
+                        }
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {game.logData.notes && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <span className="font-medium text-gray-700">Notes:</span>
+                      <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
+                    </div>
+                  )}
+                  
+                  <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
+                    Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
