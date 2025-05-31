@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
-import { formatTeamName, getTeamLogo } from '@/utils/teamLogos';
+import { formatTeamName, getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -143,7 +143,7 @@ const Dashboard = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
                   <p className="text-lg font-bold text-gray-900 truncate">
-                    {stats.mostSupportedTeam ? `${stats.mostSupportedTeam.team} (${stats.mostSupportedTeam.count})` : 'N/A'}
+                    {stats.mostSupportedTeam ? `${getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')} (${stats.mostSupportedTeam.count})` : 'N/A'}
                   </p>
                   {stats.mostSupportedTeam && (
                     <img
@@ -201,7 +201,7 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">Most wins:</span>
                         <span className="font-medium text-green-600">
-                          {stats.teamWinRecord.mostWins.team} ({stats.teamWinRecord.mostWins.count})
+                          {getTeamAbbreviation(stats.teamWinRecord.mostWins.team, 'MLB')} ({stats.teamWinRecord.mostWins.count})
                         </span>
                       </div>
                     )}
@@ -209,7 +209,7 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600">Most losses:</span>
                         <span className="font-medium text-red-600">
-                          {stats.teamWinRecord.mostLosses.team, 'MLB'} ({stats.teamWinRecord.mostLosses.count})
+                          {getTeamAbbreviation(stats.teamWinRecord.mostLosses.team, 'MLB')} ({stats.teamWinRecord.mostLosses.count})
                         </span>
                       </div>
                     )}
@@ -302,7 +302,7 @@ const Dashboard = () => {
                   
                   return (
                     <div key={team} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">{team, leagueType}</span>
+                      <span className="font-medium">{getTeamAbbreviation(team, leagueType)}</span>
                       <div className="text-right">
                         <div className="text-lg font-bold text-field-green">{count}</div>
                       </div>
