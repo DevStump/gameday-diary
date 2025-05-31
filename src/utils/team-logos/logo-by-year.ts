@@ -178,6 +178,9 @@ export const mlbLogosByYear: LogoByYear = {
     '2012-2016': 'https://content.sportslogos.net/logos/54/3637/full/miami_marlins_logo_primary_20128805.png',
     '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png'
   },
+  'FLA': {
+    '1993-2011': 'https://content.sportslogos.net/logos/54/60/full/florida_marlins_logo_primary_19935464.png'
+  },
   'MIL': {
     '2020-current': 'https://content.sportslogos.net/logos/54/64/full/6474_milwaukee_brewers-primary-2020.png',
     '2018-2019': 'https://content.sportslogos.net/logos/54/64/full/milwaukee_brewers_logo_primary_20187469.png',

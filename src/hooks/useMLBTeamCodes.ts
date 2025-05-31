@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -9,7 +8,7 @@ const baseballReferenceOverrides: Record<string, string> = {
   'CAL': 'CAL', // California Angels
   'MON': 'MON', // Montreal Expos
   // Current teams that use different codes on Baseball Reference
-  'LAD': 'LAN', // Los Angeles Dodgers
+  'LA': 'LAN', // Los Angeles Dodgers (fixed: using file_code 'LA' not 'LAD')
   'STL': 'SLN', // St. Louis Cardinals
   'CHC': 'CHN', // Chicago Cubs
   'NYM': 'NYN', // New York Mets
@@ -19,6 +18,7 @@ const baseballReferenceOverrides: Record<string, string> = {
   'NYY': 'NYA', // New York Yankees
   'TB': 'TBA', // Tampa Bay Rays
   'KC': 'KCA', // Kansas City Royals
+  'MIA': 'FLO', // Miami Marlins (Baseball Reference uses FLO for all Marlins history)
 };
 
 export const useMLBTeamCodes = () => {
