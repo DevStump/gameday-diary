@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -41,17 +40,8 @@ const Games = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: allGames = [], isLoading: loading } = useGames(filters);
+  const { data: games = [], isLoading: loading } = useGames(filters);
   const { data: gameLogs = [] } = useGameLogs();
-
-  // Filter out games that occur tomorrow or later
-  const today = new Date();
-  const todayString = today.toISOString().split('T')[0];
-  
-  const games = allGames.filter(game => {
-    const gameDate = game.date || game.game_date;
-    return gameDate <= todayString;
-  });
 
   // Create a set of logged game IDs for quick lookup
   const loggedGameIds = new Set(gameLogs.map(log => log.game_id?.toString()));
@@ -120,6 +110,9 @@ const Games = () => {
   const threeDaysAgo = new Date();
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
   const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0];
+  
+  const today = new Date();
+  const todayString = today.toISOString().split('T')[0];
 
   const { data: hotGamesData = [] } = useGames({
     search: '',
