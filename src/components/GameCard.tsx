@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -94,7 +95,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    return isPastGame(game.date); // ✅ Only show for games before today
+    return isPastGame(game.date); // ✅ Only show for games strictly before today
   };
 
   const getStatusTag = () => {
@@ -146,6 +147,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
             runsScored={game.runs_scored}
             runsAllowed={game.runs_allowed}
             isFuture={futureGame}
+            isToday={isTodayGame(game.date)}
           />
         </div>
 

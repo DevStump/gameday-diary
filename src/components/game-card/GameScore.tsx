@@ -10,17 +10,18 @@ interface GameScoreProps {
   runsScored?: number;
   runsAllowed?: number;
   isFuture?: boolean;
+  isToday?: boolean;
 }
 
-const GameScore = ({ league, ptsOff, ptsDef, runsScored, runsAllowed, isFuture }: GameScoreProps) => {
+const GameScore = ({ league, ptsOff, ptsDef, runsScored, runsAllowed, isFuture, isToday }: GameScoreProps) => {
   const getScore = () => {
     if (league === 'NFL' && ptsOff !== undefined && ptsDef !== undefined) {
-      if (!isFuture && (ptsOff !== 0 || ptsDef !== 0)) {
+      if (!isFuture && !isToday && (ptsOff !== 0 || ptsDef !== 0)) {
         return `${ptsDef} - ${ptsOff}`;
       }
     }
     if (league === 'MLB' && runsScored !== undefined && runsAllowed !== undefined) {
-      if (!isFuture && (runsScored !== 0 || runsAllowed !== 0)) {
+      if (!isFuture && !isToday && (runsScored !== 0 || runsAllowed !== 0)) {
         return `${runsAllowed} - ${runsScored}`;
       }
     }
@@ -35,15 +36,11 @@ const GameScore = ({ league, ptsOff, ptsDef, runsScored, runsAllowed, isFuture }
         <div className="text-2xl font-bold text-field-green">
           {score}
         </div>
-      ) : isFuture ? (
+      ) : (
         <Badge variant="outline" className="border-gray-300 text-gray-500">
           <Clock className="h-3 w-3 mr-1" />
           Scheduled
         </Badge>
-      ) : (
-        <div className="text-sm italic text-gray-500">
-          Score unavailable
-        </div>
       )}
     </div>
   );
