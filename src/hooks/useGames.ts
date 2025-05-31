@@ -137,16 +137,16 @@ export const useGames = (filters: GameFilters) => {
         mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
       }
       
-      if (filters.playoff === 'true') {
+      const playoffFilter = String(filters.playoff);
+    
+      if (playoffFilter === 'true') {
         mlbQuery = mlbQuery.in('game_type', ['W', 'D', 'L']);
-      } else if (filters.playoff === 'false') {
+      } else if (playoffFilter === 'false') {
         mlbQuery = mlbQuery.eq('game_type', 'R');
-      } else if (filters.playoff === 'exhibition') {
+      } else if (playoffFilter === 'exhibition') {
         mlbQuery = mlbQuery.in('game_type', ['S', 'E']);
-      } else {
-        // No playoff filter specified — fetch all types
-        console.log('No playoff filter set — including all game types');
       }
+
 
       const result = await mlbQuery;
       console.log('Query result:', result);
