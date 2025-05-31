@@ -8,6 +8,13 @@ import { Loader2, Trophy } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const Games = () => {
   const [filters, setFilters] = useState({
@@ -25,20 +32,27 @@ const Games = () => {
     awayTeam: string; 
     league: string; 
   } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const gamesPerPage = 24;
 
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { data: games = [], isLoading: loading } = useGames(filters);
 
-  // Limit to 24 games
-  const displayedGames = games.slice(0, 24);
+  // Calculate pagination
+  const totalPages = Math.ceil(games.length / gamesPerPage);
+  const startIndex = (currentPage - 1) * gamesPerPage;
+  const endIndex = startIndex + gamesPerPage;
+  const displayedGames = games.slice(startIndex, endIndex);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
     }));
+    // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
@@ -50,6 +64,22 @@ const Games = () => {
       startDate: '',
       endDate: ''
     });
+    // Reset to first page when filters are cleared
+    setCurrentPage(1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
@@ -132,28 +162,54 @@ const Games = () => {
           <>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">
-                {displayedGames.length} Games Displayed {games.length > 50 && `(${games.length} total found)`}
+                {displayedGames.length} Games Displayed 
+                {games.length > gamesPerPage && ` (Page ${currentPage} of ${totalPages})`}
+                {games.length > 50 && ` - ${games.length} total found`}
               </h2>
             </div>
 
             {displayedGames.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedGames.map((game, index) => (
-                  <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
-                    <GameCard
-                      game={game}
-                      onAddToDiary={(gameId) => handleAddToDiary(
-                        gameId, 
-                        `${game.away_team} @ ${game.home_team}`,
-                        game.home_team,
-                        game.away_team,
-                        game.league
-                      )}
-                      isAuthenticated={!!user}
-                    />
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {displayedGames.map((game, index) => (
+                    <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
+                      <GameCard
+                        game={game}
+                        onAddToDiary={(gameId) => handleAddToDiary(
+                          gameId, 
+                          `${game.away_team} @ ${game.home_team}`,
+                          game.home_team,
+                          game.away_team,
+                          game.league
+                        )}
+                        isAuthenticated={!!user}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-8 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={handlePreviousPage}
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={handleNextPage}
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
