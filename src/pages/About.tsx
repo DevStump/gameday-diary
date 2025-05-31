@@ -3,7 +3,7 @@ import React from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Info, User, LogOut } from 'lucide-react';
+import { ExternalLink, Info, User, LogOut, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -77,7 +77,7 @@ const About = () => {
         </Card>
         
         {/* Data Sources */}
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <span>📊</span>
@@ -125,6 +125,27 @@ const About = () => {
                 </a>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Feedback Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Mail className="h-5 w-5" />
+              <span>Got Feedback?</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Please feel free to reach out with any feedback, bug reports, and feature requests. Your input helps make GamedayDiary better for everyone!
+            </p>
+            <a href="mailto:nicholas.piovano@gmail.com?subject=GamedayDiary Feedback">
+              <Button className="flex items-center space-x-2">
+                <Mail className="h-4 w-4" />
+                <span>Send Feedback</span>
+              </Button>
+            </a>
           </CardContent>
         </Card>
 
