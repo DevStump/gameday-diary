@@ -18,19 +18,12 @@ export const useProfileStats = () => {
     queryFn: () => {
       if (!gameLogs || !mlbGames) return null;
 
-      // 12-month rolling window
-      const now = new Date();
-      const twelveMonthsAgo = new Date();
-      twelveMonthsAgo.setFullYear(now.getFullYear() - 1);
-
       const gameMap = Object.fromEntries(mlbGames.map(g => [String(g.game_id), g]));
 
-      // Filter game logs to 12-month window
+      // Use all game logs without date filtering
       const filteredGameLogs = gameLogs.filter(log => {
         const game = gameMap[String(log.game_id)];
-        if (!game) return false;
-        const gameDate = new Date(game.game_date || game.game_datetime);
-        return gameDate >= twelveMonthsAgo && gameDate <= now;
+        return !!game; // Only filter out logs without corresponding games
       });
 
       const totalGames = filteredGameLogs.length;
@@ -190,18 +183,6 @@ export const useProfileStats = () => {
       // Calculate average runs per game
       const avgRunsPerGame = totalGames > 0 ? Math.round((totalRuns / totalGames) * 10) / 10 : 0;
 
-      // Calculate 12-month window dates for display
-      const windowStart = twelveMonthsAgo.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-      const windowEnd = now.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-
       return {
         totalGames,
         gamesWatched,
@@ -223,7 +204,6 @@ export const useProfileStats = () => {
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
         attendedVenueBreakdown,
-        timeWindow: { start: windowStart, end: windowEnd },
       };
     },
     enabled: !!gameLogs && !!mlbGames,

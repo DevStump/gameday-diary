@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -66,9 +65,6 @@ const Dashboard = () => {
             <BarChart3 className="h-10 w-10 text-field-green" />
             <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
           </div>
-          <p className="text-lg text-gray-600">
-            Your game-watching insights from {stats.timeWindow.start} to {stats.timeWindow.end}
-          </p>
           <p className="text-sm text-gray-500 mt-1">
             {stats.totalGames} games logged
           </p>
