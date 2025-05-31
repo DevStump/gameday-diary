@@ -27,10 +27,12 @@ const baseballReferenceOverrides: Record<string, string> = {
 const getYearBasedCode = (teamCode: string, year?: number): string | null => {
   if (!year) return null;
   
-  // Marlins: MIA for 2012+, FLO for 2011 and prior
-  if (teamCode.toUpperCase() === 'MIA' && year <= 2011) {
+  // Florida Marlins: FLA for 2011 and prior should use FLO on Baseball Reference
+  if (teamCode.toUpperCase() === 'FLA' && year <= 2011) {
     return 'FLO';
   }
+  
+  // Miami Marlins: MIA for 2012+ should stay as MIA (no override needed)
   
   return null;
 };
