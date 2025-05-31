@@ -46,6 +46,7 @@ const Timeline = () => {
     endDate: filters.endDate
   });
 
+  // Only show loading when we're actually fetching data, not when filtering
   const isLoading = logsLoading || gamesLoading;
 
   // Create enriched games with log data - focus on MLB
@@ -231,6 +232,7 @@ const Timeline = () => {
     window.location.reload();
   };
 
+  // Only show loading spinner when we're actually fetching data
   if (isLoading) {
     return (
       <Layout>
