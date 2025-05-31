@@ -12,13 +12,26 @@ const About = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-3 mb-4">
             <Info className="h-10 w-10 text-field-green" />
-            <h1 className="text-4xl font-bold text-gray-900">About GamedayDiary</h1>
+            <h1 className="text-4xl font-bold text-gray-900">About</h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Track your game-watching journey with comprehensive sports data and beautiful team logos.
-          </p>
         </div>
 
+       {/* App Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <span>ℹ️</span>
+              <span>About This App</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 leading-relaxed">
+              GamedayDiary helps sports fans track and remember the games they've watched, whether live at the stadium or from home. 
+              Create a personal diary of your sports viewing experience with detailed game information, team logos, and your own notes and memories.
+            </p>
+          </CardContent>
+        </Card>
+        
         {/* Data Sources */}
         <Card className="mb-6">
           <CardHeader>
@@ -71,21 +84,6 @@ const About = () => {
           </CardContent>
         </Card>
 
-        {/* App Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>ℹ️</span>
-              <span>About This App</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 leading-relaxed">
-              GamedayDiary helps sports fans track and remember the games they've watched, whether live at the stadium or from home. 
-              Create a personal diary of your sports viewing experience with detailed game information, team logos, and your own notes and memories.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </Layout>
   );
