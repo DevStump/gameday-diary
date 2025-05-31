@@ -109,7 +109,7 @@ export const useGames = (filters: GameFilters) => {
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
       } else {
-        console.log('No default date filter applied');
+        console.log('No default date filter applied - showing all games');
       }
       
       if (searchTeam) {
