@@ -106,8 +106,8 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else if (filters.excludeFutureGames !== false) {
-        // Only filter out future games if excludeFutureGames is not explicitly false
+      } else if (filters.excludeFutureGames === true) {
+        // Only filter out future games if excludeFutureGames is explicitly true
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
       } else {
