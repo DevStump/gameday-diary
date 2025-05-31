@@ -16,8 +16,8 @@ const About = () => {
           </div>
         </div>
 
-       {/* App Info */}
-        <Card>
+        {/* App Info */}
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <span>ℹ️</span>
@@ -33,7 +33,7 @@ const About = () => {
         </Card>
         
         {/* Data Sources */}
-        <Card className="mb-6">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <span>📊</span>
