@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { useProfileStats } from '@/hooks/useProfileStats';
-import { formatTeamName } from '@/utils/teamLogos';
+import { formatTeamName, getTeamLogo } from '@/utils/teamLogos';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
