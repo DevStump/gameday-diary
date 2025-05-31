@@ -25,7 +25,6 @@ interface GameCardProps {
     playoff?: boolean;
     venue?: string;
     boxscore_url?: string;
-    is_future?: boolean;
     status?: string;
     game_type?: string;
     winning_pitcher?: string;
@@ -85,6 +84,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const statusTag = getStatusTag();
+  const isBeforeToday = new Date(game.date) < new Date(new Date().toDateString());
 
   return (
     <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
@@ -152,22 +152,24 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
-            <a 
-              href={generateBoxscoreUrl()} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+            {isAuthenticated && isBeforeToday && (
+              <a 
+                href={generateBoxscoreUrl()} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex-1"
+                onClick={(e) => e.stopPropagation()}
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Boxscore
-              </Button>
-            </a>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-field-green text-field-green bg-transparent hover:bg-field-light transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Boxscore
+                </Button>
+              </a>
+            )}
           </div>
         </div>
       </CardFooter>
