@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,103 +41,68 @@ interface GameCardProps {
   isAuthenticated: boolean;
 }
 
+// Utility to check if a game date is in the future (after today)
+const isFutureGame = (gameDateString: string): boolean => {
+  const gameDate = new Date(gameDateString);
+  const today = new Date();
+  gameDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return gameDate > today;
+};
+
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
-  
-  // Convert team names to abbreviations with game date for historical accuracy
+  const futureGame = isFutureGame(game.date);
+
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
 
-  // Generate boxscore URL based on league
   const generateBoxscoreUrl = () => {
     if (game.league === 'MLB') {
       const year = new Date(game.date).getFullYear();
-      
-      // Get the correct Baseball Reference team code
       let bbrefTeamCode = homeTeamAbbr;
-      
-      // Handle historical team code mappings for Baseball Reference
+
       if (homeTeamAbbr === 'FLA' && year <= 2002) {
-        bbrefTeamCode = 'FLO'; // Florida Marlins used FLO on Baseball Reference in early years
+        bbrefTeamCode = 'FLO';
       } else if (homeTeamAbbr === 'LAA') {
-        bbrefTeamCode = 'ANA'; // Angels always use ANA on Baseball Reference
+        bbrefTeamCode = 'ANA';
       } else {
-        // Use team_code from database for Baseball Reference URL
         const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
         bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
       }
-      
-      // Ensure the team code is uppercase for Baseball Reference
+
       bbrefTeamCode = bbrefTeamCode.toUpperCase();
-      
       const date = game.date.replace(/-/g, '');
-      
-      // Handle doubleheader games
-      let gameNumber = '0';
-      if (game.doubleheader === 'S' && game.game_num) {
-        gameNumber = game.game_num.toString();
-      }
-      
-      console.log(`Generating MLB boxscore URL: team=${game.home_team}, abbr=${homeTeamAbbr}, bbref_code=${bbrefTeamCode}, date=${date}, game=${gameNumber}`);
+      const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
+
       return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
     } else {
-      // Use existing boxscore_url for NFL
       return game.boxscore_url;
     }
   };
 
-  // Check if boxscore should be shown
   const shouldShowBoxscore = () => {
-  // Parse the game date and today's date, ignoring time
-  const gameDate = new Date(game.date);
-  const today = new Date();
-
-  // Reset both to midnight to compare dates only
-  gameDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  // Only show boxscore for games that occurred before today
-  return gameDate < today;
-};
+    return !isFutureGame(game.date);
+  };
 
   const getStatusTag = () => {
-    // Check game_type for MLB games
     if (game.game_type === 'E') {
-      return (
-        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-          Exhibition
-        </Badge>
-      );
+      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Exhibition</Badge>;
     }
-    
     if (game.game_type === 'S') {
-      return (
-        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-          Spring Training
-        </Badge>
-      );
+      return <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Spring Training</Badge>;
     }
-
-    // Check for playoff games
     if (game.playoff) {
-      return (
-        <Badge variant="outline" className="border-sports-gold text-sports-gold">
-          Playoff
-        </Badge>
-      );
+      return <Badge variant="outline" className="border-sports-gold text-sports-gold">Playoff</Badge>;
     }
-    
     return null;
   };
 
   const statusTag = getStatusTag();
 
   return (
-    <Card className={`transition-shadow duration-200 animate-fade-in h-full flex flex-col ${
-      game.is_future ? 'bg-gray-50' : ''
-    }`}>
+    <Card className={`transition-shadow duration-200 animate-fade-in h-full flex flex-col ${futureGame ? 'bg-gray-50' : ''}`}>
       <CardContent className="p-4 flex-1 flex flex-col">
-        {/* Top badges - fixed height */}
         <div className="flex justify-between items-start mb-3 min-h-[32px]">
           <div className="flex items-center space-x-2 flex-wrap">
             <Badge variant={game.league === 'NFL' ? 'default' : 'secondary'} className="bg-field-green text-white">
@@ -148,7 +112,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           </div>
         </div>
 
-        {/* Venue row - full width without character limit */}
         {game.venue && (
           <div className="flex items-center justify-center text-sm text-gray-600 mb-3 min-h-[20px]">
             <MapPin className="h-4 w-4 mr-1" />
@@ -156,35 +119,28 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
           </div>
         )}
 
-        {/* Teams and Score - fixed height container */}
         <div className="text-center mb-3 flex-1 flex flex-col justify-center min-h-[100px]">
-          {/* Team Logos and Names - pass game date for historical logos */}
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
             league={game.league}
-            isFuture={game.is_future}
+            isFuture={futureGame}
             gameDate={game.date}
           />
-          
-          {/* Score/Status container - fixed height */}
           <GameScore 
             league={game.league}
             ptsOff={game.pts_off}
             ptsDef={game.pts_def}
             runsScored={game.runs_scored}
             runsAllowed={game.runs_allowed}
-            isFuture={game.is_future}
+            isFuture={futureGame}
           />
         </div>
 
-        {/* Date and additional info - fixed height container */}
         <div className="text-center min-h-[50px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
-          
-          {/* Additional info container - fixed height */}
           <GamePitchers 
-            isFuture={game.is_future}
+            isFuture={futureGame}
             awayProbablePitcher={game.away_probable_pitcher}
             homeProbablePitcher={game.home_probable_pitcher}
             awayTeam={awayTeamAbbr}
@@ -196,14 +152,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
         </div>
       </CardContent>
 
-      {/* Vertical divider with margins */}
       <div className="border-t border-gray-200 mx-4"></div>
 
       <CardFooter className="p-4 pt-3">
         <div className="w-full">
-          {/* Dual Button Layout */}
           <div className="flex gap-x-2">
-            {/* Add to Diary Button */}
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -216,7 +169,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
               {isAuthenticated ? 'Add' : 'Sign in to Add'}
             </Button>
 
-            {/* View Boxscore Button - only show for signed-in users and when boxscore is ready */}
             {isAuthenticated && shouldShowBoxscore() && (
               <a 
                 href={generateBoxscoreUrl()} 
