@@ -18,7 +18,11 @@ const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: Gam
         <img 
           src={getTeamLogo(awayTeam, league, gameDate)} 
           alt={awayTeam}
-          className="h-12 w-12 object-contain flex-shrink-0"
+          className="h-12 w-12 object-contain flex-shrink-0 team-logo"
+          style={{
+            filter: 'drop-shadow(0 0 0 transparent)',
+            mixBlendMode: 'multiply'
+          }}
         />
         <span className="text-sm font-medium text-gray-900">
           {awayTeam}
@@ -38,7 +42,11 @@ const GameTeamDisplay = ({ homeTeam, awayTeam, league, isFuture, gameDate }: Gam
         <img 
           src={getTeamLogo(homeTeam, league, gameDate)} 
           alt={homeTeam}
-          className="h-12 w-12 object-contain flex-shrink-0"
+          className="h-12 w-12 object-contain flex-shrink-0 team-logo"
+          style={{
+            filter: 'drop-shadow(0 0 0 transparent)',
+            mixBlendMode: 'multiply'
+          }}
         />
       </div>
     </div>

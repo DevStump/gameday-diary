@@ -16,13 +16,14 @@ const NFL_TEAMS = [
 ];
 
 export const preloadTeamLogos = () => {
-  console.log('Preloading team logos...');
+  console.log('Preloading team logos with transparent backgrounds...');
   
   // Preload MLB logos
   MLB_TEAMS.forEach(team => {
     const logoUrl = getTeamLogo(team, 'MLB');
     if (logoUrl !== '/placeholder.svg') {
       const img = new Image();
+      img.crossOrigin = 'anonymous'; // Help with CORS for better loading
       img.src = logoUrl;
     }
   });
@@ -32,9 +33,10 @@ export const preloadTeamLogos = () => {
     const logoUrl = getTeamLogo(team, 'NFL');
     if (logoUrl !== '/placeholder.svg') {
       const img = new Image();
+      img.crossOrigin = 'anonymous'; // Help with CORS for better loading
       img.src = logoUrl;
     }
   });
 
-  console.log('Team logos preloading initiated');
+  console.log('Team logos with transparent backgrounds preloading initiated');
 };
