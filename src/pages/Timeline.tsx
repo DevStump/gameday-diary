@@ -237,8 +237,8 @@ const Timeline = () => {
                 </div>
                 
                 {/* Diary Metadata Overlay with reduced spacing */}
-                <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="mt-1 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="grid grid-cols-2 gap-1.5 text-sm">
                     <div>
                       <span className="font-medium text-gray-700">Mode:</span>
                       <span className="ml-2 capitalize text-gray-900">
@@ -274,13 +274,13 @@ const Timeline = () => {
                   </div>
                   
                   {game.logData.notes && (
-                    <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="mt-1.5 pt-1.5 border-t border-gray-200">
                       <span className="font-medium text-gray-700">Notes:</span>
                       <p className="mt-1 text-gray-900 text-sm">{game.logData.notes}</p>
                     </div>
                   )}
                   
-                  <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500">
+                  <div className="mt-1.5 pt-1.5 border-t border-gray-200 text-xs text-gray-500">
                     Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',

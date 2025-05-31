@@ -31,9 +31,9 @@ const GameScore = ({ league, ptsOff, ptsDef, runsScored, runsAllowed, isFuture, 
   const score = getScore();
 
   return (
-    <div className="h-[32px] flex items-center justify-center">
+    <div className="h-[24px] flex items-center justify-center">
       {score ? (
-        <div className="text-2xl font-bold text-field-green">
+        <div className="text-xl font-bold text-field-green">
           {score}
         </div>
       ) : (

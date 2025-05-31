@@ -85,8 +85,8 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   return (
     <Card className="transition-shadow duration-200 animate-fade-in h-full flex flex-col">
-      <CardContent className="p-4 flex-1 flex flex-col">
-        <div className="flex justify-between items-start mb-3 min-h-[32px]">
+      <CardContent className="p-3 flex-1 flex flex-col">
+        <div className="flex justify-between items-start mb-2 min-h-[24px]">
           <div className="flex items-center space-x-2 flex-wrap">
             <Badge variant="secondary" className="bg-field-green text-white">
               {game.league}
@@ -96,13 +96,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
         </div>
 
         {game.venue && (
-          <div className="flex items-center justify-center text-sm text-gray-600 mb-1 min-h-[20px]">
+          <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
             <MapPin className="h-4 w-4 mr-1" />
             <span className="text-center">{game.venue}</span>
           </div>
         )}
 
-        <div className="text-center mb-1 flex-1 flex flex-col justify-center min-h-[100px]">
+        <div className="text-center mb-2 flex-1 flex flex-col justify-center min-h-[80px]">
           <GameTeamDisplay 
             homeTeam={homeTeamAbbr}
             awayTeam={awayTeamAbbr}
@@ -118,7 +118,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
           />
         </div>
 
-        <div className="text-center min-h-[65px] flex flex-col justify-start">
+        <div className="text-center min-h-[45px] flex flex-col justify-start">
           <GameDateTime date={game.date} gameDateTime={game.game_datetime} />
           <GamePitchers 
             awayProbablePitcher={game.away_probable_pitcher}
@@ -132,9 +132,9 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
       {!hideDiaryButton && (
         <>
-          <div className="border-t border-gray-200 mx-4"></div>
+          <div className="border-t border-gray-200 mx-3"></div>
 
-          <CardFooter className="p-4 pt-3">
+          <CardFooter className="p-3 pt-2">
             <div className="w-full">
               <div className="flex gap-x-2">
                 <Button

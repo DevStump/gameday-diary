@@ -17,7 +17,7 @@ const GamePitchers = ({
   homeTeam
 }: GamePitchersProps) => {
   // Don't show any pitcher information
-  return <div className="min-h-[80px]"></div>;
+  return <div className="min-h-[20px]"></div>;
 };
 
 export default GamePitchers;
