@@ -32,34 +32,6 @@ const About = () => {
           </div>
         </div>
 
-        {/* User Info - Only show if logged in */}
-        {user && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
-                <span>Account</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Signed in as:</p>
-                  <p className="font-medium text-gray-900">{user.email}</p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleSignOut}
-                  className="flex items-center space-x-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sign Out</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* App Info */}
         <Card className="mb-6">
           <CardHeader>
@@ -73,6 +45,27 @@ const About = () => {
               GamedayDiary helps sports fans track and remember the games they've watched, whether live at the stadium or from home. 
               Create a personal diary of your sports viewing experience with detailed game information, team logos, and your own notes and memories.
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Feedback Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Mail className="h-5 w-5" />
+              <span>Got Feedback?</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-4">
+              Please feel free to reach out with any feedback, bug reports, and feature requests. Your input helps make GamedayDiary better for everyone!
+            </p>
+            <a href="mailto:nicholas.piovano@gmail.com?subject=GamedayDiary Feedback">
+              <Button className="flex items-center space-x-2">
+                <Mail className="h-4 w-4" />
+                <span>Send Feedback</span>
+              </Button>
+            </a>
           </CardContent>
         </Card>
         
@@ -128,26 +121,33 @@ const About = () => {
           </CardContent>
         </Card>
 
-        {/* Feedback Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Mail className="h-5 w-5" />
-              <span>Got Feedback?</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Please feel free to reach out with any feedback, bug reports, and feature requests. Your input helps make GamedayDiary better for everyone!
-            </p>
-            <a href="mailto:nicholas.piovano@gmail.com?subject=GamedayDiary Feedback">
-              <Button className="flex items-center space-x-2">
-                <Mail className="h-4 w-4" />
-                <span>Send Feedback</span>
-              </Button>
-            </a>
-          </CardContent>
-        </Card>
+        {/* User Info - Only show if logged in - moved to bottom */}
+        {user && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span>Account</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Signed in as:</p>
+                  <p className="font-medium text-gray-900">{user.email}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     </Layout>
