@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import { BarChart3, TrendingUp, Star, Calendar, Plus } from 'lucide-react';
@@ -254,7 +253,7 @@ const Profile = () => {
                       <img 
                         src={getTeamLogo(stats.mostSupportedTeam.team, 'MLB')} 
                         alt={stats.mostSupportedTeam.team}
-                        className="h-12 w-12 object-contain flex-shrink-0"
+                        className="h-8 w-8 object-contain flex-shrink-0"
                         style={{
                           filter: 'drop-shadow(0 0 0 transparent)',
                           mixBlendMode: 'multiply'
@@ -263,9 +262,9 @@ const Profile = () => {
                       <div className="text-2xl font-bold text-field-green">
                         {getTeamAbbreviation(stats.mostSupportedTeam.team, 'MLB')}
                       </div>
-                    </div>
-                    <div className="text-lg text-gray-600">
-                      ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
+                      <div className="text-lg text-gray-600">
+                        ({mostSupportedTeamCount} game{mostSupportedTeamCount !== 1 ? 's' : ''})
+                      </div>
                     </div>
                   </>
                 ) : (
