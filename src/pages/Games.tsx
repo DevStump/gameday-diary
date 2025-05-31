@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -47,14 +46,10 @@ const Games = () => {
     ...filters,
     excludeFutureGames: true
   });
-  
-  // Only fetch game logs if user is authenticated
-  const { data: gameLogs = [] } = useGameLogs({
-    enabled: !!user
-  });
+  const { data: gameLogs = [] } = useGameLogs();
 
-  // Create a set of logged game IDs for quick lookup (only if user is authenticated)
-  const loggedGameIds = user ? new Set(gameLogs.map(log => log.game_id?.toString())) : new Set();
+  // Create a set of logged game IDs for quick lookup
+  const loggedGameIds = new Set(gameLogs.map(log => log.game_id?.toString()));
 
   // Calculate pagination
   const totalPages = Math.ceil(games.length / gamesPerPage);
