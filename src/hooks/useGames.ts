@@ -133,8 +133,10 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
-      // Get today's date for filtering future games
-      const today = new Date().toISOString().split('T')[0];
+      // Get yesterday's date for filtering future games (includes today but excludes tomorrow)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayString = yesterday.toISOString().split('T')[0];
       
       // Only apply date range filtering if both startDate and endDate are provided
       const shouldApplyDateRange = filters.startDate && filters.endDate;
@@ -145,7 +147,7 @@ export const useGames = (filters: GameFilters) => {
         
         // Filter out future games unless specific date filters are provided
         if (!shouldApplyDateRange) {
-          nflQuery = nflQuery.lte('date', today);
+          nflQuery = nflQuery.lte('date', yesterdayString);
         }
         
         if (searchTeam) {
@@ -191,7 +193,7 @@ export const useGames = (filters: GameFilters) => {
         
         // Filter out future games unless specific date filters are provided
         if (!shouldApplyDateRange) {
-          mlbQuery = mlbQuery.lte('game_date', today);
+          mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         }
         
         if (searchTeam) {
