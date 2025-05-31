@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/Layout';
 import { BarChart3, TrendingUp, Star, Calendar, Target, Plus, MapPin, Users, Trophy, Activity } from 'lucide-react';
@@ -207,10 +208,6 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-500 mb-4">
-                  Record: {stats.winRecord.wins}-{stats.winRecord.losses}
-                </div>
-
                 {/* Show teams with most wins/losses */}
                 {(stats.teamWinRecord.mostWins || stats.teamWinRecord.mostLosses) && (
                   <div className="space-y-2 pt-4 border-t border-gray-200">
@@ -294,8 +291,13 @@ const Dashboard = () => {
                   {stats.totalRuns.toLocaleString()}
                 </div>
                 <div className="text-lg text-gray-600">Total Scored</div>
-                <div className="text-sm text-gray-500 mt-2">
-                  Across {stats.totalGames} game{stats.totalGames !== 1 ? 's' : ''}
+                <div className="mt-4 text-xs text-gray-500 space-y-1">
+                  {stats.highestScoringGame && (
+                    <div>High: {stats.highestScoringGame.runs} ({stats.highestScoringGame.teams})</div>
+                  )}
+                  {stats.lowestScoringGame && (
+                    <div>Low: {stats.lowestScoringGame.runs} ({stats.lowestScoringGame.teams})</div>
+                  )}
                 </div>
               </div>
             </CardContent>
