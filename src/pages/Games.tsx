@@ -25,7 +25,8 @@ const Games = () => {
     season: '',
     playoff: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    venue: ''
   });
   const [selectedGame, setSelectedGame] = useState<{ 
     id: string; 
@@ -72,7 +73,8 @@ const Games = () => {
       season: '',
       playoff: '',
       startDate: '',
-      endDate: ''
+      endDate: '',
+      venue: ''
     });
     // Reset to first page when filters are cleared
     setCurrentPage(1);
@@ -89,11 +91,12 @@ const Games = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      
     }
   };
 
   const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => {
+    console.log('handleAddToDiary called with:', { gameId, gameTitle, homeTeam, awayTeam, league });
+    
     if (!user) {
       // Store current URL with filters for redirect after authentication
       const currentUrl = window.location.origin + location.pathname + location.search;
@@ -132,6 +135,7 @@ const Games = () => {
     playoff: '',
     startDate: threeDaysAgoString,
     endDate: todayString,
+    venue: '',
     excludeFutureGames: true
   });
 
@@ -206,13 +210,7 @@ const Games = () => {
                     <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                       <GameCard
                         game={game}
-                        onAddToDiary={(gameId) => handleAddToDiary(
-                          gameId, 
-                          `${game.away_team} @ ${game.home_team}`,
-                          game.home_team,
-                          game.away_team,
-                          game.league
-                        )}
+                        onAddToDiary={handleAddToDiary}
                         isAuthenticated={!!user}
                         isAlreadyLogged={loggedGameIds.has(game.game_id?.toString())}
                       />

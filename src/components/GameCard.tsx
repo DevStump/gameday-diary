@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ interface GameCardProps {
     doubleheader?: string;
     game_num?: number;
   };
-  onAddToDiary: (gameId: string) => void;
+  onAddToDiary: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => void;
   isAuthenticated: boolean;
   hideDiaryButton?: boolean;
   isAlreadyLogged?: boolean;
@@ -94,6 +95,17 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   const statusTag = getStatusTag();
   const isBeforeToday = new Date(game.date) <= new Date(new Date().toDateString());
+
+  const handleAddClick = () => {
+    if (!isAuthenticated) {
+      // Handle unauthenticated case - this should redirect to auth
+      onAddToDiary(game.game_id, '', '', '', '');
+      return;
+    }
+    
+    const gameTitle = `${awayTeamAbbr} @ ${homeTeamAbbr}`;
+    onAddToDiary(game.game_id, gameTitle, game.home_team, game.away_team, game.league);
+  };
 
   return (
     <TooltipProvider>
@@ -162,10 +174,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                     </Button>
                   ) : (
                     <Button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onAddToDiary(game.game_id);
-                      }}
+                      onClick={handleAddClick}
                       className="flex-1 bg-field-green transition-colors"
                       size="sm"
                     >
