@@ -90,12 +90,12 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const shouldShowBoxscore = () => {
     if (game.is_future) return false;
     
-    // Check if game date is today or after
+    // Check if game date is yesterday or prior
     const today = new Date().toISOString().split('T')[0];
     const gameDate = game.date;
     
-    // If game date is today or after, show boxscore
-    return gameDate >= today;
+    // If game date is before today, show boxscore
+    return gameDate < today;
   };
 
   const getStatusTag = () => {
