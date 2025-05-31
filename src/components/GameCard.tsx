@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,12 +43,15 @@ interface GameCardProps {
 
 // ---------- 📅 Date Helper Functions ----------
 const getDateString = (date: Date): string => {
-  return date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`; // "YYYY-MM-DD"
 };
 
 const isPastGame = (gameDateString: string): boolean => {
   const todayStr = getDateString(new Date());
-  console.log(`Checking if ${gameDateString} is before ${todayStr}:`, gameDateString < todayStr);
+  console.log(`💡 game.date: ${gameDateString} | today (UTC): ${todayStr} | isPast: ${gameDateString < todayStr}`);
   return gameDateString < todayStr;
 };
 
@@ -98,13 +100,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    const todayStr = getDateString(new Date());
-    const isStrictlyPast = game.date < todayStr;
-    
-    console.log(`Game ${game.game_id} (${game.date}): today=${todayStr}, isStrictlyPast=${isStrictlyPast}`);
-    
-    // Only show for games that are strictly before today (not today, not future)
-    return isStrictlyPast;
+    return isPastGame(game.date);
   };
 
   const getStatusTag = () => {
