@@ -36,14 +36,15 @@ const Timeline = () => {
     mode: '', // New filter for diary entries
   });
 
-  // Fetch MLB games only since we're focusing on MLB data
+  // Fetch MLB games - modified to not apply default date filtering for diary
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: filters.search,
     league: 'MLB',
     season: filters.season,
     playoff: filters.playoff,
     startDate: filters.startDate,
-    endDate: filters.endDate
+    endDate: filters.endDate,
+    allowAllDates: true // Special flag to show all games in diary
   });
 
   // Only show loading when we're actually fetching data, not when filtering
