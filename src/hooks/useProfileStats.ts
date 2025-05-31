@@ -42,50 +42,44 @@ export const useProfileStats = () => {
       let losses = 0;
 
       gameLogs.forEach(log => {
-        const game = gameMap[String(log.game_id)];
-        if (!game) return;
-
-        const date = new Date(game.game_date || game.game_datetime);
-        const dateString = date.toISOString();
-
-        // Venue counts
-        if (game.venue_name) {
-          venueCounts[game.venue_name] = (venueCounts[game.venue_name] || 0) + 1;
-        }
-
         // Rooted for counts (normalize to abbreviation)
         const rootedRaw = log.rooted_for;
         if (rootedRaw && rootedRaw !== 'none') {
           const rooted = ensureAbbreviation(rootedRaw, 'MLB', dateString);
           rootedForCounts[rooted] = (rootedForCounts[rooted] || 0) + 1;
-
+        
           // Win/loss calc
           const isNfl = nflGames.some(n => n.game_id === game.game_id);
-          let winner, loser;
-
+          let winner: string | undefined;
+          let loser: string | undefined;
+        
           if (isNfl) {
             const { pts_off, pts_def, home_team, away_team } = game;
-            if (pts_off > pts_def) {
-              winner = home_team;
-              loser = away_team;
-            } else if (pts_def > pts_off) {
-              winner = away_team;
-              loser = home_team;
+            if (pts_off !== undefined && pts_def !== undefined) {
+              const homeAbbr = ensureAbbreviation(home_team, 'NFL', dateString);
+              const awayAbbr = ensureAbbreviation(away_team, 'NFL', dateString);
+              if (pts_off > pts_def) {
+                winner = homeAbbr;
+                loser = awayAbbr;
+              } else if (pts_def > pts_off) {
+                winner = awayAbbr;
+                loser = homeAbbr;
+              }
             }
           } else {
             const homeScore = game.home_score ?? game.runs_scored ?? 0;
             const awayScore = game.away_score ?? game.runs_allowed ?? 0;
-            const homeTeam = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
-            const awayTeam = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
+            const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', dateString);
+            const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', dateString);
             if (homeScore > awayScore) {
-              winner = homeTeam;
-              loser = awayTeam;
+              winner = homeAbbr;
+              loser = awayAbbr;
             } else if (awayScore > homeScore) {
-              winner = awayTeam;
-              loser = homeTeam;
+              winner = awayAbbr;
+              loser = homeAbbr;
             }
           }
-
+        
           if (rooted === winner) {
             wins++;
             teamWins[rooted] = (teamWins[rooted] || 0) + 1;
@@ -93,6 +87,8 @@ export const useProfileStats = () => {
             losses++;
             teamLosses[rooted] = (teamLosses[rooted] || 0) + 1;
           }
+        }
+
         }
 
         // Total runs
