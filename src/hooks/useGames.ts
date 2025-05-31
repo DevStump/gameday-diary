@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeTeamName } from '@/utils/team-name-map';
@@ -102,11 +101,18 @@ export const useGames = (filters: GameFilters) => {
       // Fetch MLB games only
       let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
       
-      // Apply date filtering
+      // Apply date filtering - prioritize specific date over season
       if (hasCompleteDateRange) {
-        // Use the specified date range
+        // Use the specified date range (takes priority over season filter)
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
-        console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
+        console.log('Applying MLB specific date range filter (priority):', filters.startDate, 'to', filters.endDate);
+      } else if (filters.season) {
+        // Only apply season filter if no specific date is provided
+        const seasonYear = parseInt(filters.season);
+        const startOfYear = `${seasonYear}-01-01`;
+        const endOfYear = `${seasonYear}-12-31`;
+        mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
+        console.log('Applying MLB season filter:', startOfYear, 'to', endOfYear);
       } else if (filters.excludeFutureGames === true) {
         mlbQuery = mlbQuery.lte('game_date', yesterdayString);
         console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
@@ -130,14 +136,6 @@ export const useGames = (filters: GameFilters) => {
       // Apply venue filter
       if (filters.venue) {
         mlbQuery = mlbQuery.eq('venue_name', filters.venue);
-      }
-      
-      // Filter MLB games by year using the game_date field
-      if (filters.season) {
-        const seasonYear = parseInt(filters.season);
-        const startOfYear = `${seasonYear}-01-01`;
-        const endOfYear = `${seasonYear}-12-31`;
-        mlbQuery = mlbQuery.gte('game_date', startOfYear).lte('game_date', endOfYear);
       }
       
       if (filters.playoff === 'true') {
