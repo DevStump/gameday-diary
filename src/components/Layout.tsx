@@ -17,7 +17,7 @@ const Layout = ({ children }: LayoutProps) => {
   const navigation = [
     { name: 'Games', href: '/', icon: Search },
     { name: 'Diary', href: '/diary', icon: Calendar, requireAuth: true },
-    { name: 'Dashboard', href: '/profile', icon: BarChart3, requireAuth: true },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart3, requireAuth: true },
     { name: 'About', href: '/about', icon: Info },
   ];
 
