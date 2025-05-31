@@ -48,7 +48,7 @@ const Auth = () => {
       } else if (isSignUp) {
         toast({
           title: 'Success',
-          description: 'Account created successfully! Please sign in.',
+          description: 'Account created successfully! You are now signed in.',
         });
         // Switch to sign in mode after successful signup
         setIsSignUp(false);
