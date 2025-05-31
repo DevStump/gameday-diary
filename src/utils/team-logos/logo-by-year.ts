@@ -191,6 +191,9 @@ export const mlbLogosByYear: LogoByYear = {
     '2010-2022': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_20102311.png',
     '1994-2009': 'https://content.sportslogos.net/logos/53/65/full/minnesota_twins_logo_primary_1994_sportslogosnet-3849.png'
   },
+  'MON': {
+    '1969-2004': 'https://content.sportslogos.net/logos/54/66/full/montreal_expos_logo_primary_19926140.png'
+  },
   'NYM': {
     '1999-current': 'https://content.sportslogos.net/logos/54/67/full/new_york_mets_logo_primary_1999sportslogosnet8711.png'
   },

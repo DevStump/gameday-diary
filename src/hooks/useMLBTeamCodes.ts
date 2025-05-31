@@ -8,7 +8,8 @@ const baseballReferenceOverrides: Record<string, string> = {
   'CAL': 'CAL', // California Angels
   'MON': 'MON', // Montreal Expos
   // Current teams that use different codes on Baseball Reference
-  'LA': 'LAN', // Los Angeles Dodgers (fixed: using file_code 'LA' not 'LAD')
+  'LA': 'LAN', // Los Angeles Dodgers (using file_code 'LA')
+  'LAD': 'LAN', // Los Angeles Dodgers (alternative code)
   'STL': 'SLN', // St. Louis Cardinals
   'CHC': 'CHN', // Chicago Cubs
   'NYM': 'NYN', // New York Mets
@@ -19,6 +20,8 @@ const baseballReferenceOverrides: Record<string, string> = {
   'TB': 'TBA', // Tampa Bay Rays
   'KC': 'KCA', // Kansas City Royals
   'MIA': 'FLO', // Miami Marlins (Baseball Reference uses FLO for all Marlins history)
+  'WSH': 'WSN', // Washington Nationals
+  'WAS': 'WSN', // Washington Nationals (alternative code)
 };
 
 export const useMLBTeamCodes = () => {
