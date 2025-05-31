@@ -19,9 +19,20 @@ const baseballReferenceOverrides: Record<string, string> = {
   'NYY': 'NYA', // New York Yankees
   'TB': 'TBA', // Tampa Bay Rays
   'KC': 'KCA', // Kansas City Royals
-  'MIA': 'FLO', // Miami Marlins (Baseball Reference uses FLO for all Marlins history)
   'WSH': 'WSN', // Washington Nationals
   'WAS': 'WSN', // Washington Nationals (alternative code)
+};
+
+// Year-based overrides for teams that changed codes over time
+const getYearBasedCode = (teamCode: string, year?: number): string | null => {
+  if (!year) return null;
+  
+  // Marlins: MIA for 2012+, FLO for 2011 and prior
+  if (teamCode.toUpperCase() === 'MIA' && year <= 2011) {
+    return 'FLO';
+  }
+  
+  return null;
 };
 
 export const useMLBTeamCodes = () => {
@@ -54,9 +65,52 @@ export const useMLBTeamCodes = () => {
         }
       });
 
+      // Add additional mappings for common abbreviation variants
+      // This ensures we can lookup teams by any common abbreviation format
+      const additionalMappings: Record<string, string> = {
+        // Dodgers variants
+        'LAD': teamCodeMap['LA'] || 'LAN',
+        
+        // Marlins variants (current)
+        'MIA': 'MIA', // Current Miami Marlins use MIA
+        
+        // Other common variants that might not be in the database
+        'CWS': 'CHA', // Chicago White Sox
+        'CHW': 'CHA', // Alternative White Sox code
+        'TB': 'TBA',  // Tampa Bay Rays
+        'TBR': 'TBA', // Alternative Rays code
+        'KC': 'KCA',  // Kansas City Royals
+        'KCR': 'KCA', // Alternative Royals code
+        'SD': 'SDN',  // San Diego Padres
+        'SDP': 'SDN', // Alternative Padres code
+        'SF': 'SFN',  // San Francisco Giants
+        'SFG': 'SFN', // Alternative Giants code
+        'WSH': 'WSN', // Washington Nationals
+        'WAS': 'WSN', // Alternative Nationals code
+      };
+
+      // Merge additional mappings
+      Object.entries(additionalMappings).forEach(([key, value]) => {
+        teamCodeMap[key] = value;
+      });
+
       console.log('MLB team code mapping (file_code -> bbref_code):', teamCodeMap);
       return teamCodeMap;
     },
     staleTime: 1000 * 60 * 60 * 24, // Cache for 24 hours since team codes don't change often
   });
+};
+
+// Helper function to get the correct Baseball Reference code with year consideration
+export const getBaseballReferenceCode = (teamCode: string, gameDate?: string): string => {
+  const year = gameDate ? new Date(gameDate).getFullYear() : undefined;
+  
+  // Check for year-based overrides first
+  const yearBasedCode = getYearBasedCode(teamCode, year);
+  if (yearBasedCode) {
+    return yearBasedCode;
+  }
+  
+  // Fall back to standard overrides
+  return baseballReferenceOverrides[teamCode.toUpperCase()] || teamCode;
 };

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
-import { useMLBTeamCodes } from '@/hooks/useMLBTeamCodes';
+import { useMLBTeamCodes, getBaseballReferenceCode } from '@/hooks/useMLBTeamCodes';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameScore from './game-card/GameScore';
 import GameDateTime from './game-card/GameDateTime';
@@ -48,15 +49,16 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
 
   const generateBoxscoreUrl = () => {
     const year = new Date(game.date).getFullYear();
-    let bbrefTeamCode = homeTeamAbbr;
-
-    if (homeTeamAbbr === 'FLA' && year <= 2002) {
-      bbrefTeamCode = 'FLO';
-    } else if (homeTeamAbbr === 'LAA') {
-      bbrefTeamCode = 'ANA';
-    } else {
+    
+    // Use the new helper function to get the correct Baseball Reference code
+    let bbrefTeamCode = getBaseballReferenceCode(homeTeamAbbr, game.date);
+    
+    // Try the team code map as fallback
+    if (!bbrefTeamCode || bbrefTeamCode === homeTeamAbbr) {
       const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
+      if (mappedTeamCode) {
+        bbrefTeamCode = mappedTeamCode;
+      }
     }
 
     bbrefTeamCode = bbrefTeamCode.toUpperCase();
