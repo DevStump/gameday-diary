@@ -53,7 +53,7 @@ const About = () => {
                 <span className="text-2xl">🏆</span>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Logo Source</h3>
+                <h3 className="font-semibold text-gray-900">Team Logos</h3>
                 <p className="text-gray-600 mb-2">
                   All team logos are sourced from SportsLogos.Net, providing high-quality vector graphics for professional sports teams.
                 </p>
@@ -67,19 +67,6 @@ const About = () => {
                   <ExternalLink className="h-4 w-4 ml-1" />
                 </a>
               </div>
-          </CardContent>
-        </Card>
-
-        {/* Logo Attribution */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <span>🎨</span>
-              <span>Team Logos</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            
             </div>
           </CardContent>
         </Card>
