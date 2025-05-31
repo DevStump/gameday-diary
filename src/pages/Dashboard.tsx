@@ -275,7 +275,10 @@ const Dashboard = () => {
           {/* Top Teams */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-900">Top Teams</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-orange-500" />
+                <span>Top Teams</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {stats.teamBreakdown.length > 0 ? (
@@ -313,41 +316,42 @@ const Dashboard = () => {
           {/* Game Rating */}
           <Card className="bg-white shadow-sm border border-gray-200">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-gray-900">Game Rating</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                <Star className="h-5 w-5 text-pink-500" />
+                <span>Game Rating</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center space-y-3">
-                {stats.ratedGamesCount > 0 ? (
-                  <>
-                    <div>
-                      <div className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</div>
-                      <div className="text-sm text-gray-600">Average rating</div>
-                    </div>
-                    <div className="pt-3 border-t border-gray-100 space-y-2">
-                      <div className="text-xs text-gray-600 mb-2">Rating breakdown</div>
-                      <div className="grid grid-cols-5 gap-1 text-xs">
-                        {[1, 2, 3, 4, 5].map((rating) => {
-                          const count = stats.ratingBreakdown[rating as keyof typeof stats.ratingBreakdown];
-                          const percentage = stats.ratedGamesCount > 0 ? Math.round((count / stats.ratedGamesCount) * 100) : 0;
-                          return (
-                            <div key={rating} className="text-center">
-                              <div className="font-medium">{rating}★</div>
-                              <div className="text-gray-900 font-semibold">{count}</div>
-                              <div className="text-gray-500">({percentage}%)</div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-6">
-                    <Star className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">No average rating yet</p>
-                    <p className="text-xs text-gray-500">Rate a game to see your average rating</p>
+              {stats.ratedGamesCount > 0 ? (
+                <>
+                  <div>
+                    <div className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</div>
+                    <div className="text-sm text-gray-600">Average rating</div>
                   </div>
-                )}
-              </div>
+                  <div className="pt-3 border-t border-gray-100 space-y-2">
+                    <div className="text-xs text-gray-600 mb-2">Rating breakdown</div>
+                    <div className="grid grid-cols-5 gap-1 text-xs">
+                      {[1, 2, 3, 4, 5].map((rating) => {
+                        const count = stats.ratingBreakdown[rating as keyof typeof stats.ratingBreakdown];
+                        const percentage = stats.ratedGamesCount > 0 ? Math.round((count / stats.ratedGamesCount) * 100) : 0;
+                        return (
+                          <div key={rating} className="text-center">
+                            <div className="font-medium">{rating}★</div>
+                            <div className="text-gray-900 font-semibold">{count}</div>
+                            <div className="text-gray-500">({percentage}%)</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-6">
+                  <Star className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">No average rating yet</p>
+                  <p className="text-xs text-gray-500">Rate a game to see your average rating</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
