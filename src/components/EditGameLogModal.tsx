@@ -9,6 +9,7 @@ import { Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
 import { useUpdateGameLog } from '@/hooks/useGameLogs';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface EditGameLogModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
   const [loading, setLoading] = useState(false);
   
   const updateGameLog = useUpdateGameLog();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +61,10 @@ const EditGameLogModal = ({ isOpen, onClose, gameLog, game, league }: EditGameLo
       };
 
       await updateGameLog.mutateAsync(sanitizedData);
+
+      // Force refresh of logged games data immediately
+      await queryClient.invalidateQueries({ queryKey: ['logged-games'] });
+      await queryClient.invalidateQueries({ queryKey: ['game-logs'] });
 
       toast({
         title: 'Success',
