@@ -26,7 +26,7 @@ const WelcomeModal = () => {
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold text-gray-900 mb-4">
-            📝 Welcome to GamedayDiary!
+            Welcome to GamedayDiary!
           </DialogTitle>
         </DialogHeader>
         
@@ -38,7 +38,7 @@ const WelcomeModal = () => {
           <div className="space-y-3 text-left">
             <div className="flex items-start space-x-3">
               <Search className="h-5 w-5 text-field-green mt-0.5 flex-shrink-0" />
-              <span className="text-gray-700">Search thousands of NFL & MLB games</span>
+              <span className="text-gray-700">Search thousands of MLB games</span>
             </div>
             
             <div className="flex items-start space-x-3">
