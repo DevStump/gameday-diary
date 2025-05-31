@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeTeamName } from '@/utils/team-name-map';
@@ -9,6 +10,7 @@ interface GameFilters {
   playoff: string;
   startDate: string;
   endDate: string;
+  venue: string;
   excludeFutureGames?: boolean;
 }
 
@@ -123,6 +125,11 @@ export const useGames = (filters: GameFilters) => {
         ]).join(',');
         
         mlbQuery = mlbQuery.or(orConditions);
+      }
+
+      // Apply venue filter
+      if (filters.venue) {
+        mlbQuery = mlbQuery.eq('venue_name', filters.venue);
       }
       
       // Filter MLB games by year using the game_date field
