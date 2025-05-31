@@ -20,7 +20,7 @@ import { MapPin } from 'lucide-react';
 
 const Timeline = () => {
   const { user } = useAuth();
-  const { data: gameLogs, isLoading: logsLoading } = useGameLogs();
+  const { data: gameLogs = [], isLoading: logsLoading } = useGameLogs();
   const [editingLog, setEditingLog] = useState<any>(null);
   const [deletingLog, setDeletingLog] = useState<any>(null);
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
@@ -36,7 +36,7 @@ const Timeline = () => {
     mode: '', // New filter for diary entries
   });
 
-  // Fetch MLB games - modified to not apply default date filtering for diary
+  // Fetch MLB games - show all games (past and future) for diary
   const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
     search: filters.search,
     league: 'MLB',
@@ -47,6 +47,9 @@ const Timeline = () => {
     excludeFutureGames: false
   });
 
+  console.log('Game logs in Timeline:', gameLogs);
+  console.log('MLB games in Timeline:', mlbGames);
+
   // Only show loading when we're actually fetching data, not when filtering
   const isLoading = logsLoading || gamesLoading;
 
@@ -54,8 +57,7 @@ const Timeline = () => {
   const enrichedLoggedGames = React.useMemo(() => {
     if (!gameLogs || !mlbGames) return [];
 
-    console.log('Game logs:', gameLogs);
-    console.log('MLB games:', mlbGames);
+    console.log('Creating enriched games from', gameLogs.length, 'logs and', mlbGames.length, 'games');
 
     return gameLogs.map(log => {
       console.log('Looking for game with ID:', log.game_id);
@@ -102,6 +104,8 @@ const Timeline = () => {
       };
     }).filter(Boolean);
   }, [gameLogs, mlbGames]);
+
+  console.log('Enriched logged games:', enrichedLoggedGames);
 
   // Apply filters to enriched games
   const filteredLoggedGames = React.useMemo(() => {
@@ -283,15 +287,17 @@ const Timeline = () => {
           </p>
         </div>
 
-        {/* Filters */}
-        <GameFilters 
-          filters={filters} 
-          onFilterChange={handleFilterChange} 
-          onClearFilters={handleClearFilters}
-          showModeFilter={true}
-        />
+        {/* Only show filters if there are game logs */}
+        {gameLogs.length > 0 && (
+          <GameFilters 
+            filters={filters} 
+            onFilterChange={handleFilterChange} 
+            onClearFilters={handleClearFilters}
+            showModeFilter={true}
+          />
+        )}
 
-        {/* Games Count */}
+        {/* Games Count - only show if there are logged games */}
         {sortedLoggedGames.length > 0 && (
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
