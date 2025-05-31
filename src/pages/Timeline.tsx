@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2 } from 'lucide-react';
@@ -9,6 +10,7 @@ import { Link } from 'react-router-dom';
 import GameCard from '@/components/GameCard';
 import EditGameLogModal from '@/components/EditGameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
+import GameFilters from '@/components/GameFilters';
 import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
 
 const Timeline = () => {
@@ -17,14 +19,25 @@ const Timeline = () => {
   const [editingLog, setEditingLog] = useState<any>(null);
   const [deletingLog, setDeletingLog] = useState<any>(null);
 
-  // Fetch MLB games only since we're focusing on MLB data
-  const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
-    search: '',
-    league: 'MLB',
+  // Filter state - same as Games page plus mode
+  const [filters, setFilters] = useState({
+    startDate: '',
+    endDate: '',
+    league: '',
     season: '',
     playoff: '',
-    startDate: '',
-    endDate: ''
+    search: '',
+    mode: '', // New filter for diary entries
+  });
+
+  // Fetch MLB games only since we're focusing on MLB data
+  const { data: mlbGames = [], isLoading: gamesLoading } = useGames({
+    search: filters.search,
+    league: 'MLB',
+    season: filters.season,
+    playoff: filters.playoff,
+    startDate: filters.startDate,
+    endDate: filters.endDate
   });
 
   const isLoading = logsLoading || gamesLoading;
@@ -82,14 +95,42 @@ const Timeline = () => {
     }).filter(Boolean);
   }, [gameLogs, mlbGames]);
 
+  // Apply filters to enriched games
+  const filteredLoggedGames = React.useMemo(() => {
+    let filtered = enrichedLoggedGames;
+
+    // Apply mode filter
+    if (filters.mode) {
+      filtered = filtered.filter(game => game.logData.mode === filters.mode);
+    }
+
+    return filtered;
+  }, [enrichedLoggedGames, filters.mode]);
+
   // Sort by most recently logged (based on game log creation date)
-  const sortedLoggedGames = enrichedLoggedGames.sort((a, b) => {
+  const sortedLoggedGames = filteredLoggedGames.sort((a, b) => {
     return new Date(b.logData.created_at).getTime() - new Date(a.logData.created_at).getTime();
   });
 
   const handleAddToDiary = (gameId: string) => {
     // This won't be used since these games are already in the diary
     console.log('Game already in diary:', gameId);
+  };
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      startDate: '',
+      endDate: '',
+      league: '',
+      season: '',
+      playoff: '',
+      search: '',
+      mode: '',
+    });
   };
 
   const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string) => {
@@ -143,6 +184,14 @@ const Timeline = () => {
             Your personal journey through the games you've watched and attended
           </p>
         </div>
+
+        {/* Filters */}
+        <GameFilters 
+          filters={filters} 
+          onFilterChange={handleFilterChange} 
+          onClearFilters={handleClearFilters}
+          showModeFilter={true}
+        />
 
         {/* Games Count */}
         {sortedLoggedGames.length > 0 && (
@@ -209,7 +258,7 @@ const Timeline = () => {
                     
                     <div>
                       <span className="font-medium text-gray-700">Rooted for:</span>
-                      <div className="ml-2 text-gray-900">
+                      <div className="ml-2 text-gray-900 inline-flex">
                         {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
                       </div>
                     </div>

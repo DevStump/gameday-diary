@@ -21,12 +21,14 @@ interface GameFiltersProps {
     season: string;
     playoff: string;
     search: string;
+    mode?: string; // Optional mode filter for diary pages
   };
   onFilterChange: (key: string, value: string) => void;
   onClearFilters: () => void;
+  showModeFilter?: boolean; // Whether to show the mode filter
 }
 
-const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersProps) => {
+const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter = false }: GameFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasActiveFilters = Object.values(filters).some(value => value !== '');
   
@@ -136,7 +138,7 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${showModeFilter ? '6' : '5'} gap-4 mb-4`}>
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
@@ -240,6 +242,20 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
             />
           </PopoverContent>
         </Popover>
+
+        {/* Mode Filter - Only show on diary pages */}
+        {showModeFilter && (
+          <Select value={filters.mode || ''} onValueChange={(value) => onFilterChange('mode', value === 'all' ? '' : value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="All Modes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Modes</SelectItem>
+              <SelectItem value="watched">Watched</SelectItem>
+              <SelectItem value="attended">Attended</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Active Filters */}
@@ -282,6 +298,15 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
                 onClick={() => onFilterChange('playoff', '')}
+              />
+            </Badge>
+          )}
+          {filters.mode && (
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <span>Mode: {filters.mode === 'watched' ? 'Watched' : 'Attended'}</span>
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-red-600"
+                onClick={() => onFilterChange('mode', '')}
               />
             </Badge>
           )}

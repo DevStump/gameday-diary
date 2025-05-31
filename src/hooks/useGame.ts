@@ -11,7 +11,7 @@ export const useGame = (gameId: string, league: 'MLB') => {
       const { data, error } = await supabase
         .from('mlb_schedule')
         .select('*')
-        .eq('game_id', gameId)
+        .eq('game_id', parseInt(gameId))
         .single();
 
       if (error) {
@@ -31,9 +31,6 @@ export const useGame = (gameId: string, league: 'MLB') => {
         runs_allowed: mlbData.away_score || null,
         playoff: mlbData.game_type ? ['W', 'D', 'L'].includes(mlbData.game_type) : false,
         venue: mlbData.venue_name || 'Stadium',
-        winning_pitcher: mlbData.winning_pitcher || null,
-        losing_pitcher: mlbData.losing_pitcher || null,
-        save_pitcher: mlbData.save_pitcher || null,
         // Check if game is in the future (no final score and status not final)
         is_future: !mlbData.home_score && !mlbData.away_score && mlbData.status !== 'Final',
       };

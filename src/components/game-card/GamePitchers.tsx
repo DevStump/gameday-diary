@@ -16,29 +16,8 @@ const GamePitchers = ({
   awayTeam, 
   homeTeam
 }: GamePitchersProps) => {
-  const getProbablePitchers = () => {
-    if (!isFuture || !awayProbablePitcher || !homeProbablePitcher) {
-      return null;
-    }
-    
-    return (
-      <div className="text-sm text-gray-600">
-        <span className="font-medium">Probable Pitchers:</span> {awayProbablePitcher} ({awayTeam}) vs. {homeProbablePitcher} ({homeTeam})
-      </div>
-    );
-  };
-
-  const probablePitchers = getProbablePitchers();
-
-  if (!probablePitchers) {
-    return <div className="min-h-[40px]"></div>;
-  }
-
-  return (
-    <div className="min-h-[40px] flex flex-col justify-start">
-      {probablePitchers}
-    </div>
-  );
+  // Don't show any pitcher information
+  return <div className="min-h-[80px]"></div>;
 };
 
 export default GamePitchers;
