@@ -40,7 +40,7 @@ const Games = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { data: games = [], isLoading: loading } = useGames({ ...filters, excludeFutureGames: true });
+  const { data: games = [], isLoading: loading } = useGames(filters);
   const { data: gameLogs = [] } = useGameLogs();
 
   // Create a set of logged game IDs for quick lookup
@@ -106,7 +106,7 @@ const Games = () => {
     setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
-  // Get games from past 3 days for hot games section (excluding future games)
+  // Get games from past 3 days for hot games section
   const threeDaysAgo = new Date();
   threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
   const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0];
@@ -120,8 +120,7 @@ const Games = () => {
     season: '',
     playoff: '',
     startDate: threeDaysAgoString,
-    endDate: todayString,
-    excludeFutureGames: true
+    endDate: todayString
   });
 
   return (
@@ -163,7 +162,7 @@ const Games = () => {
 
         {/* Hot Games Section */}
         <HotGames 
-          games={hotGamesData.filter(game => !game.is_future)} 
+          games={hotGamesData} 
           onAddToDiary={handleAddToDiary}
           isAuthenticated={!!user}
         />

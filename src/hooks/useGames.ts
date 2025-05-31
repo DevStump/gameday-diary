@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeTeamName } from '@/utils/team-name-map';
@@ -9,7 +10,6 @@ interface GameFilters {
   playoff: string;
   startDate: string;
   endDate: string;
-  excludeFutureGames?: boolean; // New parameter to control future game filtering
 }
 
 // Helper function to get all possible team abbreviation variants
@@ -64,9 +64,6 @@ export const useGames = (filters: GameFilters) => {
   return useQuery({
     queryKey: ['games', filters],
     queryFn: async () => {
-      // Apply default value for excludeFutureGames
-      const excludeFutureGames = filters.excludeFutureGames ?? false;
-      
       console.log('Fetching games with filters:', filters);
       
       // Check if we have a complete date range (both start and end dates)
@@ -95,11 +92,6 @@ export const useGames = (filters: GameFilters) => {
         }
       }
       
-      // Get yesterday's date for filtering future games (only used when excludeFutureGames is true)
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayString = yesterday.toISOString().split('T')[0];
-      
       // Fetch MLB games only
       let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
       
@@ -108,12 +100,6 @@ export const useGames = (filters: GameFilters) => {
         // Use the specified date range
         mlbQuery = mlbQuery.gte('game_date', filters.startDate).lte('game_date', filters.endDate);
         console.log('Applying MLB date range filter:', filters.startDate, 'to', filters.endDate);
-      } else if (excludeFutureGames === true) {
-        // Only filter out future games if excludeFutureGames is explicitly true
-        mlbQuery = mlbQuery.lte('game_date', yesterdayString);
-        console.log('Applying MLB default date filter (up to yesterday):', yesterdayString);
-      } else {
-        console.log('Not applying future game filter - showing all games');
       }
       
       if (searchTeam) {
@@ -146,7 +132,6 @@ export const useGames = (filters: GameFilters) => {
       } else if (playoffFilter === 'exhibition') {
         mlbQuery = mlbQuery.in('game_type', ['S', 'E']);
       }
-
 
       const result = await mlbQuery;
       console.log('Query result:', result);
