@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +46,7 @@ const HotGames = ({ games, onAddToDiary, isAuthenticated }: HotGamesProps) => {
     <div className="mb-8">
       <div className="flex items-center space-x-2 mb-4">
         <span className="text-2xl">🔥</span>
-        <h2 className="text-2xl font-bold text-gray-900">Hot Games (Last 24 Hours)</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Hot Games (Past 3 Days)</h2>
       </div>
       
       {/* Desktop: show all 3 games in grid */}

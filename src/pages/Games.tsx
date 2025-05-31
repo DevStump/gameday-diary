@@ -99,10 +99,10 @@ const Games = () => {
     setSelectedGame({ id: gameId, title: gameTitle, homeTeam, awayTeam, league });
   };
 
-  // Get games from last 24 hours for hot games section
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayString = yesterday.toISOString().split('T')[0];
+  // Get games from past 3 days for hot games section (excluding future games)
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0];
   
   const today = new Date();
   const todayString = today.toISOString().split('T')[0];
@@ -112,7 +112,7 @@ const Games = () => {
     league: '',
     season: '',
     playoff: '',
-    startDate: yesterdayString,
+    startDate: threeDaysAgoString,
     endDate: todayString
   });
 
@@ -137,7 +137,7 @@ const Games = () => {
 
         {/* Hot Games Section */}
         <HotGames 
-          games={hotGamesData} 
+          games={hotGamesData.filter(game => !game.is_future)} 
           onAddToDiary={handleAddToDiary}
           isAuthenticated={!!user}
         />
