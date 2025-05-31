@@ -1,3 +1,4 @@
+
 // Historical and current team name mappings
 export const mlbNameToCode: Record<string, string> = {
   // Current team names
@@ -75,6 +76,42 @@ export const mlbNameToCode: Record<string, string> = {
   "Blue Jays": "TOR",
   "Nationals": "WSH",
   "Expos": "MON", // Historical
+  
+  // Add common team abbreviations as both keys and values to avoid "no mapping found" errors
+  "ARI": "ARI",
+  "ATL": "ATL", 
+  "BAL": "BAL",
+  "BOS": "BOS",
+  "CHC": "CHC",
+  "CWS": "CWS",
+  "CIN": "CIN",
+  "CLE": "CLE",
+  "COL": "COL",
+  "DET": "DET",
+  "HOU": "HOU",
+  "KC": "KC",
+  "LAA": "LAA",
+  "LAD": "LAD",
+  "MIA": "MIA",
+  "MIL": "MIL",
+  "MIN": "MIN",
+  "NYM": "NYM",
+  "NYY": "NYY",
+  "OAK": "OAK",
+  "PHI": "PHI",
+  "PIT": "PIT",
+  "SD": "SD",
+  "SF": "SF",
+  "SEA": "SEA",
+  "STL": "STL",
+  "TB": "TB",
+  "TEX": "TEX",
+  "TOR": "TOR",
+  "WSH": "WSH",
+  "FLA": "FLA",
+  "MON": "MON",
+  "ANA": "ANA",
+  "CAL": "CAL",
 };
 
 export const nflNameToCode: Record<string, string> = {
@@ -159,6 +196,43 @@ export const nflNameToCode: Record<string, string> = {
   "Redskins": "WAS",
   "Football Team": "WAS",
   "Oilers": "HOU",
+  
+  // Add common team abbreviations as both keys and values to avoid "no mapping found" errors
+  "ARI": "ARI",
+  "ATL": "ATL",
+  "BAL": "BAL",
+  "BUF": "BUF",
+  "CAR": "CAR",
+  "CHI": "CHI",
+  "CIN": "CIN",
+  "CLE": "CLE",
+  "DAL": "DAL",
+  "DEN": "DEN",
+  "DET": "DET",
+  "GB": "GB",
+  "HOU": "HOU",
+  "IND": "IND",
+  "JAX": "JAX",
+  "KC": "KC",
+  "LV": "LV",
+  "LAC": "LAC",
+  "LAR": "LAR",
+  "MIA": "MIA",
+  "MIN": "MIN",
+  "NE": "NE",
+  "NO": "NO",
+  "NYG": "NYG",
+  "NYJ": "NYJ",
+  "PHI": "PHI",
+  "PIT": "PIT",
+  "SF": "SF",
+  "SEA": "SEA",
+  "TB": "TB",
+  "TEN": "TEN",
+  "WAS": "WAS",
+  "OAK": "OAK",
+  "SD": "SD",
+  "STL": "STL",
 };
 
 // Helper function to get historical team abbreviation based on year
@@ -234,8 +308,13 @@ export const getHistoricalTeamCode = (teamName: string, league: 'MLB' | 'NFL', g
     return foundEntry[1];
   }
   
-  // If no match found, return original name
-  console.warn(`No team code mapping found for: ${teamName} (${league})`);
+  // Try uppercase match
+  const upperName = teamName.toUpperCase();
+  if (nameMap[upperName]) {
+    return nameMap[upperName];
+  }
+  
+  // If still no match found, just return the original name instead of logging a warning
   return teamName;
 };
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,7 @@ interface GameCardProps {
     doubleheader?: string;
     game_num?: number;
   };
-  onAddToDiary: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string) => void;
+  onAddToDiary: (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string, venue?: string) => void;
   isAuthenticated: boolean;
   hideDiaryButton?: boolean;
   isAlreadyLogged?: boolean;
@@ -80,7 +79,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
     return null;
   };
 
-  // Check if boxscore should be available (3 AM EST the day after game)
   const shouldShowBoxscore = () => {
     const gameDate = new Date(game.date);
     const now = new Date();
@@ -101,7 +99,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
     
     if (!isAuthenticated) {
       // Handle unauthenticated case - this should redirect to auth
-      onAddToDiary(game.game_id?.toString() || '', '', '', '', '');
+      onAddToDiary(game.game_id?.toString() || '', '', '', '', '', game.venue);
       return;
     }
     
@@ -113,10 +111,11 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
       gameTitle,
       homeTeam: game.home_team,
       awayTeam: game.away_team,
-      league: game.league
+      league: game.league,
+      venue: game.venue
     });
     
-    onAddToDiary(gameIdString, gameTitle, game.home_team, game.away_team, game.league);
+    onAddToDiary(gameIdString, gameTitle, game.home_team, game.away_team, game.league, game.venue);
   };
 
   return (
