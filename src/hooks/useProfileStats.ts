@@ -224,6 +224,36 @@ export const useProfileStats = () => {
         day: 'numeric' 
       });
 
+      // Get last 5 rooted games (most recent first)
+      const rootedGameLogs = gameLogs
+        .filter(log => log.rooted_for && log.rooted_for !== 'none')
+        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
+        .filter(log => log.game)
+        .sort((a, b) => {
+          const dateA = new Date(a.game.game_date || a.game.game_datetime);
+          const dateB = new Date(b.game.game_date || b.game.game_datetime);
+          return dateB.getTime() - dateA.getTime();
+        })
+        .slice(0, 5)
+        .map(log => {
+          const { game } = log;
+          const homeScore = game.home_score ?? game.runs_scored ?? 0;
+          const awayScore = game.away_score ?? game.runs_allowed ?? 0;
+          const homeAbbr = ensureAbbreviation(game.home_team ?? game.home_name, 'MLB', game.game_date || game.game_datetime);
+          const awayAbbr = ensureAbbreviation(game.away_team ?? game.away_name, 'MLB', game.game_date || game.game_datetime);
+          const rootedAbbr = ensureAbbreviation(log.rooted_for, 'MLB', game.game_date || game.game_datetime);
+      
+          let won = false;
+          if (homeScore !== awayScore) {
+            const winner = homeScore > awayScore ? homeAbbr : awayAbbr;
+            won = rootedAbbr === winner;
+          }
+      
+          return { won };
+        });
+
+
+      
       return {
         totalGames,
         gamesWatched,
@@ -242,7 +272,7 @@ export const useProfileStats = () => {
         totalRuns,
         avgRunsPerGame,
         gameRunsData,
-        last5Games: last5Games.reverse(), // Most recent first
+        last5Games: rootedGameLogs,
         highestScoringGame: highestScoringGame.runs > 0 ? highestScoringGame : null,
         lowestScoringGame: lowestScoringGame.runs < Infinity ? lowestScoringGame : null,
         attendedVenueBreakdown,
