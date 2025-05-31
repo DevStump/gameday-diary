@@ -8,10 +8,15 @@ export interface LogoByYear {
 
 export const mlbLogosByYear: LogoByYear = {
   'ARI': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2024-current': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_2024_sportslogosnet-3125.png',
+    '2012-2023': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_20123733.png',
+    '2007-2011': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_20075619.png',
+    '1998-2006': 'https://content.sportslogos.net/logos/54/50/full/arizona_diamondbacks_logo_primary_19981620.png'
   },
   'ATL': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2022-current': 'https://content.sportslogos.net/logos/54/51/full/3kgwjp6heowkeg3w8zoow9ggy.png',
+    '2018-2021': 'https://content.sportslogos.net/logos/54/51/full/7150_atlanta_braves-primary-2018.png',
+    '1987-2017': 'https://content.sportslogos.net/logos/54/51/full/atlanta_braves_logo_primary_20221869.png',
   },
   'BAL': {
     '2019-current': 'https://content.sportslogos.net/logos/53/52/full/baltimore_orioles_logo_primary_20195398.png',
@@ -23,10 +28,11 @@ export const mlbLogosByYear: LogoByYear = {
     '1976-2008': 'https://content.sportslogos.net/logos/53/53/full/boston_red_sox_logo_primary_19768800.png'
   },
   'CHC': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '1979-current': 'https://content.sportslogos.net/logos/54/54/full/chicago_cubs_logo_primary_19792956.png'
   },
   'CIN': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2013-current': 'https://content.sportslogos.net/logos/54/56/full/cincinnati_reds_logo_primary_20133208.png',
+    '1999-2012': 'https://content.sportslogos.net/logos/54/56/full/cincinnati_reds_logo_primary_19997337.png',
   },
   'CLE': {
     '2022-current': 'https://content.sportslogos.net/logos/53/6804/full/cleveland_guardians_logo_primary_20227577.png',
@@ -34,7 +40,8 @@ export const mlbLogosByYear: LogoByYear = {
     '1986-2013': 'https://content.sportslogos.net/logos/53/57/full/wnyd2zhh84f50ux4uxyqbktbh.png'
   },
   'COL': {
-    '2000-current': 'https://content.sportslogos.net/logos/'
+    '2017-current': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_20171892.png'
+    '1993-2016': 'https://content.sportslogos.net/logos/54/58/full/colorado_rockies_logo_primary_19932879.png'
   },
   'CWS': {
     '1991-current': 'https://content.sportslogos.net/logos/53/55/full/chicago_white_sox_logo_primary_19911413.png'
