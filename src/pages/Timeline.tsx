@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
@@ -140,7 +141,7 @@ const Timeline = () => {
     }
 
     return (
-      <div className="flex items-center justify-center gap-0.5">
+      <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
@@ -157,7 +158,11 @@ const Timeline = () => {
 
   const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string) => {
     if (!rootedFor || rootedFor === 'none') {
-      return <span className="text-gray-500">No team</span>;
+      return (
+        <div className="flex items-center justify-center gap-1 min-w-[60px]">
+          <span className="text-gray-500">No team</span>
+        </div>
+      );
     }
     
     // Use team abbreviations instead of full names
@@ -169,7 +174,7 @@ const Timeline = () => {
     const teamAbbr = isHomeTeam ? homeTeamAbbr : awayTeamAbbr;
     
     return (
-      <div className="flex items-center gap-1">
+      <div className="flex items-center justify-center gap-1 min-w-[60px]">
         <img 
           src={getTeamLogo(teamAbbr, 'MLB')} 
           alt={teamAbbr}
@@ -341,9 +346,9 @@ const Timeline = () => {
                     <div className="border-t border-gray-200 mx-3"></div>
                     <CardFooter className="p-3 pt-2">
                       <div className="w-full">
-                        {/* Boxscore button */}
-                        {isBeforeToday && (
-                          <div className="mb-3">
+                        {/* Boxscore button - always show but greyed out if not available */}
+                        <div className="mb-3">
+                          {isBeforeToday ? (
                             <a 
                               href={generateBoxscoreUrl(game)} 
                               target="_blank" 
@@ -360,8 +365,18 @@ const Timeline = () => {
                                 Boxscore
                               </Button>
                             </a>
-                          </div>
-                        )}
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="w-full border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed"
+                            >
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              Boxscore
+                            </Button>
+                          )}
+                        </div>
 
                         {/* Diary metadata */}
                         <div className="space-y-2 text-xs text-gray-600">
@@ -389,7 +404,7 @@ const Timeline = () => {
                             
                             <div className="text-center">
                               <span className="font-medium block">Company:</span>
-                              <span>
+                              <span className="truncate">
                                 {game.logData.company || 
                                   <span className="text-gray-400">Solo</span>
                                 }
@@ -397,12 +412,13 @@ const Timeline = () => {
                             </div>
                           </div>
                           
-                          {game.logData.notes && (
-                            <div className="pt-1.5 border-t border-gray-100">
-                              <span className="font-medium">Notes:</span>
-                              <p className="mt-0.5 text-gray-700 truncate">{game.logData.notes}</p>
-                            </div>
-                          )}
+                          {/* Always show Notes section */}
+                          <div className="pt-1.5 border-t border-gray-100">
+                            <span className="font-medium">Notes:</span>
+                            <p className="mt-0.5 text-gray-700 truncate">
+                              {game.logData.notes || <span className="text-gray-400">No notes</span>}
+                            </p>
+                          </div>
                           
                           <div className="pt-1.5 border-t border-gray-100 text-gray-400 text-center">
                             Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
