@@ -36,9 +36,15 @@ const Timeline = () => {
     mode: '', // New filter for diary entries
   });
 
-  // Fetch games with logs using the new hook
+  // Fetch games with logs using the updated hook with all filters
   const { data: loggedGames = [], isLoading: loggedGamesLoading } = useLoggedGames({
     mode: filters.mode,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    league: filters.league,
+    season: filters.season,
+    playoff: filters.playoff,
+    search: filters.search,
   });
 
   console.log('Game logs in Timeline:', gameLogs);

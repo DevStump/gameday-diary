@@ -13,6 +13,12 @@ const generateDiaryEntries = (gameId: string): number => {
 
 export const useLoggedGames = (filters: {
   mode: string;
+  startDate?: string;
+  endDate?: string;
+  league?: string;
+  season?: string;
+  playoff?: string;
+  search?: string;
 }) => {
   const { user } = useAuth();
   
@@ -101,10 +107,65 @@ export const useLoggedGames = (filters: {
         };
       }).filter(Boolean);
 
-      // Apply mode filter if specified
+      // Apply filters
       let filteredGames = enrichedGames;
+      
+      // Mode filter
       if (filters.mode) {
-        filteredGames = enrichedGames.filter(game => game.logData.mode === filters.mode);
+        filteredGames = filteredGames.filter(game => game.logData.mode === filters.mode);
+      }
+
+      // League filter
+      if (filters.league) {
+        filteredGames = filteredGames.filter(game => game.league === filters.league);
+      }
+
+      // Season filter
+      if (filters.season) {
+        filteredGames = filteredGames.filter(game => {
+          const gameYear = new Date(game.date).getFullYear();
+          return gameYear.toString() === filters.season;
+        });
+      }
+
+      // Date filter (single date for both start and end)
+      if (filters.startDate) {
+        filteredGames = filteredGames.filter(game => {
+          return game.date === filters.startDate;
+        });
+      }
+
+      // Team filter (search field contains team:league format)
+      if (filters.search) {
+        filteredGames = filteredGames.filter(game => {
+          // Handle new format: "ATL:MLB"
+          if (filters.search.includes(':')) {
+            const [teamAbbr, league] = filters.search.split(':');
+            if (league !== game.league) return false;
+            
+            // Check if either home or away team matches
+            const homeTeamMatches = game.home_team?.toLowerCase().includes(teamAbbr.toLowerCase());
+            const awayTeamMatches = game.away_team?.toLowerCase().includes(teamAbbr.toLowerCase());
+            return homeTeamMatches || awayTeamMatches;
+          }
+          
+          // Legacy format - check team names
+          const searchLower = filters.search.toLowerCase();
+          const homeTeamMatches = game.home_team?.toLowerCase().includes(searchLower);
+          const awayTeamMatches = game.away_team?.toLowerCase().includes(searchLower);
+          return homeTeamMatches || awayTeamMatches;
+        });
+      }
+
+      // Playoff filter
+      if (filters.playoff) {
+        if (filters.playoff === 'true') {
+          filteredGames = filteredGames.filter(game => game.playoff);
+        } else if (filters.playoff === 'false') {
+          filteredGames = filteredGames.filter(game => !game.playoff);
+        } else if (filters.playoff === 'exhibition') {
+          filteredGames = filteredGames.filter(game => game.game_type === 'E' || game.game_type === 'S');
+        }
       }
 
       // Sort by game datetime descending (newest first), then by venue
@@ -136,7 +197,7 @@ export const useLoggedGames = (filters: {
         return venueA.localeCompare(venueB);
       });
 
-      console.log('Final enriched logged games:', sortedGames.length);
+      console.log('Final filtered logged games:', sortedGames.length);
       
       return sortedGames;
     },
