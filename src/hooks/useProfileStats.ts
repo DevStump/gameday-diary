@@ -63,17 +63,6 @@ export const useProfileStats = () => {
       let highestScoringGame = { runs: 0, teams: '', date: '', venue: '' };
       let lowestScoringGame = { runs: Infinity, teams: '', date: '', venue: '' };
 
-      // Filter for rooted games only for last 5 calculation
-      const rootedGameLogs = filteredGameLogs
-        .filter(log => log.rooted_for && log.rooted_for !== 'none')
-        .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
-        .filter(log => log.game)
-        .sort((a, b) => {
-          const dateA = new Date(a.game.game_date || a.game.game_datetime);
-          const dateB = new Date(b.game.game_date || b.game.game_datetime);
-          return dateB.getTime() - dateA.getTime();
-        });
-
       // Sort all games by date for cumulative runs
       const sortedGameLogs = filteredGameLogs
         .map(log => ({ ...log, game: gameMap[String(log.game_id)] }))
