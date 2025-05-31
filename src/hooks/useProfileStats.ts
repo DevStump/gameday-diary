@@ -3,7 +3,7 @@ import { useGameLogs } from './useGameLogs';
 import { useGames } from './useGames';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
 
-const ensureAbbreviation = (team: string, league: 'MLB', date: string): string => {
+const ensureAbbreviation = (team: string, league: 'MLB' | 'NFL', date: string): string => {
   if (team.length === 3 && team === team.toUpperCase()) return team;
   return getTeamAbbreviation(team, league, date);
 };
@@ -17,8 +17,7 @@ export const useProfileStats = () => {
     queryFn: () => {
       if (!gameLogs || !mlbGames) return null;
 
-      const allGames = [...mlbGames];
-      const gameMap = Object.fromEntries(allGames.map(g => [String(g.game_id), g]));
+      const gameMap = Object.fromEntries(mlbGames.map(g => [String(g.game_id), g]));
 
       const totalGames = gameLogs.length;
       const gamesAttended = gameLogs.filter(log => log.mode === 'attended').length;
