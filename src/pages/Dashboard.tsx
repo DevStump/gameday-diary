@@ -50,7 +50,7 @@ const Dashboard = () => {
           <div className="text-center py-12">
             <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No game data found</h3>
-            <p className="text-gray-600">Start logging games to see your stats here!</p>
+            <p className="text-gray-600">Start adding games to your diary to see your stats!</p>
           </div>
         </div>
       </Layout>
@@ -68,7 +68,7 @@ const Dashboard = () => {
           </div>
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-gray-600 mb-2">
-              Get a summary view of all the games in your diary with some fun and cool analysis
+              A personal stats hub powered by your game logs. Explore win/loss trends, top teams, favorite stadiums, and more.
             </p>
             <p className="text-sm text-gray-500">
               {stats.totalGames} games added to diary
