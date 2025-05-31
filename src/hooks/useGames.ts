@@ -132,7 +132,7 @@ export const useGames = (filters: GameFilters) => {
       if (!filters.league || filters.league === 'NFL') {
         let nflQuery = supabase.from('nfl_games').select('*').order('date', { ascending: false }).order('game_time', { ascending: false });
         
-        // Filter out future games by default (unless date filters are specified)
+        // Always filter out future games unless specific date filters are provided
         if (!filters.startDate && !filters.endDate) {
           nflQuery = nflQuery.lte('date', today);
         }
@@ -181,7 +181,7 @@ export const useGames = (filters: GameFilters) => {
       if (!filters.league || filters.league === 'MLB') {
         let mlbQuery = supabase.from('mlb_schedule').select('*').order('game_date', { ascending: false }).order('game_datetime', { ascending: false });
         
-        // Filter out future games by default (unless date filters are specified)
+        // Always filter out future games unless specific date filters are provided
         if (!filters.startDate && !filters.endDate) {
           mlbQuery = mlbQuery.lte('game_date', today);
         }
