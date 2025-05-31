@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,11 +48,13 @@ const getDateString = (date: Date): string => {
 
 const isPastGame = (gameDateString: string): boolean => {
   const todayStr = getDateString(new Date());
+  console.log(`Checking if ${gameDateString} is before ${todayStr}:`, gameDateString < todayStr);
   return gameDateString < todayStr;
 };
 
 const isTodayGame = (gameDateString: string): boolean => {
   const todayStr = getDateString(new Date());
+  console.log(`Checking if ${gameDateString} is today ${todayStr}:`, gameDateString === todayStr);
   return gameDateString === todayStr;
 };
 
@@ -66,6 +67,7 @@ const isFutureGame = (gameDateString: string): boolean => {
 const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   const { data: teamCodeMap = {} } = useMLBTeamCodes();
   const futureGame = isFutureGame(game.date);
+  const todayGame = isTodayGame(game.date);
 
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
@@ -95,7 +97,15 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    return isPastGame(game.date); // ✅ Only show for games strictly before today
+    const isPast = isPastGame(game.date);
+    const isToday = isTodayGame(game.date);
+    const isFuture = isFutureGame(game.date);
+    
+    console.log(`Game ${game.game_id} (${game.date}): isPast=${isPast}, isToday=${isToday}, isFuture=${isFuture}`);
+    console.log(`Should show boxscore: ${isPast && !isToday && !isFuture}`);
+    
+    // Only show for games that are strictly in the past (not today, not future)
+    return isPast && !isToday && !isFuture;
   };
 
   const getStatusTag = () => {
