@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -97,15 +98,13 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated }: GameCardProps) => {
   };
 
   const shouldShowBoxscore = () => {
-    const isPast = isPastGame(game.date);
-    const isToday = isTodayGame(game.date);
-    const isFuture = isFutureGame(game.date);
+    const todayStr = getDateString(new Date());
+    const isStrictlyPast = game.date < todayStr;
     
-    console.log(`Game ${game.game_id} (${game.date}): isPast=${isPast}, isToday=${isToday}, isFuture=${isFuture}`);
-    console.log(`Should show boxscore: ${isPast && !isToday && !isFuture}`);
+    console.log(`Game ${game.game_id} (${game.date}): today=${todayStr}, isStrictlyPast=${isStrictlyPast}`);
     
-    // Only show for games that are strictly in the past (not today, not future)
-    return isPast && !isToday && !isFuture;
+    // Only show for games that are strictly before today (not today, not future)
+    return isStrictlyPast;
   };
 
   const getStatusTag = () => {
