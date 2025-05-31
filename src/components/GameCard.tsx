@@ -50,14 +50,17 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
   const generateBoxscoreUrl = () => {
     const year = new Date(game.date).getFullYear();
     
-    // Use the new helper function to get the correct Baseball Reference code
+    // Use the helper function to get the correct Baseball Reference code
     let bbrefTeamCode = getBaseballReferenceCode(homeTeamAbbr, game.date);
     
-    // Try the team code map as fallback
-    if (!bbrefTeamCode || bbrefTeamCode === homeTeamAbbr) {
+    // Only use the team code map as fallback if getBaseballReferenceCode didn't provide a valid override
+    // Don't treat a successful mapping (like MIA->MIA for 2019) as a failure
+    if (!bbrefTeamCode) {
       const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
       if (mappedTeamCode) {
         bbrefTeamCode = mappedTeamCode;
+      } else {
+        bbrefTeamCode = homeTeamAbbr;
       }
     }
 
