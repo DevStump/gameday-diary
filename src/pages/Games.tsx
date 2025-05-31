@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
@@ -141,6 +142,9 @@ const Games = () => {
     excludeFutureGames: true
   });
 
+  // Check if we need extra bottom padding on mobile (fewer than 24 games displayed)
+  const needsExtraPadding = displayedGames.length < gamesPerPage;
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -208,7 +212,7 @@ const Games = () => {
           <>
             {displayedGames.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${needsExtraPadding ? 'pb-24 md:pb-0' : ''}`}>
                   {displayedGames.map((game, index) => (
                     <div key={game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                       <GameCard
