@@ -135,9 +135,9 @@ const Dashboard = () => {
               {stats.attendedVenueBreakdown?.length > 0 ? (
                 <div className="space-y-3">
                   {stats.attendedVenueBreakdown.slice(0, 5).map((venue, index) => (
-                    <div key={venue.venue} className="flex justify-between items-center">
-                      <span className="text-sm font-medium">{venue.venue}</span>
-                      <Badge variant="secondary">{venue.count} games</Badge>
+                    <div key={venue[0]} className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{venue[0]}</span>
+                      <Badge variant="secondary">{venue[1]} games</Badge>
                     </div>
                   ))}
                 </div>
@@ -160,8 +160,8 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center">
                   <span>Win Percentage</span>
                   <span className="font-bold text-green-600">
-                    {stats.winRecord?.wins && stats.winRecord?.total ? 
-                      `${((stats.winRecord.wins / stats.winRecord.total) * 100).toFixed(1)}%` : 
+                    {stats.winRecord?.wins && (stats.winRecord.wins + stats.winRecord.losses) > 0 ? 
+                      `${((stats.winRecord.wins / (stats.winRecord.wins + stats.winRecord.losses)) * 100).toFixed(1)}%` : 
                       'N/A'
                     }
                   </span>
@@ -170,8 +170,8 @@ const Dashboard = () => {
                   <div 
                     className="bg-green-600 h-2 rounded-full" 
                     style={{ 
-                      width: stats.winRecord?.wins && stats.winRecord?.total ? 
-                        `${(stats.winRecord.wins / stats.winRecord.total) * 100}%` : 
+                      width: stats.winRecord?.wins && (stats.winRecord.wins + stats.winRecord.losses) > 0 ? 
+                        `${(stats.winRecord.wins / (stats.winRecord.wins + stats.winRecord.losses)) * 100}%` : 
                         '0%' 
                     }}
                   ></div>
@@ -217,21 +217,21 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* League Breakdown */}
+        {/* Team Breakdown */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart3 className="h-5 w-5 mr-2" />
-              League Breakdown
+              Team Breakdown
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {stats.leagueBreakdown?.length > 0 ? (
-                stats.leagueBreakdown.map((league) => (
-                  <div key={league.league} className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{league.league}</span>
-                    <Badge variant="outline">{league.count} games</Badge>
+              {stats.teamBreakdown?.length > 0 ? (
+                stats.teamBreakdown.map((team) => (
+                  <div key={team[0]} className="flex justify-between items-center">
+                    <span className="text-sm font-medium">{team[0]}</span>
+                    <Badge variant="outline">{team[1]} games</Badge>
                   </div>
                 ))
               ) : (

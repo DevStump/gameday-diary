@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useGameLogs } from '@/hooks/useGameLogs';
+import { useLoggedGames } from '@/hooks/useLoggedGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -38,10 +38,18 @@ const Timeline = () => {
     venue?: string;
   } | null>(null);
 
-  const [editingLog, setEditingLog] = useState<string | null>(null);
-  const [deletingLog, setDeletingLog] = useState<string | null>(null);
+  const [editingLog, setEditingLog] = useState<any | null>(null);
+  const [deletingLog, setDeletingLog] = useState<any | null>(null);
 
-  const { data: gameLogs = [], isLoading } = useGameLogs();
+  const { data: loggedGames = [], isLoading } = useLoggedGames({
+    mode: filters.mode === 'all' ? '' : filters.mode,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    league: filters.league,
+    season: filters.season,
+    playoff: filters.playoff,
+    search: filters.search,
+  });
 
   if (!user) {
     return (
@@ -74,31 +82,6 @@ const Timeline = () => {
       </Layout>
     );
   }
-
-  // Apply filters to game logs
-  const filteredLogs = gameLogs.filter(log => {
-    // Mode filter
-    if (filters.mode === 'attended' && log.mode !== 'attended') return false;
-    if (filters.mode === 'watched' && log.mode !== 'watched') return false;
-
-    // League filter
-    if (filters.league && log.league !== filters.league) return false;
-
-    // Season filter (extract year from game_id or use a different approach)
-    if (filters.season) {
-      const logYear = new Date(log.created_at).getFullYear().toString();
-      if (logYear !== filters.season) return false;
-    }
-
-    // Search filter (search in notes, teams, etc.)
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      const searchableText = `${log.notes || ''} ${log.rooted_for || ''}`.toLowerCase();
-      if (!searchableText.includes(searchTerm)) return false;
-    }
-
-    return true;
-  });
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -147,7 +130,7 @@ const Timeline = () => {
               Your personal collection of games you've watched and attended
             </p>
             <Badge variant="secondary" className="self-start sm:self-center">
-              {filteredLogs.length} {filteredLogs.length === 1 ? 'game' : 'games'}
+              {loggedGames.length} {loggedGames.length === 1 ? 'game' : 'games'}
             </Badge>
           </div>
         </div>
@@ -195,7 +178,7 @@ const Timeline = () => {
                     <SelectValue placeholder="All leagues" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All leagues</SelectItem>
+                    <SelectItem value="all">All leagues</SelectItem>
                     <SelectItem value="MLB">MLB</SelectItem>
                   </SelectContent>
                 </Select>
@@ -208,7 +191,7 @@ const Timeline = () => {
                     <SelectValue placeholder="All seasons" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All seasons</SelectItem>
+                    <SelectItem value="all">All seasons</SelectItem>
                     {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
                       <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                     ))}
@@ -220,22 +203,24 @@ const Timeline = () => {
         </Card>
 
         {/* Game Logs Grid */}
-        {filteredLogs.length > 0 ? (
+        {loggedGames.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredLogs.map((log, index) => (
-              <div key={log.id} style={{ animationDelay: `${index * 0.1}s` }}>
+            {loggedGames.map((game, index) => (
+              <div key={game.logData?.id || game.game_id} style={{ animationDelay: `${index * 0.1}s` }}>
                 <GameCard
                   game={{
-                    game_id: log.game_id || '',
-                    date: new Date(log.created_at).toISOString().split('T')[0],
-                    home_team: '',
-                    away_team: '',
-                    league: 'MLB',
-                    venue: log.venue || undefined,
+                    game_id: game.game_id || '',
+                    date: game.date || new Date().toISOString().split('T')[0],
+                    home_team: game.home_team || '',
+                    away_team: game.away_team || '',
+                    league: game.league || 'MLB',
+                    venue: game.venue || game.venue_name || undefined,
                   }}
                   onAddToDiary={handleAddToDiary}
                   isAuthenticated={!!user}
                   hideDiaryButton={true}
+                  onEdit={() => setEditingLog({ log: game.logData, game })}
+                  onDelete={() => setDeletingLog({ log: game.logData, game })}
                 />
               </div>
             ))}
@@ -282,7 +267,9 @@ const Timeline = () => {
           <EditGameLogModal
             isOpen={!!editingLog}
             onClose={() => setEditingLog(null)}
-            logId={editingLog}
+            gameLog={editingLog.log}
+            game={editingLog.game}
+            league="MLB"
           />
         )}
 
@@ -291,7 +278,9 @@ const Timeline = () => {
           <DeleteGameLogModal
             isOpen={!!deletingLog}
             onClose={() => setDeletingLog(null)}
-            logId={deletingLog}
+            gameLog={deletingLog.log}
+            game={deletingLog.game}
+            league="MLB"
           />
         )}
       </div>
