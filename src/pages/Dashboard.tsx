@@ -142,7 +142,8 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Supported</p>
-                  <p className="text-lg font-bold text-gray-900 truncate">{formatTeamName(stats.mostSupportedTeam, 'MLB')}</p>
+                  <p className="text-lg font-bold text-gray-900 truncate">{mostSupportedTeam?.team} ({mostSupportedTeam?.count})</p>
+                  <img src={getTeamLogo(mostSupportedTeam?.team, 'MLB')} />
                 </div>
                 <Trophy className="h-8 w-8 text-sports-gold opacity-80" />
               </div>

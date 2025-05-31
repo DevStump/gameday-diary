@@ -107,7 +107,12 @@ export const useProfileStats = () => {
       });
 
       const mostVisitedVenue = Object.entries(venueCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
-      const mostSupportedTeam = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
+      const mostSupportedEntry = Object.entries(rootedForCounts).sort(([, a], [, b]) => b - a)[0];
+      const mostSupportedTeam = mostSupportedEntry
+        ? { team: mostSupportedEntry[0], count: mostSupportedEntry[1] }
+        : null;
+
+
       const mostWinsEntry = Object.entries(teamWins).sort(([, a], [, b]) => b - a)[0];
       const mostLossesEntry = Object.entries(teamLosses).sort(([, a], [, b]) => b - a)[0];
       const teamBreakdown = Object.entries(teamCounts).sort(([, a], [, b]) => b - a).slice(0, 5);
