@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { formatTeamName } from '@/utils/teamLogos';
+import type { DateRange } from 'react-day-picker';
 
 interface GameFiltersProps {
   filters: {
@@ -48,28 +49,39 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     'SEA', 'STL', 'TB', 'TEX', 'TOR', 'WSH'
   ].sort();
 
-  const handleDateChange = (date: Date | undefined, type: 'startDate' | 'endDate') => {
-    if (date) {
-      // Format as YYYY-MM-DD to match database format (no timezone)
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const dateString = `${year}-${month}-${day}`;
-      onFilterChange(type, dateString);
-    } else {
-      onFilterChange(type, '');
+  // Convert filters to DateRange for the calendar
+  const getDateRange = (): DateRange | undefined => {
+    if (!filters.startDate || !filters.endDate) return undefined;
+    
+    try {
+      const [startYear, startMonth, startDay] = filters.startDate.split('-').map(Number);
+      const [endYear, endMonth, endDay] = filters.endDate.split('-').map(Number);
+      
+      return {
+        from: new Date(startYear, startMonth - 1, startDay),
+        to: new Date(endYear, endMonth - 1, endDay)
+      };
+    } catch {
+      return undefined;
     }
   };
 
-  // Helper function to parse date string safely
-  const parseDate = (dateString: string): Date | undefined => {
-    if (!dateString) return undefined;
-    try {
-      // Parse YYYY-MM-DD format directly
-      const [year, month, day] = dateString.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    } catch {
-      return undefined;
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    if (range?.from && range?.to) {
+      // Format as YYYY-MM-DD
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      onFilterChange('startDate', formatDate(range.from));
+      onFilterChange('endDate', formatDate(range.to));
+    } else {
+      // Clear both dates if range is incomplete
+      onFilterChange('startDate', '');
+      onFilterChange('endDate', '');
     }
   };
 
@@ -118,10 +130,12 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
     setIsOpen(false);
   };
 
+  const dateRange = getDateRange();
+
   // Filter content component to avoid duplication
   const FilterContent = () => (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
         {/* League */}
         <Select value={filters.league} onValueChange={(value) => onFilterChange('league', value === 'all' ? '' : value)}>
           <SelectTrigger>
@@ -197,50 +211,32 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
           </SelectContent>
         </Select>
 
-        {/* Start Date */}
+        {/* Date Range Picker */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               className={cn(
                 "justify-start text-left font-normal",
-                !filters.startDate && "text-muted-foreground"
+                !dateRange && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.startDate ? format(parseDate(filters.startDate) || new Date(), "MMM dd, yyyy") : "Start Date"}
+              {dateRange ? (
+                <>
+                  {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+                </>
+              ) : (
+                "Pick date range"
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
-              mode="single"
-              selected={parseDate(filters.startDate)}
-              onSelect={(date) => handleDateChange(date, 'startDate')}
-              initialFocus
-              className="pointer-events-auto"
-            />
-          </PopoverContent>
-        </Popover>
-
-        {/* End Date */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "justify-start text-left font-normal",
-                !filters.endDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.endDate ? format(parseDate(filters.endDate) || new Date(), "MMM dd, yyyy") : "End Date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={parseDate(filters.endDate)}
-              onSelect={(date) => handleDateChange(date, 'endDate')}
+              mode="range"
+              selected={dateRange}
+              onSelect={handleDateRangeChange}
+              numberOfMonths={2}
               initialFocus
               className="pointer-events-auto"
             />
@@ -291,21 +287,17 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters }: GameFiltersPro
               />
             </Badge>
           )}
-          {filters.startDate && (
+          {dateRange && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>From: {format(parseDate(filters.startDate) || new Date(), "MMM dd, yyyy")}</span>
+              <span>
+                {format(dateRange.from, "MMM dd, yyyy")} - {format(dateRange.to, "MMM dd, yyyy")}
+              </span>
               <X
                 className="h-3 w-3 cursor-pointer hover:text-red-600"
-                onClick={() => onFilterChange('startDate', '')}
-              />
-            </Badge>
-          )}
-          {filters.endDate && (
-            <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>To: {format(parseDate(filters.endDate) || new Date(), "MMM dd, yyyy")}</span>
-              <X
-                className="h-3 w-3 cursor-pointer hover:text-red-600"
-                onClick={() => onFilterChange('endDate', '')}
+                onClick={() => {
+                  onFilterChange('startDate', '');
+                  onFilterChange('endDate', '');
+                }}
               />
             </Badge>
           )}
