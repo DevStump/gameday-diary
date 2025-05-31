@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
-import { Calendar, Loader2, Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Calendar, Loader2, Edit, Trash2, ExternalLink, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -135,6 +134,27 @@ const Timeline = () => {
     });
   };
 
+  const renderStarRating = (rating: number | null) => {
+    if (!rating) {
+      return <span className="text-gray-400">Not rated</span>;
+    }
+
+    return (
+      <div className="flex items-center justify-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`h-3 w-3 ${
+              star <= rating 
+                ? 'fill-yellow-400 text-yellow-400' 
+                : 'text-gray-300'
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
   const getRootedForDisplay = (rootedFor: string, homeTeam: string, awayTeam: string) => {
     if (!rootedFor || rootedFor === 'none') {
       return <span className="text-gray-500">No team</span>;
@@ -192,6 +212,12 @@ const Timeline = () => {
       return <Badge variant="outline" className="border-sports-gold text-sports-gold">Playoff</Badge>;
     }
     return null;
+  };
+
+  const handleDeleteClose = () => {
+    setDeletingLog(null);
+    // Refresh the page to show the deleted game is gone
+    window.location.reload();
   };
 
   if (isLoading) {
@@ -340,33 +366,30 @@ const Timeline = () => {
                         {/* Diary metadata */}
                         <div className="space-y-2 text-xs text-gray-600">
                           <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="font-medium">Mode:</span>
-                              <span className="ml-1 capitalize">
+                            <div className="text-center">
+                              <span className="font-medium block">Mode:</span>
+                              <span className="capitalize">
                                 {game.logData.mode === 'attended' ? '🏟️ Attended' : '📺 Watched'}
                               </span>
                             </div>
                             
-                            <div>
-                              <span className="font-medium">Rating:</span>
-                              <span className="ml-1">
-                                {game.logData.rating ? 
-                                  `⭐ ${game.logData.rating}/5` : 
-                                  <span className="text-gray-400">Not rated</span>
-                                }
-                              </span>
+                            <div className="text-center">
+                              <span className="font-medium block">Rating:</span>
+                              <div className="flex justify-center">
+                                {renderStarRating(game.logData.rating)}
+                              </div>
                             </div>
                             
-                            <div>
-                              <span className="font-medium">Rooted for:</span>
-                              <div className="ml-1 inline-flex">
+                            <div className="text-center">
+                              <span className="font-medium block">Rooted for:</span>
+                              <div className="flex justify-center">
                                 {getRootedForDisplay(game.logData.rooted_for, game.home_team, game.away_team)}
                               </div>
                             </div>
                             
-                            <div>
-                              <span className="font-medium">Company:</span>
-                              <span className="ml-1">
+                            <div className="text-center">
+                              <span className="font-medium block">Company:</span>
+                              <span>
                                 {game.logData.company || 
                                   <span className="text-gray-400">Solo</span>
                                 }
@@ -377,11 +400,11 @@ const Timeline = () => {
                           {game.logData.notes && (
                             <div className="pt-1.5 border-t border-gray-100">
                               <span className="font-medium">Notes:</span>
-                              <p className="mt-0.5 text-gray-700">{game.logData.notes}</p>
+                              <p className="mt-0.5 text-gray-700 truncate">{game.logData.notes}</p>
                             </div>
                           )}
                           
-                          <div className="pt-1.5 border-t border-gray-100 text-gray-400">
+                          <div className="pt-1.5 border-t border-gray-100 text-gray-400 text-center">
                             Added: {new Date(game.logData.created_at).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -425,7 +448,7 @@ const Timeline = () => {
       {deletingLog && (
         <DeleteGameLogModal
           isOpen={!!deletingLog}
-          onClose={() => setDeletingLog(null)}
+          onClose={handleDeleteClose}
           gameLog={deletingLog.log}
           game={deletingLog.game}
           league="MLB"
