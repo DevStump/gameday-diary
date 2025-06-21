@@ -40,7 +40,6 @@ GameDay Diary is your personal sports memory bank. Whether you were in the stadi
 - Your diary is completely private
 - Secure authentication
 - Your data is never shared
-- Export your diary anytime
 
 ## 📱 How It Works
 
