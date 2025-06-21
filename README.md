@@ -66,13 +66,6 @@ GameDay Diary is your personal sports memory bank. Whether you were in the stadi
 - **Advanced Analytics** - Deeper insights into your fandom
 - **Export Options** - Download your diary as PDF or spreadsheet
 
-## 💬 Get in Touch
-
-Have questions or feedback? We'd love to hear from you!
-
-- Email: hello@gamedaydiary.com
-- Twitter: [@gamedaydiary](https://twitter.com/gamedaydiary)
-
 ## 🏟️ About
 
 GameDay Diary was built by sports fans, for sports fans. We believe every game has a story worth remembering, whether it's a World Series Game 7 or a random Tuesday night in June.
