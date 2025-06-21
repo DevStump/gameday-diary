@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
+# 🏟️ GameDay Diary
 
-## Project info
+Track every game you've ever attended or watched. Build your personal sports history, one game at a time.
 
-**URL**: https://lovable.dev/projects/a5e7bcca-dea0-4f89-9439-14a724328e7b
+![GameDay Diary](https://img.shields.io/badge/version-1.0.0-blue)
+![MLB Support](https://img.shields.io/badge/MLB-Live-green)
+![NFL Support](https://img.shields.io/badge/NFL-Coming%20Soon-yellow)
+![NBA Support](https://img.shields.io/badge/NBA-Coming%20Soon-orange)
 
-## How can I edit this code?
+## 🎯 What is GameDay Diary?
 
-There are several ways of editing your application.
+GameDay Diary is your personal sports memory bank. Whether you were in the stadium or on your couch, every game tells a story. We help you capture and relive those moments.
 
-**Use Lovable**
+**Visit us at: [gamedaydiary.com](https://gamedaydiary.com)** *(coming soon)*
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a5e7bcca-dea0-4f89-9439-14a724328e7b) and start prompting.
+## ✨ Features
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📖 Game Browser
+- Browse the complete MLB game history database
+- Advanced filtering by date, season, team, venue, and game type
+- "Hot Games" section showing recent games
+- One-click diary entry creation
+- Direct links to Baseball Reference boxscores
 
-**Use your preferred IDE**
+### 📔 Your Personal Diary
+- Track games you've attended (🏟️) or watched (📺)
+- Rate games with 1-5 stars
+- Record who you rooted for and track your W/L record
+- Add notes about who you went with and your experience
+- Edit and manage your game entries
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 📊 Dashboard Analytics
+- View your personal game statistics
+- Win/loss record visualization
+- Top teams, venues, and seasons
+- Game distribution charts
+- Average rating across all games
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🔐 Privacy & Security
+- Your diary is completely private
+- Secure authentication
+- Your data is never shared
+- Export your diary anytime
 
-Follow these steps:
+## 📱 How It Works
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Sign Up** - Create your free account in seconds
+2. **Browse Games** - Search through our comprehensive MLB database
+3. **Add to Diary** - Click to add any game with your personal details
+4. **Track Your Stats** - Watch your fandom story unfold through beautiful analytics
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🏆 Perfect For
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Season Ticket Holders** - Track every home game experience
+- **Travel Fans** - Document your ballpark journey across the country
+- **Casual Viewers** - Remember those special games you watched with friends
+- **Stats Lovers** - Analyze your personal fan metrics and trends
+- **Memory Keepers** - Preserve the stories behind each game
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🗺️ Coming Soon
 
-**Edit a file directly in GitHub**
+- **NFL Support** - Track every touchdown and field goal
+- **NBA Support** - From buzzer beaters to blowouts
+- **Social Features** - Share your stats with friends (optionally!)
+- **Mobile Apps** - iOS and Android native experiences
+- **Advanced Analytics** - Deeper insights into your fandom
+- **Export Options** - Download your diary as PDF or spreadsheet
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 💬 Get in Touch
 
-**Use GitHub Codespaces**
+Have questions or feedback? We'd love to hear from you!
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Email: hello@gamedaydiary.com
+- Twitter: [@gamedaydiary](https://twitter.com/gamedaydiary)
 
-## What technologies are used for this project?
+## 🏟️ About
 
-This project is built with:
+GameDay Diary was built by sports fans, for sports fans. We believe every game has a story worth remembering, whether it's a World Series Game 7 or a random Tuesday night in June.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/a5e7bcca-dea0-4f89-9439-14a724328e7b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+**GameDay Diary** - Your games. Your memories. Your story.
