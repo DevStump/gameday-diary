@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Calendar, BarChart3, Search, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import WelcomeModal from '@/components/WelcomeModal';
+import WelcomeModal from '@/components/modals/WelcomeModal';
 
 interface LayoutProps {
   children: React.ReactNode;

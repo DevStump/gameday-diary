@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import GameCard from '@/components/GameCard';
 import GameFilters from '@/components/GameFilters';
-import GameLogModal from '@/components/GameLogModal';
+import GameLogModal from '@/components/modals/GameLogModal';
 import HotGames from '@/components/HotGames';
 import { Loader2, Trophy, X, Info } from 'lucide-react';
 import { useGames } from '@/hooks/useGames';
