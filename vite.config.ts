@@ -10,14 +10,13 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      plugins: mode === 'production' ? [
-        ["transform-remove-console", { "exclude": ["error", "warn"] }]
-      ] : []
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
