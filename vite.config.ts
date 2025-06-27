@@ -10,7 +10,11 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      plugins: mode === 'production' ? [
+        ["transform-remove-console", { "exclude": ["error", "warn"] }]
+      ] : []
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),

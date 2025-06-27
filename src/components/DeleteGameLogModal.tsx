@@ -42,7 +42,6 @@ const DeleteGameLogModal = ({ isOpen, onClose, gameLog, game, league }: DeleteGa
       // Close modal immediately to provide instant feedback
       onClose();
     } catch (error) {
-      console.error('Error deleting game log:', error);
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to delete game log.',

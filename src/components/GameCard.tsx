@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, BookOpen, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getTeamAbbreviation } from '@/utils/teamLogos';
-import { useMLBTeamCodes, getBaseballReferenceCode } from '@/hooks/useMLBTeamCodes';
+import { generateBoxscoreUrl } from '@/utils/team-mappings';
 import GameTeamDisplay from './game-card/GameTeamDisplay';
 import GameScore from './game-card/GameScore';
 import GameDateTime from './game-card/GameDateTime';
@@ -42,33 +41,13 @@ interface GameCardProps {
 }
 
 const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false, isAlreadyLogged = false }: GameCardProps) => {
-  const { data: teamCodeMap = {} } = useMLBTeamCodes();
-
   const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
   const awayTeamAbbr = getTeamAbbreviation(game.away_team, game.league, game.date);
 
-  const generateBoxscoreUrl = () => {
-    const year = new Date(game.date).getFullYear();
-    
-    // Use the helper function to get the correct Baseball Reference code
-    let bbrefTeamCode = getBaseballReferenceCode(homeTeamAbbr, game.date);
-    
-    // Only use the team code map as fallback if getBaseballReferenceCode didn't provide a valid override
-    // Don't treat a successful mapping (like MIA->MIA for 2019) as a failure
-    if (!bbrefTeamCode) {
-      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      if (mappedTeamCode) {
-        bbrefTeamCode = mappedTeamCode;
-      } else {
-        bbrefTeamCode = homeTeamAbbr;
-      }
-    }
-
-    bbrefTeamCode = bbrefTeamCode.toUpperCase();
-    const date = game.date.replace(/-/g, '');
+  const getBoxscoreUrl = () => {
+    // Use the new utility function from team-mappings
     const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
-
-    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
+    return generateBoxscoreUrl(homeTeamAbbr, game.date, gameNumber);
   };
 
   const getStatusTag = () => {
@@ -100,8 +79,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
   const isBeforeToday = new Date(game.date) <= new Date(new Date().toDateString());
 
   const handleAddClick = () => {
-    console.log('Add button clicked for game:', game.game_id);
-    
     if (!isAuthenticated) {
       // Handle unauthenticated case - this should redirect to auth
       onAddToDiary(game.game_id?.toString() || '', '', '', '', '', game.venue);
@@ -110,15 +87,6 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
     
     const gameTitle = `${awayTeamAbbr} @ ${homeTeamAbbr}`;
     const gameIdString = game.game_id?.toString() || '';
-    
-    console.log('Calling onAddToDiary with:', {
-      gameId: gameIdString,
-      gameTitle,
-      homeTeam: game.home_team,
-      awayTeam: game.away_team,
-      league: game.league,
-      venue: game.venue
-    });
     
     onAddToDiary(gameIdString, gameTitle, game.home_team, game.away_team, game.league, game.venue);
   };
@@ -203,7 +171,7 @@ const GameCard = ({ game, onAddToDiary, isAuthenticated, hideDiaryButton = false
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <a 
-                          href={generateBoxscoreUrl()} 
+                          href={getBoxscoreUrl()} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="flex-1"

@@ -11,15 +11,15 @@ import { useLoggedGames } from '@/hooks/useLoggedGames';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link } from 'react-router-dom';
-import EditGameLogModal from '@/components/EditGameLogModal';
+import GameLogModal from '@/components/GameLogModal';
 import DeleteGameLogModal from '@/components/DeleteGameLogModal';
 import GameFilters from '@/components/GameFilters';
 import { getTeamLogo, getTeamAbbreviation } from '@/utils/teamLogos';
-import { useMLBTeamCodes } from '@/hooks/useMLBTeamCodes';
 import GameTeamDisplay from '@/components/game-card/GameTeamDisplay';
 import GameScore from '@/components/game-card/GameScore';
 import GameDateTime from '@/components/game-card/GameDateTime';
 import { MapPin } from 'lucide-react';
+import { generateBoxscoreUrl } from '@/utils/team-mappings';
 
 // Helper component for conditional tooltips
 const TooltipWrapper = ({ children, text, isMobile }: { children: React.ReactNode; text: string; isMobile: boolean }) => {
@@ -52,7 +52,6 @@ const Diary = () => {
   const { data: gameLogs = [], isLoading: logsLoading } = useGameLogs();
   const [editingLog, setEditingLog] = useState<any>(null);
   const [deletingLog, setDeletingLog] = useState<any>(null);
-  const { data: teamCodeMap = {} } = useMLBTeamCodes();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter state - same as Games page plus mode
@@ -77,8 +76,6 @@ const Diary = () => {
     search: filters.search,
   });
 
-  console.log('Game logs in Diary:', gameLogs);
-  console.log('Logged games from new hook:', loggedGames);
 
   // Only show loading when we're actually fetching data and user is authenticated
   const isLoading = user && (logsLoading || loggedGamesLoading);
@@ -172,25 +169,10 @@ const Diary = () => {
     );
   };
 
-  const generateBoxscoreUrl = (game: any) => {
+  const getBoxscoreUrl = (game: any) => {
     const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
-    const year = new Date(game.date).getFullYear();
-    let bbrefTeamCode = homeTeamAbbr;
-
-    if (homeTeamAbbr === 'FLA' && year <= 2002) {
-      bbrefTeamCode = 'FLO';
-    } else if (homeTeamAbbr === 'LAA') {
-      bbrefTeamCode = 'ANA';
-    } else {
-      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
-    }
-
-    bbrefTeamCode = bbrefTeamCode.toUpperCase();
-    const date = game.date.replace(/-/g, '');
     const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
-
-    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
+    return generateBoxscoreUrl(homeTeamAbbr, game.date, gameNumber);
   };
 
   const getStatusTag = (game: any) => {
@@ -358,7 +340,7 @@ const Diary = () => {
                                 <div className="mb-3">
                                   {isBeforeToday ? (
                                     <a 
-                                      href={generateBoxscoreUrl(game)} 
+                                      href={getBoxscoreUrl(game)} 
                                       target="_blank" 
                                       rel="noopener noreferrer"
                                       className="block"
@@ -506,9 +488,10 @@ const Diary = () => {
 
         {/* Modals - only show if user is authenticated */}
         {user && editingLog && (
-          <EditGameLogModal
+          <GameLogModal
             isOpen={!!editingLog}
             onClose={() => setEditingLog(null)}
+            mode="edit"
             gameLog={editingLog.log}
             game={editingLog.game}
             league="MLB"

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectLabel, SelectGroup } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -103,8 +101,6 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
   };
 
   const handleDateChange = (date: Date | undefined, isMobile = false) => {
-    console.log('Date changed:', date);
-    
     if (date) {
       // Format as YYYY-MM-DD
       const formatDate = (date: Date) => {
@@ -115,8 +111,6 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
       };
       
       const selectedDate = formatDate(date);
-      
-      console.log('Setting date:', selectedDate);
       
       if (isMobile) {
         // Update pending filters for mobile
@@ -132,7 +126,6 @@ const GameFilters = ({ filters, onFilterChange, onClearFilters, showModeFilter =
       }
     } else {
       // Clear both dates if no date is selected
-      console.log('Clearing date');
       if (isMobile) {
         setPendingFilters(prev => ({
           ...prev,

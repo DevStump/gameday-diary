@@ -17,6 +17,7 @@ import GameTeamDisplay from '@/components/game-card/GameTeamDisplay';
 import GameScore from '@/components/game-card/GameScore';
 import GameDateTime from '@/components/game-card/GameDateTime';
 import { MapPin } from 'lucide-react';
+import { generateBoxscoreUrl } from '@/utils/team-mappings';
 
 const Timeline = () => {
   const { user } = useAuth();
@@ -47,8 +48,6 @@ const Timeline = () => {
     search: filters.search,
   });
 
-  console.log('Game logs in Timeline:', gameLogs);
-  console.log('Logged games from new hook:', loggedGames);
 
   // Only show loading when we're actually fetching data
   const isLoading = logsLoading || loggedGamesLoading;
@@ -126,25 +125,10 @@ const Timeline = () => {
     );
   };
 
-  const generateBoxscoreUrl = (game: any) => {
+  const getBoxscoreUrl = (game: any) => {
     const homeTeamAbbr = getTeamAbbreviation(game.home_team, game.league, game.date);
-    const year = new Date(game.date).getFullYear();
-    let bbrefTeamCode = homeTeamAbbr;
-
-    if (homeTeamAbbr === 'FLA' && year <= 2002) {
-      bbrefTeamCode = 'FLO';
-    } else if (homeTeamAbbr === 'LAA') {
-      bbrefTeamCode = 'ANA';
-    } else {
-      const mappedTeamCode = teamCodeMap[homeTeamAbbr.toUpperCase()];
-      bbrefTeamCode = mappedTeamCode || homeTeamAbbr;
-    }
-
-    bbrefTeamCode = bbrefTeamCode.toUpperCase();
-    const date = game.date.replace(/-/g, '');
     const gameNumber = game.doubleheader === 'S' && game.game_num ? game.game_num.toString() : '0';
-
-    return `https://www.baseball-reference.com/boxes/${bbrefTeamCode}/${bbrefTeamCode}${date}${gameNumber}.shtml`;
+    return generateBoxscoreUrl(homeTeamAbbr, game.date, gameNumber);
   };
 
   const getStatusTag = (game: any) => {
@@ -290,7 +274,7 @@ const Timeline = () => {
                         <div className="mb-3">
                           {isBeforeToday ? (
                             <a 
-                              href={generateBoxscoreUrl(game)} 
+                              href={getBoxscoreUrl(game)} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="block"

@@ -98,8 +98,6 @@ const Games = () => {
   };
 
   const handleAddToDiary = (gameId: string, gameTitle: string, homeTeam: string, awayTeam: string, league: string, venue?: string) => {
-    console.log('handleAddToDiary called with:', { gameId, gameTitle, homeTeam, awayTeam, league, venue });
-    
     if (!user) {
       // Store current URL with filters for redirect after authentication
       const currentUrl = window.location.origin + location.pathname + location.search;
@@ -262,6 +260,7 @@ const Games = () => {
           <GameLogModal
             isOpen={!!selectedGame}
             onClose={() => setSelectedGame(null)}
+            mode="add"
             gameId={selectedGame.id}
             gameTitle={selectedGame.title}
             homeTeam={selectedGame.homeTeam}
